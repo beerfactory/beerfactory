@@ -28,10 +28,21 @@ trait DatabaseConfig extends ConfigTry {
       }
     }
   }
+
+  lazy val dbURL = engine match {
+    case `h2Engine` => getString(databaseConfigPath + ".properties.url")
+    case `pgEngine` => {
+      val host = getString(databaseConfigPath + ".properties.serverName")
+      val port = getString(databaseConfigPath + ".properties.portNumber")
+      val dbName = getString(databaseConfigPath + ".properties.databaseName")
+      Success(s"jdbc:postgresql://$host:$port/$dbName")
+    }
+  }
 }
 
 object DatabaseConfig {
-  val dataSourceClassPath = "beerfactory.server.database.dataSourceClass"
+  val databaseConfigPath = "beerfactory.server.database"
+  val dataSourceClassPath = databaseConfigPath + ".dataSourceClass"
   val h2Engine = "H2"
   val pgEngine = "PG"
 }

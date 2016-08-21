@@ -17,6 +17,7 @@ object Dependencies {
     val playJson = "2.5.0"
     val slick = "3.1.1"
     val h2 = "1.4.192"
+    val flyway = "4.0.3"
   }
 
   object jsV {
@@ -37,14 +38,14 @@ object Dependencies {
 
   val scalactic = "org.scalactic" %% "scalactic" % V.scalactic
 
-  val flyway = "org.flywaydb" % "flyway-core" % "4.0.3"
   // Test
   val scalatest = "org.scalatest" %% "scalatest" % V.scalatest % "test"
 
   val commonDependencies = Seq(typesafeLogging, logbackClassic, scalatest)
   val dbDependencies = Seq(
     "com.typesafe.slick" %% "slick" % V.slick,
-    "com.h2database" % "h2" % V.h2
+    "com.h2database" % "h2" % V.h2,
+    "org.flywaydb" % "flyway-core" % V.flyway
   )
   val serverDependencies = commonDependencies ++ dbDependencies ++ Seq(akkaActor, akkaStream)
 
