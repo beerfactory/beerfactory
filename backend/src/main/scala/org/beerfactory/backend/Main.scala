@@ -18,9 +18,21 @@ class Main extends StrictLogging {
     implicit val _materializer = ActorMaterializer()
     import _system.dispatcher
 
+    val modules = new ModulesWiring {
+      lazy val system = _system
+      println(sqlDatabase)
+    }
+
   }
 }
 
-object Main extends App {
-
+object Main extends App with StrictLogging {
+  try {
+    new Main().start()
+  } catch {
+    case exc:Throwable => {
+      logger.error(s"Application startup failed: $exc")
+      logger.debug("Stacktrace:", exc)
+    }
+  }
 }

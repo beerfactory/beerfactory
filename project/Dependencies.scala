@@ -45,7 +45,9 @@ object Dependencies {
   val dbDependencies = Seq(
     "com.typesafe.slick" %% "slick" % V.slick,
     "com.h2database" % "h2" % V.h2,
-    "org.flywaydb" % "flyway-core" % V.flyway
+    "org.flywaydb" % "flyway-core" % V.flyway,
+    "com.typesafe.slick" %% "slick-hikaricp" % V.slick
+
   )
   val serverDependencies = commonDependencies ++ dbDependencies ++ Seq(akkaActor, akkaStream)
 

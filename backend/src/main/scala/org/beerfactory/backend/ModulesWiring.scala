@@ -3,7 +3,7 @@ package org.beerfactory.backend
 import akka.actor.ActorSystem
 import com.typesafe.config.{Config, ConfigFactory}
 import com.typesafe.scalalogging.StrictLogging
-import org.beerfactory.backend.database.DatabaseConfig
+import org.beerfactory.backend.database.{DatabaseConfig, SqlDatabase}
 
 /*
  *********************************************************************************
@@ -19,6 +19,8 @@ trait ModulesWiring extends StrictLogging {
   lazy val config = new DatabaseConfig {
     override def hoconConfig = ConfigFactory.load()
   }
+
+  lazy val sqlDatabase:SqlDatabase = SqlDatabase.init(config).get
 
 
 }

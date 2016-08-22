@@ -1,6 +1,7 @@
 package org.beerfactory.backend.database
 
 import com.typesafe.config.Config
+import com.typesafe.scalalogging.StrictLogging
 import org.beerfactory.backend.utils.ConfigTry
 
 import scala.util.{Failure, Success}
@@ -13,29 +14,39 @@ import scala.util.{Failure, Success}
  * this stuff is worth it, you can buy me a beer in return.   Nicolas JOUANIN
  *********************************************************************************
  */
-trait DatabaseConfig extends ConfigTry {
+trait DatabaseConfig extends ConfigTry with StrictLogging {
   import DatabaseConfig._
   def hoconConfig: Config
 
   lazy val engine = getString(dataSourceClassPath) match {
     case Success(dsClass:String) => {
-      val h2Pattern = "H2".r
-      val pgPattern = "PG".r
-      dsClass.toUpperCase match {
-        case h2Pattern() => h2Engine
-        case pgPattern() => pgEngine
-        case _ => Failure(new IllegalArgumentException(s"Unknown engine for datasourceClass: $dsClass"))
+      if(dsClass.toUpperCase.contains("H2"))
+        h2Engine
+      else
+      {
+        if(dsClass.toUpperCase.contains("PG"))
+          pgEngine
+        else
+        {
+          logger.warn(s"Can't determine Database engine for datasourceClass: '$dsClass'")
+          dsClass
+        }
       }
     }
+    case Failure(_) => {
+      logger.warn(s"Can't read parameter $dataSourceClassPath value, falling back to H2")
+      h2Engine
+    }
+
   }
 
   lazy val dbURL = engine match {
-    case `h2Engine` => getString(databaseConfigPath + ".properties.url")
+    case `h2Engine` => getString(databaseConfigPath + ".properties.url").get
     case `pgEngine` => {
-      val host = getString(databaseConfigPath + ".properties.serverName")
-      val port = getString(databaseConfigPath + ".properties.portNumber")
-      val dbName = getString(databaseConfigPath + ".properties.databaseName")
-      Success(s"jdbc:postgresql://$host:$port/$dbName")
+      val host = getString(databaseConfigPath + ".properties.serverName").get
+      val port = getString(databaseConfigPath + ".properties.portNumber").get
+      val dbName = getString(databaseConfigPath + ".properties.databaseName").get
+      s"jdbc:postgresql://$host:$port/$dbName"
     }
   }
 }
