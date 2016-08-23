@@ -40,7 +40,8 @@ case class SqlDatabase(
       props.put("flyway.url", connectionString.url)
       flyway.configure(props)
     }
-    flyway.setDataSource(connectionString.url, connectionString.username, connectionString.password)
+    else
+      flyway.setDataSource(connectionString.url, connectionString.username, connectionString.password)
     flyway.migrate()
   }
 
