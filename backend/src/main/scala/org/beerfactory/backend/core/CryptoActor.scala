@@ -95,6 +95,12 @@ class CryptoActor(aConfig: Option[Config]=None) extends Actor with Stash with St
     res
   }
 
+  /**
+    * Check if a plain password match a hashed password
+    * @param testPassword plain text password to check
+    * @param hashString hash to for equality testing
+    * @return Validation or ErrorMessage
+    */
   private def checkPassword(testPassword: String, hashString: String): Validation[ErrorMessage] = {
     try {
       val Array(iterStr, saltStr, keyStr) = hashString.split(":")
