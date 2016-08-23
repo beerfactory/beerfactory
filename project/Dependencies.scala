@@ -32,7 +32,7 @@ object Dependencies {
 
   val akkaActor = "com.typesafe.akka" %% "akka-actor" % V.akka
   val akkaStream = "com.typesafe.akka" % "akka-stream_2.11" % V.akka
-  val akkaTestKit = "com.typesafe.akka" % "akka-testkit_2.11" % V.akka
+  val akkaTestKit = "com.typesafe.akka" % "akka-testkit_2.11" % V.akka % Test
   val akkaStreamTestKit = "com.typesafe.akka" % "akka-stream-testkit_2.11" % V.akka
   val playJson = "com.typesafe.play" %% "play-json" % V.playJson
 
@@ -41,7 +41,7 @@ object Dependencies {
   // Test
   val scalatest = "org.scalatest" %% "scalatest" % V.scalatest % "test"
 
-  val commonDependencies = Seq(typesafeLogging, logbackClassic, scalatest)
+  val commonDependencies = Seq(typesafeLogging, logbackClassic, scalactic, scalatest)
   val dbDependencies = Seq(
     "com.typesafe.slick" %% "slick" % V.slick,
     "com.h2database" % "h2" % V.h2,
@@ -49,7 +49,7 @@ object Dependencies {
     "com.typesafe.slick" %% "slick-hikaricp" % V.slick
 
   )
-  val serverDependencies = commonDependencies ++ dbDependencies ++ Seq(akkaActor, akkaStream)
+  val serverDependencies = commonDependencies ++ dbDependencies ++ Seq(akkaActor, akkaStream, akkaTestKit)
 
   val scalajsDependencies = Def.setting(Seq(
     "com.github.japgolly.scalajs-react" %%% "core" % V.scalajsReact,
