@@ -18,6 +18,7 @@ object Dependencies {
     val slick = "3.1.1"
     val h2 = "1.4.192"
     val flyway = "4.0.3"
+    val hsqldb = "2.3.4"
   }
 
   object jsV {
@@ -44,7 +45,7 @@ object Dependencies {
   val commonDependencies = Seq(typesafeLogging, logbackClassic, scalactic, scalatest)
   val dbDependencies = Seq(
     "com.typesafe.slick" %% "slick" % V.slick,
-    "com.h2database" % "h2" % V.h2,
+    "org.hsqldb" % "hsqldb" % V.hsqldb,
     "org.flywaydb" % "flyway-core" % V.flyway,
     "com.typesafe.slick" %% "slick-hikaricp" % V.slick
 
