@@ -23,11 +23,6 @@ trait FlatSpecWithDb extends FlatSpec with Matchers with BeforeAndAfterAll with 
     createAll()
   }
 
-  def clearData() {
-    dropAll()
-    createAll()
-  }
-
   override protected def afterAll() {
     super.afterAll()
     dropAll()
