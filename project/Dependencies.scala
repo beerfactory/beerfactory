@@ -18,7 +18,7 @@ object Dependencies {
     val slick = "3.1.1"
     val h2 = "1.4.192"
     val flyway = "4.0.3"
-    val hsqldb = "2.3.4"
+    val hsqldb = "2.3.3"
   }
 
   object jsV {
