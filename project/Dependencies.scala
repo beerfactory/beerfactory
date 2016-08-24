@@ -17,7 +17,7 @@ object Dependencies {
     val playJson = "2.5.0"
     val slick = "3.1.1"
     val h2 = "1.4.192"
-    val flyway = "4.0.3"
+    val liquibase = "3.5.1"
     val hsqldb = "2.3.3"
   }
 
@@ -46,7 +46,8 @@ object Dependencies {
   val dbDependencies = Seq(
     "com.typesafe.slick" %% "slick" % V.slick,
     "org.hsqldb" % "hsqldb" % V.hsqldb,
-    "org.flywaydb" % "flyway-core" % V.flyway,
+    "org.liquibase" % "liquibase-core" % V.liquibase,
+    "com.mattbertolini" % "liquibase-slf4j" % "2.0.0",
     "com.typesafe.slick" %% "slick-hikaricp" % V.slick
 
   )

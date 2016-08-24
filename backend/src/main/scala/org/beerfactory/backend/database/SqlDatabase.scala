@@ -12,10 +12,15 @@ import java.time.{OffsetDateTime, ZoneOffset}
 import java.util.Properties
 
 import com.typesafe.scalalogging.StrictLogging
-import org.flywaydb.core.Flyway
 import slick.driver.JdbcProfile
 import slick.jdbc.JdbcBackend._
 import DatabaseConfig._
+import liquibase.Contexts
+import java.sql.DriverManager
+import liquibase.Liquibase
+import liquibase.database.DatabaseFactory
+import liquibase.database.jvm.JdbcConnection
+import liquibase.resource.ClassLoaderResourceAccessor
 
 import scala.util.{Failure, Success, Try}
 
@@ -31,18 +36,19 @@ case class SqlDatabase(
     t => t.toInstant.atOffset(ZoneOffset.UTC)
   )
 
+  private def liquiConnect() = {
+    val conn = DriverManager.getConnection(connectionString.url, connectionString.username, connectionString.password)
+    val database = DatabaseFactory.getInstance()
+      .findCorrectDatabaseImplementation(new JdbcConnection(conn))
+    new Liquibase("db/changelogs/changelog-master.xml", new ClassLoaderResourceAccessor(), database)
+
+  }
   def updateSchema() {
-    val flyway = new Flyway()
-    if(connectionString.url contains("hsqldb")) {
-      // Ugly workaround
-      val props = new Properties()
-      props.put("flyway.driver", "org.hsqldb.jdbc.JDBCDriver")
-      props.put("flyway.url", connectionString.url)
-      flyway.configure(props)
-    }
-    else
-      flyway.setDataSource(connectionString.url, connectionString.username, connectionString.password)
-    flyway.migrate()
+    liquiConnect().update(new Contexts())
+  }
+
+  def dropSchema() {
+    liquiConnect().dropAll()
   }
 
   def close() {
@@ -86,10 +92,10 @@ object SqlDatabase extends StrictLogging {
     }
   }
 
-  def initEmbedded(connectionString: String): Try[SqlDatabase] = {
+  def initEmbedded(connectionString: String, user: String, password: String): Try[SqlDatabase] = {
     try {
       val db = Database.forURL(connectionString)
-      Success(SqlDatabase(db, slick.driver.HsqldbDriver, JdbcConnectionString(connectionString)))
+      Success(SqlDatabase(db, slick.driver.HsqldbDriver, JdbcConnectionString(connectionString, user, password)))
     }
     catch {
       case exc:Throwable => Failure(exc)

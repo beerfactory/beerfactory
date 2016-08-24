@@ -12,11 +12,11 @@ import org.beerfactory.backend.database.SqlDatabase
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FlatSpec, Matchers}
 
-trait FlatSpecWithDb extends FlatSpec with Matchers with BeforeAndAfterAll with BeforeAndAfterEach with ScalaFutures
+trait FlatSpecWithDb extends FlatSpec with Matchers with BeforeAndAfterAll with ScalaFutures
   with IntegrationPatience {
 
   private val connectionString = "jdbc:hsqldb:mem:berfactory_test" + this.getClass.getSimpleName
-  val sqlDatabase = SqlDatabase.initEmbedded(connectionString).get
+  val sqlDatabase = SqlDatabase.initEmbedded(connectionString, "SA", "").get
 
   override protected def beforeAll() {
     super.beforeAll()
@@ -35,22 +35,10 @@ trait FlatSpecWithDb extends FlatSpec with Matchers with BeforeAndAfterAll with 
   }
 
   private def dropAll() {
-    import sqlDatabase.driver.api._
-    sqlDatabase.db.run(sqlu"DROP ALL OBJECTS").futureValue
+    sqlDatabase.dropSchema()
   }
 
   private def createAll() {
     sqlDatabase.updateSchema()
-  }
-
-  override protected def afterEach() {
-    try {
-      clearData()
-    }
-    catch {
-      case e: Exception => e.printStackTrace()
-    }
-
-    super.afterEach()
   }
 }
