@@ -16,6 +16,7 @@ object Dependencies {
     val scalaDom = "0.9.1"
     val playJson = "2.5.0"
     val slick = "3.1.1"
+    val slickPg = "0.14.3"
     val h2 = "1.4.192"
     val liquibase = "3.5.1"
     val hsqldb = "2.3.3"
@@ -49,10 +50,13 @@ object Dependencies {
     "org.liquibase" % "liquibase-core" % V.liquibase,
     "org.postgresql" % "postgresql" % "9.4.1209",
     "com.mattbertolini" % "liquibase-slf4j" % "2.0.0",
+    "com.github.tminglei" %% "slick-pg" % V.slickPg,
+    "com.github.tminglei" %% "slick-pg_date2" % V.slickPg,
+    "com.github.tminglei" %% "slick-pg_play-json" % V.slickPg,
     "com.typesafe.slick" %% "slick-hikaricp" % V.slick
 
   )
-  val serverDependencies = commonDependencies ++ dbDependencies ++ Seq(akkaActor, akkaStream, akkaTestKit)
+  val serverDependencies = commonDependencies ++ dbDependencies ++ Seq(playJson, akkaActor, akkaStream, akkaTestKit)
 
   val scalajsDependencies = Def.setting(Seq(
     "com.github.japgolly.scalajs-react" %%% "core" % V.scalajsReact,

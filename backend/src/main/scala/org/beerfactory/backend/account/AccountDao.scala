@@ -71,13 +71,13 @@ trait AccountSchema {
   import database._
   import database.driver.api._
 
-  class AccountTable(tag: Tag) extends Table[Account](tag, "accounts") {
-    def id = column[UUID]("account_id", O.PrimaryKey)
-    def login = column[String]("login")
-    def passwordHash = column[String]("passwordHash")
-    def email = column[String]("email")
-    def createdOn = column[OffsetDateTime]("createdOn")
-    def status = column[AccountStatus]("status")
+  class AccountTable(tag: Tag) extends Table[Account](tag, "ACCOUNTS") {
+    def id = column[UUID]("ACCOUNT_ID", O.PrimaryKey, O.SqlType("BINARY(16)"))
+    def login = column[String]("LOGIN")
+    def passwordHash = column[String]("PASSWORD_HASH")
+    def email = column[String]("EMAIL")
+    def createdOn = column[OffsetDateTime]("CREATED_ON")
+    def status = column[AccountStatus]("STATUS")
 
     def * = (id, login, passwordHash, email, createdOn, status) <> (Account.tupled, Account.unapply)
   }

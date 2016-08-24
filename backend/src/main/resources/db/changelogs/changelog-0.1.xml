@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<databaseChangeLog
-        xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
-                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+        objectQuotingStrategy="QUOTE_ALL_OBJECTS">
     <changeSet author="nico" id="1">
-        <createTable tableName="accounts">
-            <column name="ACCOUNT_ID" type="VARCHAR(100)">
+        <createTable tableName="ACCOUNTS">
+            <column name="ACCOUNT_ID" type="BINARY(16)">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
             <column name="LOGIN" type="VARCHAR(100)">
                 <constraints nullable="false"/>
             </column>
-            <column name="PASSWORDHASH" type="VARCHAR(100)">
+            <column name="PASSWORD_HASH" type="VARCHAR(100)">
                 <constraints nullable="false"/>
             </column>
             <column name="EMAIL" type="VARCHAR(100)">
                 <constraints nullable="false"/>
             </column>
-            <column name="CREATEDON" type="TIMESTAMP">
+            <column name="CREATED_ON" type="TIMESTAMP WITHOUT TIME ZONE">
                 <constraints nullable="false"/>
             </column>
             <column name="STATUS" type="VARCHAR(100)">

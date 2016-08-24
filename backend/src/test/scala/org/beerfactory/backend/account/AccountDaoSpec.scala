@@ -8,7 +8,7 @@
  */
 package org.beerfactory.backend.account
 
-import java.time.OffsetDateTime
+import java.time.{OffsetDateTime, ZoneId}
 
 import akka.actor.ActorSystem
 import org.beerfactory.backend.account.domain.{Account, NewAccount}
@@ -23,10 +23,10 @@ class AccountDaoSpec extends FlatSpecWithDb with Matchers {
   import scala.concurrent.ExecutionContext.Implicits.global
 
   val uuidActor = actorSystem.actorOf(UUIDActor.props(), name = "uuidActor")
-  val accountDao = new AccountDao(sqlDatabase, uuidActor)
 
   it should "add new account" in {
-    val now = OffsetDateTime.now()
+    val accountDao = new AccountDao(sqlDatabase, uuidActor)
+    val now = OffsetDateTime.now(ZoneId.of("UTC"))
     val newAccount = accountDao.createAccount(
       "login", "passwordHash", "toto@toto.com", now, NewAccount).futureValue
     newAccount shouldBe a [Account]
@@ -43,15 +43,17 @@ class AccountDaoSpec extends FlatSpecWithDb with Matchers {
   }
 
   it should "find an existing account by its Id" in {
+    val accountDao = new AccountDao(sqlDatabase, uuidActor)
     val someAccount = accountDao.createAccount(
-      "login", "passwordHash", "toto@toto.com", OffsetDateTime.now(), NewAccount).futureValue
+      "login", "passwordHash", "toto@toto.com", OffsetDateTime.now(ZoneId.of("UTC")), NewAccount).futureValue
     val testAccount = accountDao.findById(someAccount.id).futureValue
     testAccount shouldEqual Some(someAccount)
   }
 
   it should "find an existing account by its email" in {
+    val accountDao = new AccountDao(sqlDatabase, uuidActor)
     val someAccount = accountDao.createAccount(
-      "login", "passwordHash", "toto@toto.com", OffsetDateTime.now(), NewAccount).futureValue
+      "login", "passwordHash", "titi@toto.com", OffsetDateTime.now(ZoneId.of("UTC")), NewAccount).futureValue
     val testAccount = accountDao.findByEmail(someAccount.email).futureValue
     testAccount shouldEqual Some(someAccount)
   }

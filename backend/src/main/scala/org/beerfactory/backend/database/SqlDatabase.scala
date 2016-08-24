@@ -44,7 +44,12 @@ case class SqlDatabase(
 
   }
   def updateSchema() {
-    liquiConnect().update(new Contexts())
+    val conn = DriverManager.getConnection(connectionString.url, connectionString.username, connectionString.password)
+    val database = DatabaseFactory.getInstance()
+      .findCorrectDatabaseImplementation(new JdbcConnection(conn))
+    val liquibase = new Liquibase("db/changelogs/changelog-master.xml", new ClassLoaderResourceAccessor(), database)
+    liquibase.update(new Contexts())
+    database.close()
   }
 
   def dropSchema() {
@@ -92,10 +97,10 @@ object SqlDatabase extends StrictLogging {
     }
   }
 
-  def initEmbedded(connectionString: String, user: String, password: String): Try[SqlDatabase] = {
+  def initFromConnection(driver: JdbcProfile, connectionString: String, user: String, password: String): Try[SqlDatabase] = {
     try {
       val db = Database.forURL(connectionString)
-      Success(SqlDatabase(db, slick.driver.HsqldbDriver, JdbcConnectionString(connectionString, user, password)))
+      Success(SqlDatabase(db, driver, JdbcConnectionString(connectionString, user, password)))
     }
     catch {
       case exc:Throwable => Failure(exc)
