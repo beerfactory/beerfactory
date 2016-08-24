@@ -47,6 +47,7 @@ object Dependencies {
     "com.typesafe.slick" %% "slick" % V.slick,
     "org.hsqldb" % "hsqldb" % V.hsqldb,
     "org.liquibase" % "liquibase-core" % V.liquibase,
+    "org.postgresql" % "postgresql" % "9.4.1209",
     "com.mattbertolini" % "liquibase-slf4j" % "2.0.0",
     "com.typesafe.slick" %% "slick-hikaricp" % V.slick
 
