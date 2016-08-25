@@ -15,7 +15,7 @@ import slick.profile.Capability
 /**
   * Created by nico on 01/06/2016.
   */
-trait PgDriver extends ExPostgresDriver
+trait PgDriver extends ExPostgresDriver with BeerfactoryDriver
   with PgArraySupport
   with PgDate2Support
   with PgRangeSupport
@@ -50,4 +50,6 @@ trait PgDriver extends ExPostgresDriver
 
 }
 
-object PgDriver extends PgDriver
+object PgDriver extends PgDriver {
+  def engine: DBEngine = PostgresqlEngine
+}

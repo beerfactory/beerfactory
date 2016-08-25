@@ -25,9 +25,8 @@ import liquibase.resource.ClassLoaderResourceAccessor
 import scala.util.{Failure, Success, Try}
 
 case class SqlDatabase( db: slick.jdbc.JdbcBackend.Database,
-                        driver: JdbcProfile,
-                        connectionString: JdbcConnectionString,
-                        engine: DBEngine
+                        driver: JdbcProfile with BeerfactoryDriver,
+                        connectionString: JdbcConnectionString
                       )  {
   import driver.api._
 
@@ -80,7 +79,7 @@ object SqlDatabase extends StrictLogging {
   private def initHsql(config: DatabaseConfig): Try[SqlDatabase] = {
     try {
       val db = Database.forConfig(databaseConfigPath, config.hoconConfig)
-      Success(SqlDatabase(db, slick.driver.HsqldbDriver, JdbcConnectionString(config.dbURL), HsqldbEngine))
+      Success(SqlDatabase(db, HsqlDriver, JdbcConnectionString(config.dbURL)))
     }
     catch {
       case exc:Throwable => Failure(exc)
@@ -90,17 +89,17 @@ object SqlDatabase extends StrictLogging {
   private def initPg(config: DatabaseConfig): Try[SqlDatabase] = {
     try {
       val db = Database.forConfig(databaseConfigPath, config.hoconConfig)
-      Success(SqlDatabase(db, slick.driver.PostgresDriver, JdbcConnectionString(config.dbURL), PostgresqlEngine))
+      Success(SqlDatabase(db, PgDriver, JdbcConnectionString(config.dbURL)))
     }
     catch {
       case exc:Throwable => Failure(exc)
     }
   }
 
-  def initFromConnection(driver: JdbcProfile, connectionString: String, user: String, password: String, engine:DBEngine): Try[SqlDatabase] = {
+  def initFromConnection(driver: JdbcProfile with BeerfactoryDriver, connectionString: String, user: String, password: String): Try[SqlDatabase] = {
     try {
       val db = Database.forURL(connectionString, user, password)
-      Success(SqlDatabase(db, driver, JdbcConnectionString(connectionString, user, password), engine))
+      Success(SqlDatabase(db, driver, JdbcConnectionString(connectionString, user, password)))
     }
     catch {
       case exc:Throwable => Failure(exc)

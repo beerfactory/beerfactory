@@ -8,7 +8,17 @@
  */
 package org.beerfactory.backend.database
 
+import slick.driver.JdbcDriver
+
 trait DBEngine
 object PostgresqlEngine extends DBEngine
 object HsqldbEngine extends DBEngine
 case class OtherEngine(name: String) extends DBEngine
+
+trait BeerfactoryDriver {
+  def engine: DBEngine
+}
+
+object HsqlDriver extends slick.driver.HsqldbDriver with BeerfactoryDriver {
+  def engine: DBEngine = HsqldbEngine
+}

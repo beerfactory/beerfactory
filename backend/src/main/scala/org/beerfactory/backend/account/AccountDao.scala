@@ -71,12 +71,12 @@ trait AccountSchema {
   import database._
   import database.driver.api._
 
-  private val tableName = database.engine match {
+  private val tableName = database.driver.engine match {
     case HsqldbEngine => "ACCOUNTS"
     case PostgresqlEngine => "accounts"
   }
 
-  private val colNames = database.engine match {
+  private val colNames = database.driver.engine match {
     case HsqldbEngine => ("ACCOUNT_ID", "LOGIN", "PASSWORD_HASH", "EMAIL", "CREATED_ON", "STATUS")
     case PostgresqlEngine => ("account_id", "login", "password_hash", "email", "created_on", "status")
   }
