@@ -72,7 +72,7 @@ trait AccountSchema {
   import database.driver.api._
 
   class AccountTable(tag: Tag) extends Table[Account](tag, "ACCOUNTS") {
-    def id = column[UUID]("ACCOUNT_ID", O.PrimaryKey, O.SqlType("BINARY(16)"))
+    def id = column[UUID]("ACCOUNT_ID", O.PrimaryKey)
     def login = column[String]("LOGIN")
     def passwordHash = column[String]("PASSWORD_HASH")
     def email = column[String]("EMAIL")

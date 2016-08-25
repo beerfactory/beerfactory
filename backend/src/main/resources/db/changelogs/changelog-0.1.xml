@@ -2,11 +2,13 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
-        objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    <property name="uuid.type" value="uuid" dbms="postgresql"/>
+    <property name="uuid.type" value="binary(16)" dbms="hsqldb"/>
+
     <changeSet author="nico" id="1">
-        <createTable tableName="ACCOUNTS">
-            <column name="ACCOUNT_ID" type="BINARY(16)">
+        <createTable tableName="accounts">
+            <column name="ACCOUNT_ID" type="${uuid.type}">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
             <column name="LOGIN" type="VARCHAR(100)">

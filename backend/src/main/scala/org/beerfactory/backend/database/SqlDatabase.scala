@@ -99,7 +99,7 @@ object SqlDatabase extends StrictLogging {
 
   def initFromConnection(driver: JdbcProfile, connectionString: String, user: String, password: String): Try[SqlDatabase] = {
     try {
-      val db = Database.forURL(connectionString)
+      val db = Database.forURL(connectionString, user, password)
       Success(SqlDatabase(db, driver, JdbcConnectionString(connectionString, user, password)))
     }
     catch {
