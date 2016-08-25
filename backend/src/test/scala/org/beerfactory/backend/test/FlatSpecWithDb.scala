@@ -8,17 +8,17 @@
  */
 package org.beerfactory.backend.test
 
-import org.beerfactory.backend.database.{PgDriver, SqlDatabase}
+import org.beerfactory.backend.database.{HsqldbEngine, PgDriver, PostgresqlEngine, SqlDatabase}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FlatSpec, Matchers}
 
 trait FlatSpecWithDb extends FlatSpec with Matchers with BeforeAndAfterAll with ScalaFutures
   with IntegrationPatience {
 
-  //private val connectionString = "jdbc:hsqldb:mem:berfactory_test" + this.getClass.getSimpleName
-  //val sqlDatabase = SqlDatabase.initFromConnection(slick.driver.HsqldbDriver, connectionString, "SA", "").get
-  private val connectionString = "jdbc:postgresql://localhost:5432/beerfactory"
-  val sqlDatabase = SqlDatabase.initFromConnection(PgDriver, connectionString, "beerfactory", "beerfactory").get
+  private val connectionString = "jdbc:hsqldb:mem:berfactory_test" + this.getClass.getSimpleName
+  val sqlDatabase = SqlDatabase.initFromConnection(slick.driver.HsqldbDriver, connectionString, "SA", "", HsqldbEngine).get
+  //private val connectionString = "jdbc:postgresql://localhost:5432/beerfactory"
+  //val sqlDatabase = SqlDatabase.initFromConnection(PgDriver, connectionString, "beerfactory", "beerfactory", PostgresqlEngine).get
 
 
   override protected def beforeAll() {

@@ -17,7 +17,7 @@ import akka.util.Timeout
 import com.typesafe.scalalogging.StrictLogging
 import org.beerfactory.backend.account.domain._
 import org.beerfactory.backend.core.UUIDActor.GetUUID
-import org.beerfactory.backend.database.SqlDatabase
+import org.beerfactory.backend.database.{HsqldbEngine, PostgresqlEngine, SqlDatabase}
 
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
@@ -71,13 +71,23 @@ trait AccountSchema {
   import database._
   import database.driver.api._
 
-  class AccountTable(tag: Tag) extends Table[Account](tag, "ACCOUNTS") {
-    def id = column[UUID]("ACCOUNT_ID", O.PrimaryKey)
-    def login = column[String]("LOGIN")
-    def passwordHash = column[String]("PASSWORD_HASH")
-    def email = column[String]("EMAIL")
-    def createdOn = column[OffsetDateTime]("CREATED_ON")
-    def status = column[AccountStatus]("STATUS")
+  private val tableName = database.engine match {
+    case HsqldbEngine => "ACCOUNTS"
+    case PostgresqlEngine => "accounts"
+  }
+
+  private val colNames = database.engine match {
+    case HsqldbEngine => ("ACCOUNT_ID", "LOGIN", "PASSWORD_HASH", "EMAIL", "CREATED_ON", "STATUS")
+    case PostgresqlEngine => ("account_id", "login", "password_hash", "email", "created_on", "status")
+  }
+
+  class AccountTable(tag: Tag) extends Table[Account](tag, tableName) {
+    def id = column[UUID](colNames._1, O.PrimaryKey)
+    def login = column[String](colNames._2)
+    def passwordHash = column[String](colNames._3)
+    def email = column[String](colNames._4)
+    def createdOn = column[OffsetDateTime](colNames._5)
+    def status = column[AccountStatus](colNames._6)
 
     def * = (id, login, passwordHash, email, createdOn, status) <> (Account.tupled, Account.unapply)
   }

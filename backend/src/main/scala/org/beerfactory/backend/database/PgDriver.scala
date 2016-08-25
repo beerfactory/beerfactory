@@ -31,7 +31,7 @@ trait PgDriver extends ExPostgresDriver
 
   override val api = MyAPI
 
-  override def quoteIdentifier(id: String): String = id
+  //override def quoteIdentifier(id: String): String = id
 
   object MyAPI extends API with ArrayImplicits
     with DateTimeImplicits

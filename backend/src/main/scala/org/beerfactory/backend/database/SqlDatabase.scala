@@ -24,10 +24,10 @@ import liquibase.resource.ClassLoaderResourceAccessor
 
 import scala.util.{Failure, Success, Try}
 
-case class SqlDatabase(
-                        db: slick.jdbc.JdbcBackend.Database,
+case class SqlDatabase( db: slick.jdbc.JdbcBackend.Database,
                         driver: JdbcProfile,
-                        connectionString: JdbcConnectionString
+                        connectionString: JdbcConnectionString,
+                        engine: DBEngine
                       )  {
   import driver.api._
 
@@ -67,8 +67,8 @@ case class JdbcConnectionString(url: String, username: String = "", password: St
 object SqlDatabase extends StrictLogging {
   def init(config: DatabaseConfig): Try[SqlDatabase] = {
     val db = config.engine match {
-      case DatabaseConfig.hsqlEngine => initHsql(config)
-      case DatabaseConfig.pgEngine => initPg(config)
+      case HsqldbEngine => initHsql(config)
+      case PostgresqlEngine => initPg(config)
       case x => Failure(new IllegalArgumentException(s"Indetermined engine for datasource configuration '$x'"))
     }
     logger.debug("Database configuration: " + db.getOrElse("FAILURE"))
@@ -80,7 +80,7 @@ object SqlDatabase extends StrictLogging {
   private def initHsql(config: DatabaseConfig): Try[SqlDatabase] = {
     try {
       val db = Database.forConfig(databaseConfigPath, config.hoconConfig)
-      Success(SqlDatabase(db, slick.driver.HsqldbDriver, JdbcConnectionString(config.dbURL)))
+      Success(SqlDatabase(db, slick.driver.HsqldbDriver, JdbcConnectionString(config.dbURL), HsqldbEngine))
     }
     catch {
       case exc:Throwable => Failure(exc)
@@ -90,17 +90,17 @@ object SqlDatabase extends StrictLogging {
   private def initPg(config: DatabaseConfig): Try[SqlDatabase] = {
     try {
       val db = Database.forConfig(databaseConfigPath, config.hoconConfig)
-      Success(SqlDatabase(db, slick.driver.PostgresDriver, JdbcConnectionString(config.dbURL)))
+      Success(SqlDatabase(db, slick.driver.PostgresDriver, JdbcConnectionString(config.dbURL), PostgresqlEngine))
     }
     catch {
       case exc:Throwable => Failure(exc)
     }
   }
 
-  def initFromConnection(driver: JdbcProfile, connectionString: String, user: String, password: String): Try[SqlDatabase] = {
+  def initFromConnection(driver: JdbcProfile, connectionString: String, user: String, password: String, engine:DBEngine): Try[SqlDatabase] = {
     try {
       val db = Database.forURL(connectionString, user, password)
-      Success(SqlDatabase(db, driver, JdbcConnectionString(connectionString, user, password)))
+      Success(SqlDatabase(db, driver, JdbcConnectionString(connectionString, user, password), engine))
     }
     catch {
       case exc:Throwable => Failure(exc)

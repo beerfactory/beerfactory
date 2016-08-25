@@ -21,28 +21,28 @@ trait DatabaseConfig extends ConfigTry with StrictLogging {
   lazy val engine = getString(dataSourceClassPath) match {
     case Success(dsClass:String) => {
       if(dsClass.toUpperCase.contains("HSQL"))
-        hsqlEngine
+        HsqldbEngine
       else
       {
         if(dsClass.toUpperCase.contains("PG"))
-          pgEngine
+          PostgresqlEngine
         else
         {
           logger.warn(s"Can't determine Database engine for datasourceClass: '$dsClass'")
-          dsClass
+          OtherEngine(dsClass)
         }
       }
     }
     case Failure(_) => {
       logger.warn(s"Can't read parameter $dataSourceClassPath value, falling back to HSQL")
-      hsqlEngine
+      HsqldbEngine
     }
 
   }
 
   lazy val dbURL = engine match {
-    case `hsqlEngine` => getString(databaseConfigPath + ".properties.url").get
-    case `pgEngine` => {
+    case HsqldbEngine => getString(databaseConfigPath + ".properties.url").get
+    case PostgresqlEngine => {
       val host = getString(databaseConfigPath + ".properties.serverName").get
       val port = getString(databaseConfigPath + ".properties.portNumber").get
       val dbName = getString(databaseConfigPath + ".properties.databaseName").get
@@ -54,6 +54,4 @@ trait DatabaseConfig extends ConfigTry with StrictLogging {
 object DatabaseConfig {
   val databaseConfigPath = "beerfactory.server.database"
   val dataSourceClassPath = databaseConfigPath + ".dataSourceClass"
-  val hsqlEngine = "HSQL"
-  val pgEngine = "PG"
 }
