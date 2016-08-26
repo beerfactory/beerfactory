@@ -14,18 +14,23 @@ import akka.actor.ActorSystem
 import org.beerfactory.backend.account.domain.{Account, NewAccount}
 import org.beerfactory.backend.core.UUIDActor
 import org.beerfactory.backend.test.FlatSpecWithDb
-import org.scalatest.Matchers
+import org.scalatest.{BeforeAndAfterAll, Matchers}
 
-class AccountDaoSpec extends FlatSpecWithDb with Matchers {
+class AccountDaoSpec extends FlatSpecWithDb with Matchers with BeforeAndAfterAll {
   behavior of "AccountDao"
 
   lazy val actorSystem = ActorSystem()
   import scala.concurrent.ExecutionContext.Implicits.global
 
   val uuidActor = actorSystem.actorOf(UUIDActor.props(), name = "uuidActor")
+  val accountDao = new AccountDao(sqlDatabase, uuidActor)
+
+  override def afterAll() {
+    actorSystem.terminate().futureValue
+    super.afterAll
+  }
 
   it should "add new account" in {
-    val accountDao = new AccountDao(sqlDatabase, uuidActor)
     val now = OffsetDateTime.now(ZoneId.of("UTC"))
     val newAccount = accountDao.createAccount(
       "login", "passwordHash", "toto@toto.com", now, NewAccount).futureValue
@@ -35,11 +40,6 @@ class AccountDaoSpec extends FlatSpecWithDb with Matchers {
     newAccount.email shouldEqual "toto@toto.com"
     newAccount.createdOn shouldEqual now
     newAccount.status shouldEqual NewAccount
-  }
-
-  override protected def afterAll() {
-    actorSystem.terminate().futureValue
-    super.afterAll()
   }
 
   it should "find an existing account by its Id" in {

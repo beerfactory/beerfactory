@@ -34,7 +34,7 @@ class AccountService( accountConfig: AccountConfig,
 
   implicit val timeout = Timeout(accountConfig.actorWaitTimeout.toMillis, TimeUnit.MILLISECONDS)
 
-  protected def registerAccount(registrationRequest: AccountRegisterRequest): Future[AccountRegisterResult] = {
+  def registerAccount(registrationRequest: AccountRegisterRequest): Future[AccountRegisterResult] = {
     def checkExistence(): Future[Validation[ErrorMessage]] = {
       for {
         existingLoginOpt <- accountDao.findByLogin(registrationRequest.login, caseSensitive = false)
@@ -69,7 +69,7 @@ class AccountService( accountConfig: AccountConfig,
     )
   }
 
-  protected def authenticate(request: AuthenticateRequest): Future[AuthenticateResult] = {
+  def authenticate(request: AuthenticateRequest): Future[AuthenticateResult] = {
     def findAccountByLoginOrEmail: Future[Option[Account] Or ErrorMessage] = {
       for {
         loginOpt <- accountDao.findByLogin(request.emailOrLogin, caseSensitive = false)
@@ -104,7 +104,7 @@ class AccountService( accountConfig: AccountConfig,
     )
   }
 
-  private def checkPassword(password: String, hash: String): Future[Validation[ErrorMessage]] = {
+  def checkPassword(password: String, hash: String): Future[Validation[ErrorMessage]] = {
     ask(cryptoActor, CryptoActor.CheckPassword(password, hash)).mapTo[Validation[ErrorMessage]]
   }
 

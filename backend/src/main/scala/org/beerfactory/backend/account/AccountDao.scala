@@ -54,7 +54,7 @@ class AccountDao(protected val database: SqlDatabase, uuidActor: ActorRef)(impli
   def findByLogin(login: String, caseSensitive:Boolean=true): Future[Option[Account]] = {
     caseSensitive match {
       case true => findOneWhere(_.login === login)
-      case false => findOneWhere(_.login.toLowerCase === login.toLowerCase())
+      case false => findOneWhere (_.login.toLowerCase === login.toLowerCase)
     }
   }
 
