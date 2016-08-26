@@ -18,7 +18,3 @@ case class OtherEngine(name: String) extends DBEngine
 trait BeerfactoryDriver {
   def engine: DBEngine
 }
-
-object HsqlDriver extends slick.driver.HsqldbDriver with BeerfactoryDriver {
-  def engine: DBEngine = HsqldbEngine
-}

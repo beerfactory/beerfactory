@@ -19,7 +19,7 @@ object Dependencies {
     val slickPg = "0.14.3"
     val h2 = "1.4.192"
     val liquibase = "3.5.1"
-    val hsqldb = "2.3.3"
+    val hsqldb = "2.3.4"
   }
 
   object jsV {
