@@ -31,7 +31,7 @@ class AccountDaoSpec extends FlatSpecWithDb with Matchers with BeforeAndAfterAll
   }
 
   it should "add new account" in {
-    val now = OffsetDateTime.now(ZoneId.of("UTC"))
+    val now = OffsetDateTime.now()
     val newAccount = accountDao.createAccount(
       "login", "passwordHash", "toto@toto.com", now, NewAccount).futureValue
     newAccount shouldBe a [Account]

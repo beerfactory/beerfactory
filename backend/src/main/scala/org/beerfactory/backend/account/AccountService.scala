@@ -8,7 +8,7 @@
  */
 package org.beerfactory.backend.account
 
-import java.time.OffsetDateTime
+import java.time.{OffsetDateTime, ZoneId}
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 
@@ -40,8 +40,8 @@ class AccountService( accountConfig: AccountConfig,
         existingLoginOpt <- accountDao.findByLogin(registrationRequest.login, caseSensitive = false)
         existingEmailOpt <- accountDao.findByEmail(registrationRequest.email)
       } yield {
-        existingLoginOpt.map(_ => Fail("userRegistration.login.alreadyUsed")).orElse(
-          existingEmailOpt.map(_ => Fail("userRegistration.email.alreadyUsed"))
+        existingLoginOpt.map(_ => Fail("accountRegistration.login.alreadyUsed")).orElse(
+          existingEmailOpt.map(_ => Fail("accountRegistration.email.alreadyUsed"))
         ).getOrElse(Pass)
       }
     }
@@ -53,7 +53,7 @@ class AccountService( accountConfig: AccountConfig,
       case Pass =>
         for {
           passwordHash <- ask(cryptoActor, CryptoActor.HashPassword(registrationRequest.password)).mapTo[String]
-          account <- accountDao.createAccount(registrationRequest.login, passwordHash, registrationRequest.email, OffsetDateTime.now(), NewAccount)
+          account <- accountDao.createAccount(registrationRequest.login, passwordHash, registrationRequest.email, OffsetDateTime.now(ZoneId.of("UTC")), NewAccount)
         } yield account
         logger.debug(s"Registration success for request: $registrationRequest")
         Future.successful(RegistrationSuccess)
@@ -89,8 +89,8 @@ class AccountService( accountConfig: AccountConfig,
         case Bad(err: ErrorMessage) => Future.successful(AuthenticateFailure(Seq(err)))
         case Good(None) => Future.successful(AuthenticateFailure(Seq("authenticate.account.unknown")))
         case Good(Some(account:Account)) => account.status match {
-          case NewAccount | ConfirmWait => Future.successful(AuthenticateFailure(Seq("authenticate.account.notYetActive")))
-          case Disabled => Future.successful(AuthenticateFailure(Seq("authenticate.account.disabled")))
+          case NewAccount | ConfirmWait => Future.successful(AuthenticateFailure(Seq("accountAuthentication.account.notYetActive")))
+          case Disabled => Future.successful(AuthenticateFailure(Seq("accountAuthentication.account.disabled")))
           case Active | Confirmed =>
             checkPassword(request.password, account.passwordHash).flatMap {
               case Fail(err) => Future.successful(AuthenticateFailure(Seq(err)))
@@ -112,26 +112,26 @@ class AccountService( accountConfig: AccountConfig,
     def loginDiffersPassword(errorCode: String)(validated: AccountRegisterRequest) = validate(errorCode, validated.login != validated.password)
 
     def validateLogin = Good(registrationRequest.login) when(
-      notBlank("userRegistration.login.blank"),
-      minSize("userRegistration.login.minSize", accountConfig.loginMinSize),
-      maxSize("userRegistration.login.maxSize", accountConfig.loginMaxSize)
+      notBlank("accountRegistration.login.blank"),
+      minSize("accountRegistration.login.minSize", accountConfig.loginMinSize),
+      maxSize("accountRegistration.login.maxSize", accountConfig.loginMaxSize)
       )
 
     def validatePassword = Good(registrationRequest.password) when(
-      notBlank("userRegistration.password.blank"),
-      minSize("userRegistration.password.minSize", accountConfig.passwordMinSize),
-      maxSize("userRegistration.password.maxSize", accountConfig.passwordMaxSize)
+      notBlank("accountRegistration.password.blank"),
+      minSize("accountRegistration.password.minSize", accountConfig.passwordMinSize),
+      maxSize("accountRegistration.password.maxSize", accountConfig.passwordMaxSize)
       )
 
-    def validateEmail = Good(registrationRequest.email) when validEmailAddress("userRegistration.email.invalid")
-    def fieldsRestrictions = Good(registrationRequest) when loginDiffersPassword("userRegistration.restriction.loginEqualsPassword")
+    def validateEmail = Good(registrationRequest.email) when validEmailAddress("accountRegistration.email.invalid")
+    def fieldsRestrictions = Good(registrationRequest) when loginDiffersPassword("accountRegistration.restriction.loginEqualsPassword")
 
     List(validateLogin, validatePassword, validateEmail, fieldsRestrictions).combined
   }
 
   private def validateAuthenticateRequest(request: AuthenticateRequest): Any Or Every[ErrorMessage] = {
-    def validateEmailOrLogin = Good(request.emailOrLogin) when notBlank("userAuthenticate.emailOrLogin.blank")
-    def validatePassword = Good(request.password) when notBlank("userAuthenticate.password.blank")
+    def validateEmailOrLogin = Good(request.emailOrLogin) when notBlank("accountAuthenticate.emailOrLogin.blank")
+    def validatePassword = Good(request.password) when notBlank("accountAuthenticate.password.blank")
 
     List(validateEmailOrLogin, validatePassword).combined
   }
