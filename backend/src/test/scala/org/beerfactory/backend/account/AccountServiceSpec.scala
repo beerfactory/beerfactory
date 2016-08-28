@@ -1,10 +1,8 @@
 package org.beerfactory.backend.account
 
 import java.time.OffsetDateTime
-import java.util.concurrent.Executors
 
 import akka.actor.ActorSystem
-import akka.util.Timeout
 import com.typesafe.config.{Config, ConfigFactory}
 import org.beerfactory.backend.account.api._
 import org.beerfactory.backend.account.domain.{Account, Active}
@@ -12,10 +10,6 @@ import org.beerfactory.backend.core.{AccountConfig, CryptoActor, UUIDActor}
 import org.beerfactory.backend.test.FlatSpecWithDb
 import org.scalatest.{BeforeAndAfterAll, Matchers}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
-
-import scala.concurrent.{Await, ExecutionContext}
-import scala.concurrent.duration._
-import scala.concurrent._
 
 class AuthServiceActorSpec extends FlatSpecWithDb with Matchers with BeforeAndAfterAll with ScalaFutures with IntegrationPatience {
   behavior of "AuthServiceActor"

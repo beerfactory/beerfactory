@@ -104,7 +104,7 @@ class AccountService( accountConfig: AccountConfig,
     )
   }
 
-  def checkPassword(password: String, hash: String): Future[Validation[ErrorMessage]] = {
+  private def checkPassword(password: String, hash: String): Future[Validation[ErrorMessage]] = {
     ask(cryptoActor, CryptoActor.CheckPassword(password, hash)).mapTo[Validation[ErrorMessage]]
   }
 
