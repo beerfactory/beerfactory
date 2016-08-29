@@ -5,6 +5,7 @@ resolvers += "Flyway" at "https://flywaydb.org/repo"
 resolvers += "Typesafe repository" at "https://repo.typesafe.com/typesafe/maven-releases/"
 resolvers += "Typesafe Releases" at "http://repo.typesafe.com/typesafe/releases/"
 resolvers += Resolver.url("scoverage-bintray", url("https://dl.bintray.com/sksamuel/sbt-plugins/"))(Resolver.ivyStylePatterns)
+resolvers += Resolver.bintrayRepo("hseeberger", "maven")
 
 addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.3.5")
 addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.1.0")

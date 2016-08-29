@@ -17,9 +17,9 @@ object Dependencies {
     val playJson = "2.5.0"
     val slick = "3.1.1"
     val slickPg = "0.14.3"
-    val h2 = "1.4.192"
     val liquibase = "3.5.1"
     val hsqldb = "2.3.4"
+    val akkaHttpJson = "1.9.0"
   }
 
   object jsV {
@@ -34,8 +34,10 @@ object Dependencies {
 
   val akkaActor = "com.typesafe.akka" %% "akka-actor" % V.akka
   val akkaStream = "com.typesafe.akka" % "akka-stream_2.11" % V.akka
+  val akkaHttp = "com.typesafe.akka" %% "akka-http-experimental" % V.akka
   val akkaTestKit = "com.typesafe.akka" % "akka-testkit_2.11" % V.akka % Test
   val akkaStreamTestKit = "com.typesafe.akka" % "akka-stream-testkit_2.11" % V.akka
+  val akkaHttpJson = "de.heikoseeberger" %% "akka-http-play-json" % V.akkaHttpJson
   val playJson = "com.typesafe.play" %% "play-json" % V.playJson
 
   val scalactic = "org.scalactic" %% "scalactic" % V.scalactic
@@ -54,9 +56,9 @@ object Dependencies {
     "com.github.tminglei" %% "slick-pg_date2" % V.slickPg,
     "com.github.tminglei" %% "slick-pg_play-json" % V.slickPg,
     "com.typesafe.slick" %% "slick-hikaricp" % V.slick
-
   )
-  val serverDependencies = commonDependencies ++ dbDependencies ++ Seq(playJson, akkaActor, akkaStream, akkaTestKit)
+
+  val serverDependencies = commonDependencies ++ dbDependencies ++ Seq(playJson, akkaActor, akkaStream, akkaHttp, akkaHttpJson, akkaTestKit)
 
   val scalajsDependencies = Def.setting(Seq(
     "com.github.japgolly.scalajs-react" %%% "core" % V.scalajsReact,

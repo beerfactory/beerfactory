@@ -9,8 +9,10 @@
 package org.beerfactory.backend
 
 import akka.actor.ActorSystem
+import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
 import com.typesafe.scalalogging.StrictLogging
+import scala.util.{Failure, Success}
 
 class Main extends StrictLogging {
   def start() = {
@@ -18,17 +20,43 @@ class Main extends StrictLogging {
     implicit val _materializer = ActorMaterializer()
     import _system.dispatcher
 
-    val modules = new ModulesWiring {
+    val modules = new ModulesWiring with Routes {
       lazy val system = _system
-      println(sqlDatabase)
+
     }
+    modules.sqlDatabase.updateSchema()
+
+    (Http().bindAndHandle(modules.routes, modules.config.serverHost, modules.config.serverPort), modules)
 
   }
 }
 
 object Main extends App with StrictLogging {
   try {
-    new Main().start()
+    val (startFuture, bl) = new Main().start()
+
+    val host = bl.config.serverHost
+    val port = bl.config.serverPort
+
+    val system = bl.system
+    import system.dispatcher
+
+    startFuture.onComplete {
+      case Success(b) =>
+        logger.info(s"Server started on $host:$port")
+        sys.addShutdownHook {
+          b.unbind()
+          bl.system.terminate()
+          logger.info("Server stopped")
+        }
+      case Failure(e) =>
+        logger.error(s"Cannot start server on $host:$port", e)
+        sys.addShutdownHook {
+          bl.system.terminate()
+          logger.info("Server stopped")
+        }
+    }
+
   } catch {
     case exc:Throwable => {
       logger.error(s"Application startup failed: $exc")

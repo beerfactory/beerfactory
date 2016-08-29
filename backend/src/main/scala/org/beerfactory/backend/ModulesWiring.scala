@@ -18,7 +18,7 @@ import org.beerfactory.backend.database.{DatabaseConfig, SqlDatabase}
 trait ModulesWiring extends StrictLogging {
   def system: ActorSystem
 
-  lazy val config = new DatabaseConfig with AccountConfig {
+  lazy val config = new DatabaseConfig with AccountConfig with ServerConfig {
     override def hoconConfig = ConfigFactory.load()
   }
 
