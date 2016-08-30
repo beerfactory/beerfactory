@@ -17,7 +17,7 @@ trait Routes extends RoutesRequestWrapper
   lazy val routes = requestWrapper {
     pathPrefix("api") {
       accountRoutes
-        versionRoutes
+        //versionRoutes
     } ~
       getFromResourceDirectory("webapp") ~
       path("") {

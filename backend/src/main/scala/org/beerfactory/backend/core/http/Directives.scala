@@ -11,6 +11,8 @@ package org.beerfactory.backend.core.http
 import akka.http.scaladsl.model.headers.RawHeader
 import akka.http.scaladsl.server.{AuthorizationFailedRejection, Directive0, Directive1}
 import akka.http.scaladsl.server.Directives._
+import pdi.jwt.algorithms.JwtHmacAlgorithm
+import pdi.jwt.{JwtAlgorithm, JwtClaim, JwtJson}
 
 import scala.util.{Failure, Success}
 
@@ -18,13 +20,11 @@ trait Directives {
   val httpResponseHeader: String = "Set-Authorization"
   val httpRequestTokenHeader: String = "Authorization"
 
-  val algo = JwtAlgorithm.HS256
-
-  def setAuthToken(claim: JwtClaim, key: String): Directive0 = {
+  def setAuthToken(claim: JwtClaim, algo:JwtHmacAlgorithm, key: String): Directive0 = {
     respondWithHeader(RawHeader(httpResponseHeader, JwtJson.encode(claim, key, algo)))
   }
 
-  def validateAuthToken(key: String): Directive1[JwtClaim] = {
+  def validateAuthToken(algo:JwtHmacAlgorithm, key: String): Directive1[JwtClaim] = {
     optionalHeaderValueByName(httpRequestTokenHeader).flatMap {
       case None => reject(AuthorizationFailedRejection)
       case Some(token) =>

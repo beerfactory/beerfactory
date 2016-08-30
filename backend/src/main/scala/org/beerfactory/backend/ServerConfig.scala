@@ -8,6 +8,8 @@
  */
 package org.beerfactory.backend
 
+import java.time.Duration
+
 import com.typesafe.config.Config
 
 trait ServerConfig {
@@ -15,4 +17,7 @@ trait ServerConfig {
 
   lazy val serverHost: String = hoconConfig.getString("beerfactory.server.host")
   lazy val serverPort: Int = hoconConfig.getInt("beerfactory.server.port")
+  lazy val jwtAlgorithmName: String = hoconConfig.getString("beerfactory.server.jwt.algorithm")
+  lazy val jwtTTL:Duration = hoconConfig.getDuration("beerfactory.server.jwt.ttl")
+  lazy val jwtSecretKey: String = hoconConfig.getString("beerfactory.server.jwt.secret-key")
 }
