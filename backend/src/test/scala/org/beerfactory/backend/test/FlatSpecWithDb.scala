@@ -15,6 +15,7 @@ import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FlatSpec, Matchers}
 trait FlatSpecWithDb extends FlatSpec with Matchers with BeforeAndAfterAll with BeforeAndAfterEach with ScalaFutures
   with IntegrationPatience {
 
+  Class.forName("org.hsqldb.jdbcDriver") //Needed for hsqldb ?
   private val connectionString = "jdbc:hsqldb:mem:berfactory_test" + this.getClass.getSimpleName
   val sqlDatabase = SqlDatabase.initFromConnection(HsqlDriver, connectionString, "SA", "").get
   //private val connectionString = "jdbc:postgresql://localhost:5432/beerfactory"
@@ -28,8 +29,8 @@ trait FlatSpecWithDb extends FlatSpec with Matchers with BeforeAndAfterAll with 
 
   override protected def beforeEach() {
     super.beforeEach()
-    dropAll()
-    createAll()
+    //dropAll()
+    //createAll()
   }
 
   override protected def afterAll() {

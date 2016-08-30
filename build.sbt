@@ -10,3 +10,6 @@ lazy val beerfactoryBackend = (project in file("backend"))
     name := "backend",
     libraryDependencies ++= Dependencies.serverDependencies
   )
+
+logBuffered in Test := false
+//parallelExecution in Test := false

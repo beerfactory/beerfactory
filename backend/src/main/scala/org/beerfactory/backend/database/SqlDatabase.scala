@@ -48,7 +48,7 @@ case class SqlDatabase( db: slick.jdbc.JdbcBackend.Database,
       .findCorrectDatabaseImplementation(new JdbcConnection(conn))
     val liquibase = new Liquibase("db/changelogs/changelog-master.xml", new ClassLoaderResourceAccessor(), database)
     liquibase.update(new Contexts())
-    database.close()
+//    database.close()
   }
 
   def dropSchema() {
