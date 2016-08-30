@@ -26,7 +26,7 @@ trait AccountRoutes extends StrictLogging {
   val jwtAlgorithm = JwtAlgorithm.allHmac().find(_.name.toLowerCase == config.jwtAlgorithmName.toLowerCase) match {
     case Some(x:JwtHmacAlgorithm) => x
     case None => {
-      logger.warn(s"Incorrect or unknown JWT signing algotithm '$config.jwtAlgorithmName' specified in configuration. Using 'HmacSHA256' default")
+      logger.warn(s"Incorrect or unknown JWT signing algorithm '$config.jwtAlgorithmName' specified in configuration. Using 'HmacSHA256' default")
       JwtAlgorithm.HS256
     }
   }
