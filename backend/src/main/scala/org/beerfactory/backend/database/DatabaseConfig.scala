@@ -41,7 +41,7 @@ trait DatabaseConfig extends ConfigTry with StrictLogging {
   }
 
   lazy val dbURL = engine match {
-    case HsqldbEngine => getString(databaseConfigPath + ".url").get
+    case HsqldbEngine => getString(databaseConfigPath + ".properties.url").get
     case PostgresqlEngine => {
       val host = getString(databaseConfigPath + ".properties.serverName").get
       val port = getString(databaseConfigPath + ".properties.portNumber").get
@@ -49,6 +49,9 @@ trait DatabaseConfig extends ConfigTry with StrictLogging {
       s"jdbc:postgresql://$host:$port/$dbName"
     }
   }
+
+  lazy val dbuserName = getString(databaseConfigPath + ".properties.user").get
+  lazy val dbPassword = getString(databaseConfigPath + ".properties.password").get
 }
 
 object DatabaseConfig {

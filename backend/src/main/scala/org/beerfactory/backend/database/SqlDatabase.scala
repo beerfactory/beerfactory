@@ -79,7 +79,9 @@ object SqlDatabase extends StrictLogging {
   private def initHsql(config: DatabaseConfig): Try[SqlDatabase] = {
     try {
       val db = Database.forConfig(databaseConfigPath, config.hoconConfig)
-      Success(SqlDatabase(db, HsqlDriver, JdbcConnectionString(config.dbURL)))
+      val s = Success(SqlDatabase(db, HsqlDriver, JdbcConnectionString(config.dbURL, config.dbuserName, config.dbPassword)))
+      println(s)
+      s
     }
     catch {
       case exc:Throwable => Failure(exc)
@@ -89,7 +91,7 @@ object SqlDatabase extends StrictLogging {
   private def initPg(config: DatabaseConfig): Try[SqlDatabase] = {
     try {
       val db = Database.forConfig(databaseConfigPath, config.hoconConfig)
-      Success(SqlDatabase(db, PgDriver, JdbcConnectionString(config.dbURL)))
+      Success(SqlDatabase(db, PgDriver, JdbcConnectionString(config.dbURL, config.dbuserName, config.dbPassword)))
     }
     catch {
       case exc:Throwable => Failure(exc)
