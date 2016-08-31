@@ -26,7 +26,7 @@ trait ModulesWiring extends StrictLogging {
   lazy val cryptoActor = system.actorOf(CryptoActor.props(), name = "cryptoActor")
 
   lazy val daoExecutionContext = system.dispatchers.lookup("beerfactory.server.dao-dispatcher")
-  lazy val serviceExecutionContext = system.dispatchers.lookup("service-dispatcher")
+  lazy val serviceExecutionContext = system.dispatchers.lookup("beerfactory.server.service-dispatcher")
 
   lazy val sqlDatabase:SqlDatabase = SqlDatabase.init(config).get
 

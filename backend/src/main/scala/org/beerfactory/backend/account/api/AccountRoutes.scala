@@ -41,7 +41,7 @@ trait AccountRoutes extends StrictLogging {
       issuedNow.
       expiresIn(jwtTTL)
   }
-  val accountRoutes = path("account") {
+  val accountRoutes = pathPrefix("account") {
     path("register") {
       post {
         entity(as[AccountRegisterRequest]) { accountRegistration =>
