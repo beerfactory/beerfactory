@@ -15,7 +15,7 @@ import org.beerfactory.backend.account.AccountService
 import de.heikoseeberger.akkahttpplayjson.PlayJsonSupport._
 import org.beerfactory.backend.ServerConfig
 import org.beerfactory.backend.core.http.Directives._
-import org.beerfactory.backend.utils.Version
+import org.beerfactory.backend.version.Version
 import pdi.jwt.algorithms.JwtHmacAlgorithm
 import pdi.jwt.{JwtAlgorithm, JwtClaim}
 

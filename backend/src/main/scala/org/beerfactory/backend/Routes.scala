@@ -11,13 +11,15 @@ package org.beerfactory.backend
 import akka.http.scaladsl.server.Directives._
 import org.beerfactory.backend.account.api.AccountRoutes
 import org.beerfactory.backend.core.api.RoutesRequestWrapper
+import org.beerfactory.backend.version.VersionRoutes
 
 trait Routes extends RoutesRequestWrapper
-  with AccountRoutes {
+  with AccountRoutes
+  with VersionRoutes {
   lazy val routes = requestWrapper {
     pathPrefix("api") {
-      accountRoutes
-        //versionRoutes
+      accountRoutes ~
+        versionRoutes
     } ~
       getFromResourceDirectory("webapp") ~
       path("") {
