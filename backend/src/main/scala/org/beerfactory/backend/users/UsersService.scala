@@ -40,8 +40,8 @@ class UsersService(userConfig: UsersServiceConfig,
         existingLoginOpt <- usersDao.findByLogin(registrationRequest.login, caseSensitive = false)
         existingEmailOpt <- usersDao.findByEmail(registrationRequest.email)
       } yield {
-        existingLoginOpt.map(_ => Fail("accountRegistration.login.alreadyUsed")).orElse(
-          existingEmailOpt.map(_ => Fail("accountRegistration.email.alreadyUsed"))
+        existingLoginOpt.map(_ => Fail("UsersService.registerUser.username_alreadyUsed")).orElse(
+          existingEmailOpt.map(_ => Fail("UsersService.registerUser.email_alreadyUsed"))
         ).getOrElse(Pass)
       }
     }
@@ -77,7 +77,7 @@ class UsersService(userConfig: UsersServiceConfig,
       } yield {
         if(loginOpt.isDefined && emailOpt.isDefined) {
           logger.warn(s"found two occurrences of Account having login or email equals to '${request.emailOrLogin}")
-          Bad("authenticate.emailOrPassword.notUnique")
+          Bad("UsersService.authenticate.emailOrPassword_notUnique")
         }
         else
           Good(loginOpt orElse emailOpt)
@@ -87,10 +87,10 @@ class UsersService(userConfig: UsersServiceConfig,
     validateAuthenticateRequest(request).fold(
       _ => findAccountByLoginOrEmail.flatMap {
         case Bad(err: ErrorMessage) => Future.successful(AuthenticateFailure(Seq(err)))
-        case Good(None) => Future.successful(AuthenticateFailure(Seq("authenticate.account.unknown")))
+        case Good(None) => Future.successful(AuthenticateFailure(Seq("UsersService.authenticate.user_unknown")))
         case Good(Some(account:User)) => account.status match {
-          case NewAccount | ConfirmWait => Future.successful(AuthenticateFailure(Seq("accountAuthentication.account.notYetActive")))
-          case Disabled => Future.successful(AuthenticateFailure(Seq("accountAuthentication.account.disabled")))
+          case NewAccount | ConfirmWait => Future.successful(AuthenticateFailure(Seq("UsersService.authenticate.user_notYetActive")))
+          case Disabled => Future.successful(AuthenticateFailure(Seq("UsersService.authenticate.user_disabled")))
           case Active | Confirmed =>
             checkPassword(request.password, account.passwordHash).flatMap {
               case Fail(err) => Future.successful(AuthenticateFailure(Seq(err)))
@@ -112,26 +112,26 @@ class UsersService(userConfig: UsersServiceConfig,
     def loginDiffersPassword(errorCode: String)(validated: UserRegisterRequest) = validate(errorCode, validated.login != validated.password)
 
     def validateLogin = Good(registrationRequest.login) when(
-      notBlank("accountRegistration.login.blank"),
-      minSize("accountRegistration.login.minSize", userConfig.loginMinSize),
-      maxSize("accountRegistration.login.maxSize", userConfig.loginMaxSize)
+      notBlank("UsersService.registerUser.username_blank"),
+      minSize("UsersService.registerUser.username_minSize", userConfig.loginMinSize),
+      maxSize("UsersService.registerUser.username_maxSize", userConfig.loginMaxSize)
       )
 
     def validatePassword = Good(registrationRequest.password) when(
-      notBlank("accountRegistration.password.blank"),
-      minSize("accountRegistration.password.minSize", userConfig.passwordMinSize),
-      maxSize("accountRegistration.password.maxSize", userConfig.passwordMaxSize)
+      notBlank("UsersService.registerUser.password_blank"),
+      minSize("UsersService.registerUser.password_minSize", userConfig.passwordMinSize),
+      maxSize("UsersService.registerUser.password_maxSize", userConfig.passwordMaxSize)
       )
 
-    def validateEmail = Good(registrationRequest.email) when validEmailAddress("accountRegistration.email.invalid")
-    def fieldsRestrictions = Good(registrationRequest) when loginDiffersPassword("accountRegistration.restriction.loginEqualsPassword")
+    def validateEmail = Good(registrationRequest.email) when validEmailAddress("UsersService.registerUser.email_invalid")
+    def fieldsRestrictions = Good(registrationRequest) when loginDiffersPassword("UsersService.registerUser.restriction_usernameEqualsPassword")
 
     List(validateLogin, validatePassword, validateEmail, fieldsRestrictions).combined
   }
 
   private def validateAuthenticateRequest(request: LoginRequest): Any Or Every[ErrorMessage] = {
-    def validateEmailOrLogin = Good(request.emailOrLogin) when notBlank("accountAuthenticate.emailOrLogin.blank")
-    def validatePassword = Good(request.password) when notBlank("accountAuthenticate.password.blank")
+    def validateEmailOrLogin = Good(request.emailOrLogin) when notBlank("UsersService.authenticate.emailOrLogin_blank")
+    def validatePassword = Good(request.password) when notBlank("UsersService.authenticate.password_blank")
 
     List(validateEmailOrLogin, validatePassword).combined
   }
