@@ -11,7 +11,7 @@ package org.beerfactory.backend.account.api
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity, StatusCodes}
 import akka.http.scaladsl.server.Directives._
 import com.typesafe.scalalogging.StrictLogging
-import org.beerfactory.backend.account.AccountService
+import org.beerfactory.backend.account.UsersService
 import de.heikoseeberger.akkahttpplayjson.PlayJsonSupport._
 import org.beerfactory.backend.ServerConfig
 import org.beerfactory.backend.core.http.Directives._
@@ -19,8 +19,8 @@ import org.beerfactory.backend.version.Version
 import pdi.jwt.algorithms.JwtHmacAlgorithm
 import pdi.jwt.{JwtAlgorithm, JwtClaim}
 
-trait AccountRoutes extends StrictLogging {
-  def accountService: AccountService
+trait UsersRoutes extends StrictLogging {
+  def usersService: UsersService
   def config: ServerConfig
 
   val jwtAlgorithm = JwtAlgorithm.allHmac().find(_.name.toLowerCase == config.jwtAlgorithmName.toLowerCase) match {
@@ -41,11 +41,11 @@ trait AccountRoutes extends StrictLogging {
       issuedNow.
       expiresIn(jwtTTL)
   }
-  val accountRoutes = pathPrefix("account") {
+  val usersRoutes = pathPrefix("account") {
     path("register") {
       post {
-        entity(as[AccountRegisterRequest]) { accountRegistration =>
-          onSuccess(accountService.registerAccount(accountRegistration)) {
+        entity(as[UserCreateRequest]) { accountRegistration =>
+          onSuccess(usersService.registerUser(accountRegistration)) {
             case failure:RegistrationFailure => complete(StatusCodes.BadRequest, failure)
             case RegistrationSuccess => complete("success")
           }
@@ -54,8 +54,8 @@ trait AccountRoutes extends StrictLogging {
     } ~
       path("authenticate") {
         post {
-          entity(as[AuthenticateRequest]) { request =>
-            onSuccess(accountService.authenticate(request)) {
+          entity(as[LoginRequest]) { request =>
+            onSuccess(usersService.authenticate(request)) {
               case failure:AuthenticateFailure => complete(StatusCodes.BadRequest, failure)
               case success:AuthenticationSuccess =>
                 setAuthToken(

@@ -25,77 +25,77 @@ import scala.concurrent.{ExecutionContext, Future}
 /**
   * Created by nico on 12/06/2016.
   */
-class AccountDao(protected val database: SqlDatabase, uuidActor: ActorRef)(implicit val ec: ExecutionContext) extends AccountSchema with StrictLogging {
+class UsersDao(protected val database: SqlDatabase, uuidActor: ActorRef)(implicit val ec: ExecutionContext) extends UsersSchema with StrictLogging {
   import database._
   import database.driver.api._
 
   implicit val timeout = Timeout(5 seconds)
 
-  def createAccount(login: String,
-                    passwordHash: String,
-                    email: String,
-                    createdOn: OffsetDateTime,
-                    status: AccountStatus): Future[Account] = {
+  def createUser(login: String,
+                 passwordHash: String,
+                 email: String,
+                 createdOn: OffsetDateTime,
+                 status: UserStatus): Future[User] = {
     ask(uuidActor, GetUUID).mapTo[UUID] flatMap {
       uuid =>
 //        val newAccount = Account(uuid, login, passwordHash, email, createdOn, status)
 //        db.run(accounts += newAccount).map(_ => newAccount)
         db.run(
           (accounts returning accounts.map(_.id) into ((account, _ ) => account))
-            += Account(uuid, login, passwordHash, email, createdOn, status)
-        ).mapTo[Account]
+            += User(uuid, login, passwordHash, email, createdOn, status)
+        ).mapTo[User]
     }
   }
 
-  def findById(accountId: UUID): Future[Option[Account]] = findOneWhere(_.id === accountId)
+  def findById(userId: UUID): Future[Option[User]] = findOneWhere(_.id === userId)
 
-  def findByEmail(email: String): Future[Option[Account]] = findOneWhere(_.email.toLowerCase === email.toLowerCase)
+  def findByEmail(email: String): Future[Option[User]] = findOneWhere(_.email.toLowerCase === email.toLowerCase)
 
-  def findByLogin(login: String, caseSensitive:Boolean=true): Future[Option[Account]] = {
+  def findByLogin(login: String, caseSensitive:Boolean=true): Future[Option[User]] = {
     caseSensitive match {
       case true => findOneWhere(_.login === login)
       case false => findOneWhere (_.login.toLowerCase === login.toLowerCase)
     }
   }
 
-  def findOneWhere(condition: AccountTable => Rep[Boolean]) = db.run(accounts.filter(condition).result.headOption)
+  def findOneWhere(condition: UserTable => Rep[Boolean]) = db.run(accounts.filter(condition).result.headOption)
 }
 
 /**
   * The schemas are in separate traits, so that if your DAO would require to access (e.g. join) multiple tables,
   * you can just mix in the necessary traits and have the `TableQuery` definitions available.
   */
-trait AccountSchema {
+trait UsersSchema {
   protected val database: SqlDatabase
 
   import database._
   import database.driver.api._
 
   private val tableName = database.driver.engine match {
-    case HsqldbEngine => "ACCOUNTS"
-    case PostgresqlEngine => "accounts"
+    case HsqldbEngine => "USER"
+    case PostgresqlEngine => "user"
   }
 
   private val colNames = database.driver.engine match {
-    case HsqldbEngine => ("ACCOUNT_ID", "LOGIN", "PASSWORD_HASH", "EMAIL", "CREATED_ON", "STATUS")
-    case PostgresqlEngine => ("account_id", "login", "password_hash", "email", "created_on", "status")
+    case HsqldbEngine => ("ID", "USERNAME", "PASSWORD", "EMAIL", "CREATED_ON", "STATUS")
+    case PostgresqlEngine => ("id", "username", "password", "email", "created_on", "status")
   }
 
-  class AccountTable(tag: Tag) extends Table[Account](tag, tableName) {
+  class UserTable(tag: Tag) extends Table[User](tag, tableName) {
     def id = column[UUID](colNames._1, O.PrimaryKey)
     def login = column[String](colNames._2)
     def passwordHash = column[String](colNames._3)
     def email = column[String](colNames._4)
     def createdOn = column[OffsetDateTime](colNames._5)
-    def status = column[AccountStatus](colNames._6)
+    def status = column[UserStatus](colNames._6)
 
-    def * = (id, login, passwordHash, email, createdOn, status) <> (Account.tupled, Account.unapply)
+    def * = (id, login, passwordHash, email, createdOn, status) <> (User.tupled, User.unapply)
   }
 
-  val accounts = TableQuery[AccountTable]
+  val accounts = TableQuery[UserTable]
 
 
-  implicit val accountStatusColumnType = MappedColumnType.base[AccountStatus, String](
+  implicit val userStatusColumnType = MappedColumnType.base[UserStatus, String](
     {
       status => status match {
         case NewAccount => "NewAccount"

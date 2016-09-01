@@ -8,9 +8,13 @@
  */
 package org.beerfactory.backend.account.domain
 
-sealed trait AccountStatus
-case object NewAccount extends AccountStatus
-case object ConfirmWait extends AccountStatus
-case object Confirmed extends AccountStatus
-case object Active extends AccountStatus
-case object Disabled extends AccountStatus
+import java.time.OffsetDateTime
+import java.util.UUID
+
+case class User(id: UUID,
+                login: String,
+                passwordHash: String,
+                email: String,
+                createdOn: OffsetDateTime,
+                status: UserStatus
+                  )

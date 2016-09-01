@@ -6,11 +6,11 @@
  * this stuff is worth it, you can buy me a beer in return.   Nicolas JOUANIN
  *********************************************************************************
  */
-package org.beerfactory.backend.core
+package org.beerfactory.backend.account
 
 import com.typesafe.config.Config
 
-trait AccountConfig {
+trait UsersServiceConfig {
   def hoconConfig: Config
 
   private lazy val accountConfig = hoconConfig.getConfig("beerfactory.server.accountService")

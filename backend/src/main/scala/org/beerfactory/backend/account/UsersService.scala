@@ -16,7 +16,7 @@ import akka.actor.ActorRef
 import com.typesafe.scalalogging.StrictLogging
 import org.beerfactory.backend.account.api._
 import org.beerfactory.backend.account.domain._
-import org.beerfactory.backend.core.{AccountConfig, CryptoActor, UUIDActor}
+import org.beerfactory.backend.core.{CryptoActor, UUIDActor}
 import org.scalactic._
 import org.scalactic.Accumulation._
 import org.scalactic._
@@ -27,18 +27,18 @@ import org.beerfactory.backend.core.Validators._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class AccountService( accountConfig: AccountConfig,
-                      accountDao: AccountDao,
-                      uuidActor: ActorRef,
-                      cryptoActor: ActorRef)(implicit ec: ExecutionContext) extends StrictLogging {
+class UsersService(userConfig: UsersServiceConfig,
+                   usersDao: UsersDao,
+                   uuidActor: ActorRef,
+                   cryptoActor: ActorRef)(implicit ec: ExecutionContext) extends StrictLogging {
 
-  implicit val timeout = Timeout(accountConfig.actorWaitTimeout.toMillis, TimeUnit.MILLISECONDS)
+  implicit val timeout = Timeout(userConfig.actorWaitTimeout.toMillis, TimeUnit.MILLISECONDS)
 
-  def registerAccount(registrationRequest: AccountRegisterRequest): Future[AccountRegisterResult] = {
+  def registerUser(registrationRequest: UserCreateRequest): Future[AccountRegisterResult] = {
     def checkExistence(): Future[Validation[ErrorMessage]] = {
       for {
-        existingLoginOpt <- accountDao.findByLogin(registrationRequest.login, caseSensitive = false)
-        existingEmailOpt <- accountDao.findByEmail(registrationRequest.email)
+        existingLoginOpt <- usersDao.findByLogin(registrationRequest.login, caseSensitive = false)
+        existingEmailOpt <- usersDao.findByEmail(registrationRequest.email)
       } yield {
         existingLoginOpt.map(_ => Fail("accountRegistration.login.alreadyUsed")).orElse(
           existingEmailOpt.map(_ => Fail("accountRegistration.email.alreadyUsed"))
@@ -53,7 +53,7 @@ class AccountService( accountConfig: AccountConfig,
       case Pass =>
         for {
           passwordHash <- ask(cryptoActor, CryptoActor.HashPassword(registrationRequest.password)).mapTo[String]
-          account <- accountDao.createAccount(registrationRequest.login, passwordHash, registrationRequest.email, OffsetDateTime.now(ZoneId.of("UTC")), NewAccount)
+          account <- usersDao.createUser(registrationRequest.login, passwordHash, registrationRequest.email, OffsetDateTime.now(ZoneId.of("UTC")), NewAccount)
         } yield account
         logger.debug(s"Registration success for request: $registrationRequest")
         Future.successful(RegistrationSuccess)
@@ -69,11 +69,11 @@ class AccountService( accountConfig: AccountConfig,
     )
   }
 
-  def authenticate(request: AuthenticateRequest): Future[AuthenticateResult] = {
-    def findAccountByLoginOrEmail: Future[Option[Account] Or ErrorMessage] = {
+  def authenticate(request: LoginRequest): Future[AuthenticateResult] = {
+    def findAccountByLoginOrEmail: Future[Option[User] Or ErrorMessage] = {
       for {
-        loginOpt <- accountDao.findByLogin(request.emailOrLogin, caseSensitive = false)
-        emailOpt <- accountDao.findByEmail(request.emailOrLogin)
+        loginOpt <- usersDao.findByLogin(request.emailOrLogin, caseSensitive = false)
+        emailOpt <- usersDao.findByEmail(request.emailOrLogin)
       } yield {
         if(loginOpt.isDefined && emailOpt.isDefined) {
           logger.warn(s"found two occurrences of Account having login or email equals to '${request.emailOrLogin}")
@@ -88,7 +88,7 @@ class AccountService( accountConfig: AccountConfig,
       _ => findAccountByLoginOrEmail.flatMap {
         case Bad(err: ErrorMessage) => Future.successful(AuthenticateFailure(Seq(err)))
         case Good(None) => Future.successful(AuthenticateFailure(Seq("authenticate.account.unknown")))
-        case Good(Some(account:Account)) => account.status match {
+        case Good(Some(account:User)) => account.status match {
           case NewAccount | ConfirmWait => Future.successful(AuthenticateFailure(Seq("accountAuthentication.account.notYetActive")))
           case Disabled => Future.successful(AuthenticateFailure(Seq("accountAuthentication.account.disabled")))
           case Active | Confirmed =>
@@ -108,19 +108,19 @@ class AccountService( accountConfig: AccountConfig,
     ask(cryptoActor, CryptoActor.CheckPassword(password, hash)).mapTo[Validation[ErrorMessage]]
   }
 
-  private def validateRegistrationRequest(registrationRequest: AccountRegisterRequest): Any Or Every[ErrorMessage] = {
-    def loginDiffersPassword(errorCode: String)(validated: AccountRegisterRequest) = validate(errorCode, validated.login != validated.password)
+  private def validateRegistrationRequest(registrationRequest: UserCreateRequest): Any Or Every[ErrorMessage] = {
+    def loginDiffersPassword(errorCode: String)(validated: UserCreateRequest) = validate(errorCode, validated.login != validated.password)
 
     def validateLogin = Good(registrationRequest.login) when(
       notBlank("accountRegistration.login.blank"),
-      minSize("accountRegistration.login.minSize", accountConfig.loginMinSize),
-      maxSize("accountRegistration.login.maxSize", accountConfig.loginMaxSize)
+      minSize("accountRegistration.login.minSize", userConfig.loginMinSize),
+      maxSize("accountRegistration.login.maxSize", userConfig.loginMaxSize)
       )
 
     def validatePassword = Good(registrationRequest.password) when(
       notBlank("accountRegistration.password.blank"),
-      minSize("accountRegistration.password.minSize", accountConfig.passwordMinSize),
-      maxSize("accountRegistration.password.maxSize", accountConfig.passwordMaxSize)
+      minSize("accountRegistration.password.minSize", userConfig.passwordMinSize),
+      maxSize("accountRegistration.password.maxSize", userConfig.passwordMaxSize)
       )
 
     def validateEmail = Good(registrationRequest.email) when validEmailAddress("accountRegistration.email.invalid")
@@ -129,7 +129,7 @@ class AccountService( accountConfig: AccountConfig,
     List(validateLogin, validatePassword, validateEmail, fieldsRestrictions).combined
   }
 
-  private def validateAuthenticateRequest(request: AuthenticateRequest): Any Or Every[ErrorMessage] = {
+  private def validateAuthenticateRequest(request: LoginRequest): Any Or Every[ErrorMessage] = {
     def validateEmailOrLogin = Good(request.emailOrLogin) when notBlank("accountAuthenticate.emailOrLogin.blank")
     def validatePassword = Good(request.password) when notBlank("accountAuthenticate.password.blank")
 
