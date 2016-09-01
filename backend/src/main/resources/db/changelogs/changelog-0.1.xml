@@ -7,14 +7,14 @@
     <property name="uuid.type" value="binary(16)" dbms="hsqldb"/>
 
     <changeSet author="nico" id="1">
-        <createTable tableName="accounts">
-            <column name="ACCOUNT_ID" type="${uuid.type}">
+        <createTable tableName="USER">
+            <column name="ID" type="${uuid.type}">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="LOGIN" type="VARCHAR(100)">
+            <column name="USERNAME" type="VARCHAR(100)">
                 <constraints nullable="false"/>
             </column>
-            <column name="PASSWORD_HASH" type="VARCHAR(100)">
+            <column name="PASSWORD" type="VARCHAR(100)">
                 <constraints nullable="false"/>
             </column>
             <column name="EMAIL" type="VARCHAR(100)">

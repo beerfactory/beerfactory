@@ -6,7 +6,7 @@
  * this stuff is worth it, you can buy me a beer in return.   Nicolas JOUANIN
  *********************************************************************************
  */
-package org.beerfactory.backend.account.api
+package org.beerfactory.backend.users.api
 
 import java.util.UUID
 
@@ -15,12 +15,12 @@ import play.api.libs.json.{Format, Json}
 sealed trait ServiceResponse
 
 
-sealed trait AccountRegisterResult extends ServiceResponse
-case class RegistrationFailure(errors: Seq[String]) extends AccountRegisterResult
+sealed trait UserRegisterResult extends ServiceResponse
+case class RegistrationFailure(errors: Seq[String]) extends UserRegisterResult
 object RegistrationFailure {
   implicit val format: Format[RegistrationFailure] = Json.format[RegistrationFailure]
 }
-case object RegistrationSuccess extends AccountRegisterResult
+case object RegistrationSuccess extends UserRegisterResult
 
 sealed trait AuthenticateResult extends ServiceResponse
 case class AuthenticateFailure(errors: Seq[String]) extends AuthenticateResult

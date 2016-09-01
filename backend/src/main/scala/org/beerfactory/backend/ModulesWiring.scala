@@ -3,7 +3,7 @@ package org.beerfactory.backend
 import akka.actor.ActorSystem
 import com.typesafe.config.{Config, ConfigFactory}
 import com.typesafe.scalalogging.StrictLogging
-import org.beerfactory.backend.account.{UsersServiceConfig, UsersDao, UsersService}
+import org.beerfactory.backend.users.{UsersServiceConfig, UsersDao, UsersService}
 import org.beerfactory.backend.core.{CryptoActor, UUIDActor}
 import org.beerfactory.backend.database.{DatabaseConfig, SqlDatabase}
 
@@ -32,6 +32,6 @@ trait ModulesWiring extends StrictLogging {
 
   lazy val accountDao = new UsersDao(sqlDatabase, uuidActor)(daoExecutionContext)
 
-  lazy val accountService = new UsersService(config, accountDao, uuidActor, cryptoActor)(serviceExecutionContext)
+  lazy val usersService = new UsersService(config, accountDao, uuidActor, cryptoActor)(serviceExecutionContext)
 
 }

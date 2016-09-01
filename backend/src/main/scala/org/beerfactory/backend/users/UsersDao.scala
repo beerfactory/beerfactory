@@ -6,7 +6,7 @@
  * this stuff is worth it, you can buy me a beer in return.   Nicolas JOUANIN
  *********************************************************************************
  */
-package org.beerfactory.backend.account
+package org.beerfactory.backend.users
 
 import java.time.OffsetDateTime
 import java.util.UUID
@@ -15,7 +15,7 @@ import akka.actor.ActorRef
 import akka.pattern.ask
 import akka.util.Timeout
 import com.typesafe.scalalogging.StrictLogging
-import org.beerfactory.backend.account.domain._
+import org.beerfactory.backend.users.domain._
 import org.beerfactory.backend.core.UUIDActor.GetUUID
 import org.beerfactory.backend.database.{HsqldbEngine, PostgresqlEngine, SqlDatabase}
 

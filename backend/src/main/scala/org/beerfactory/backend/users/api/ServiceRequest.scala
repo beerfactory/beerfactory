@@ -6,15 +6,15 @@
  * this stuff is worth it, you can buy me a beer in return.   Nicolas JOUANIN
  *********************************************************************************
  */
-package org.beerfactory.backend.account.api
+package org.beerfactory.backend.users.api
 
 import play.api.libs.json.{Format, Json}
 
 sealed trait ServiceRequest
 
-case class UserCreateRequest(login: String, password: String, email: String) extends ServiceRequest
-object UserCreateRequest {
-  implicit val format: Format[UserCreateRequest] = Json.format[UserCreateRequest]
+case class UserRegisterRequest(login: String, password: String, email: String) extends ServiceRequest
+object UserRegisterRequest {
+  implicit val format: Format[UserRegisterRequest] = Json.format[UserRegisterRequest]
 }
 case class LoginRequest(emailOrLogin: String, password: String) extends ServiceRequest
 object LoginRequest {

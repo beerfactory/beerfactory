@@ -9,7 +9,7 @@
 package org.beerfactory.backend
 
 import akka.http.scaladsl.server.Directives._
-import org.beerfactory.backend.account.api.UsersRoutes
+import org.beerfactory.backend.users.api.UsersRoutes
 import org.beerfactory.backend.core.api.RoutesRequestWrapper
 import org.beerfactory.backend.version.VersionRoutes
 

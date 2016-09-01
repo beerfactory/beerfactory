@@ -6,7 +6,7 @@
  * this stuff is worth it, you can buy me a beer in return.   Nicolas JOUANIN
  *********************************************************************************
  */
-package org.beerfactory.backend.account.domain
+package org.beerfactory.backend.users.domain
 
 sealed trait UserStatus
 case object NewAccount extends UserStatus

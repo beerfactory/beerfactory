@@ -6,12 +6,12 @@
  * this stuff is worth it, you can buy me a beer in return.   Nicolas JOUANIN
  *********************************************************************************
  */
-package org.beerfactory.backend.account.api
+package org.beerfactory.backend.users.api
 
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity, StatusCodes}
 import akka.http.scaladsl.server.Directives._
 import com.typesafe.scalalogging.StrictLogging
-import org.beerfactory.backend.account.UsersService
+import org.beerfactory.backend.users.UsersService
 import de.heikoseeberger.akkahttpplayjson.PlayJsonSupport._
 import org.beerfactory.backend.ServerConfig
 import org.beerfactory.backend.core.http.Directives._
@@ -44,7 +44,7 @@ trait UsersRoutes extends StrictLogging {
   val usersRoutes = pathPrefix("account") {
     path("register") {
       post {
-        entity(as[UserCreateRequest]) { accountRegistration =>
+        entity(as[UserRegisterRequest]) { accountRegistration =>
           onSuccess(usersService.registerUser(accountRegistration)) {
             case failure:RegistrationFailure => complete(StatusCodes.BadRequest, failure)
             case RegistrationSuccess => complete("success")

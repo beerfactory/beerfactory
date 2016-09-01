@@ -6,12 +6,12 @@
  * this stuff is worth it, you can buy me a beer in return.   Nicolas JOUANIN
  *********************************************************************************
  */
-package org.beerfactory.backend.account
+package org.beerfactory.backend.users
 
 import java.time.{OffsetDateTime, ZoneId}
 
 import akka.actor.ActorSystem
-import org.beerfactory.backend.account.domain.{User, NewAccount}
+import org.beerfactory.backend.users.domain.{User, NewAccount}
 import org.beerfactory.backend.core.UUIDActor
 import org.beerfactory.backend.test.FlatSpecWithDb
 import org.scalatest.{BeforeAndAfterAll, Matchers}

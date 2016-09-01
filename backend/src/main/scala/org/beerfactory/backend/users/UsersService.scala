@@ -6,7 +6,7 @@
  * this stuff is worth it, you can buy me a beer in return.   Nicolas JOUANIN
  *********************************************************************************
  */
-package org.beerfactory.backend.account
+package org.beerfactory.backend.users
 
 import java.time.{OffsetDateTime, ZoneId}
 import java.util.UUID
@@ -14,8 +14,8 @@ import java.util.concurrent.TimeUnit
 
 import akka.actor.ActorRef
 import com.typesafe.scalalogging.StrictLogging
-import org.beerfactory.backend.account.api._
-import org.beerfactory.backend.account.domain._
+import org.beerfactory.backend.users.api._
+import org.beerfactory.backend.users.domain._
 import org.beerfactory.backend.core.{CryptoActor, UUIDActor}
 import org.scalactic._
 import org.scalactic.Accumulation._
@@ -34,7 +34,7 @@ class UsersService(userConfig: UsersServiceConfig,
 
   implicit val timeout = Timeout(userConfig.actorWaitTimeout.toMillis, TimeUnit.MILLISECONDS)
 
-  def registerUser(registrationRequest: UserCreateRequest): Future[AccountRegisterResult] = {
+  def registerUser(registrationRequest: UserRegisterRequest): Future[UserRegisterResult] = {
     def checkExistence(): Future[Validation[ErrorMessage]] = {
       for {
         existingLoginOpt <- usersDao.findByLogin(registrationRequest.login, caseSensitive = false)
@@ -108,8 +108,8 @@ class UsersService(userConfig: UsersServiceConfig,
     ask(cryptoActor, CryptoActor.CheckPassword(password, hash)).mapTo[Validation[ErrorMessage]]
   }
 
-  private def validateRegistrationRequest(registrationRequest: UserCreateRequest): Any Or Every[ErrorMessage] = {
-    def loginDiffersPassword(errorCode: String)(validated: UserCreateRequest) = validate(errorCode, validated.login != validated.password)
+  private def validateRegistrationRequest(registrationRequest: UserRegisterRequest): Any Or Every[ErrorMessage] = {
+    def loginDiffersPassword(errorCode: String)(validated: UserRegisterRequest) = validate(errorCode, validated.login != validated.password)
 
     def validateLogin = Good(registrationRequest.login) when(
       notBlank("accountRegistration.login.blank"),

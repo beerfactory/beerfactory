@@ -6,7 +6,7 @@
  * this stuff is worth it, you can buy me a beer in return.   Nicolas JOUANIN
  *********************************************************************************
  */
-package org.beerfactory.backend.account
+package org.beerfactory.backend.users
 
 import com.typesafe.config.Config
 

@@ -1,11 +1,11 @@
-package org.beerfactory.backend.account
+package org.beerfactory.backend.users
 
 import java.time.OffsetDateTime
 
 import akka.actor.ActorSystem
 import com.typesafe.config.{Config, ConfigFactory}
-import org.beerfactory.backend.account.api._
-import org.beerfactory.backend.account.domain.{User, Active}
+import org.beerfactory.backend.users.api._
+import org.beerfactory.backend.users.domain.{User, Active}
 import org.beerfactory.backend.core.{CryptoActor, UUIDActor}
 import org.beerfactory.backend.test.FlatSpecWithDb
 import org.scalatest.{BeforeAndAfterAll, Matchers}
@@ -31,41 +31,41 @@ class UsersServiceActorSpec extends FlatSpecWithDb with Matchers with BeforeAndA
   }
 
   it should "fail register user with blank login" in {
-    val res = usersService.registerUser(UserCreateRequest(" ", "password", "some@sample.com")).futureValue
+    val res = usersService.registerUser(UserRegisterRequest(" ", "password", "some@sample.com")).futureValue
     res shouldEqual RegistrationFailure(List("accountRegistration.login.blank", "accountRegistration.login.minSize"))
   }
 
   it should "fail register user with blank password" in {
-    val res = usersService.registerUser(UserCreateRequest("login", "", "some@sample.com")).futureValue
+    val res = usersService.registerUser(UserRegisterRequest("login", "", "some@sample.com")).futureValue
     res shouldEqual RegistrationFailure(List("accountRegistration.password.blank", "accountRegistration.password.minSize"))
   }
 
   it should "fail register user with invalid email" in {
-    val res = usersService.registerUser(UserCreateRequest("login", "password", "invalid@@sample.com")).futureValue
+    val res = usersService.registerUser(UserRegisterRequest("login", "password", "invalid@@sample.com")).futureValue
     res shouldEqual RegistrationFailure(List("accountRegistration.email.invalid"))
   }
 
   it should "fail register user with login and password equal" in {
-    val res = usersService.registerUser(UserCreateRequest("same", "same", "invalid@sample.com")).futureValue
+    val res = usersService.registerUser(UserRegisterRequest("same", "same", "invalid@sample.com")).futureValue
     res shouldEqual RegistrationFailure(List("accountRegistration.restriction.loginEqualsPassword"))
   }
 
   it should "succeed register user" in {
-    val res = usersService.registerUser(UserCreateRequest("login", "password", "some@sample.com")).futureValue
+    val res = usersService.registerUser(UserRegisterRequest("login", "password", "some@sample.com")).futureValue
     res shouldEqual RegistrationSuccess
   }
 
   it should "fail register user with login already used" in {
-    val res = usersService.registerUser(UserCreateRequest("samelogin", "password", "samelogin@sample.com")).futureValue
+    val res = usersService.registerUser(UserRegisterRequest("samelogin", "password", "samelogin@sample.com")).futureValue
     res shouldEqual RegistrationSuccess
-    val res2 = usersService.registerUser(UserCreateRequest("SameLogin", "xxxxx", "toto@sample.com")).futureValue
+    val res2 = usersService.registerUser(UserRegisterRequest("SameLogin", "xxxxx", "toto@sample.com")).futureValue
     res2 shouldEqual RegistrationFailure(List("accountRegistration.login.alreadyUsed"))
   }
 
   it should "fail register user with email already used" in {
-    val res = usersService.registerUser(UserCreateRequest("test", "password", "same@sample.com")).futureValue
+    val res = usersService.registerUser(UserRegisterRequest("test", "password", "same@sample.com")).futureValue
     res shouldEqual RegistrationSuccess
-    val res2 = usersService.registerUser(UserCreateRequest("otherlogin", "xxxxx", "same@sample.com")).futureValue
+    val res2 = usersService.registerUser(UserRegisterRequest("otherlogin", "xxxxx", "same@sample.com")).futureValue
     res2 shouldEqual RegistrationFailure(List("accountRegistration.email.alreadyUsed"))
   }
 
@@ -97,7 +97,7 @@ class UsersServiceActorSpec extends FlatSpecWithDb with Matchers with BeforeAndA
   }
 
   it should "fail authenticate user if not active" in {
-    val res = usersService.registerUser(UserCreateRequest("notactive", "password", "notactive@sample.com")).futureValue
+    val res = usersService.registerUser(UserRegisterRequest("notactive", "password", "notactive@sample.com")).futureValue
     res shouldEqual RegistrationSuccess
     val res2 = usersService.authenticate(LoginRequest("notactive", "password")).futureValue
     res2 shouldEqual AuthenticateFailure(List("accountAuthentication.account.notYetActive"))
