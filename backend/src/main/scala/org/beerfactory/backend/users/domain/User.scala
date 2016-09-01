@@ -15,6 +15,5 @@ case class User(id: UUID,
                 login: String,
                 passwordHash: String,
                 email: String,
-                createdOn: OffsetDateTime,
-                status: UserStatus
+                createdOn: OffsetDateTime
                   )

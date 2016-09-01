@@ -34,15 +34,14 @@ class UsersDao(protected val database: SqlDatabase, uuidActor: ActorRef)(implici
   def createUser(login: String,
                  passwordHash: String,
                  email: String,
-                 createdOn: OffsetDateTime,
-                 status: UserStatus): Future[User] = {
+                 createdOn: OffsetDateTime): Future[User] = {
     ask(uuidActor, GetUUID).mapTo[UUID] flatMap {
       uuid =>
 //        val newAccount = Account(uuid, login, passwordHash, email, createdOn, status)
 //        db.run(accounts += newAccount).map(_ => newAccount)
         db.run(
-          (accounts returning accounts.map(_.id) into ((account, _ ) => account))
-            += User(uuid, login, passwordHash, email, createdOn, status)
+          (users returning users.map(_.id) into ((account, _ ) => account))
+            += User(uuid, login, passwordHash, email, createdOn)
         ).mapTo[User]
     }
   }
@@ -58,7 +57,7 @@ class UsersDao(protected val database: SqlDatabase, uuidActor: ActorRef)(implici
     }
   }
 
-  def findOneWhere(condition: UserTable => Rep[Boolean]) = db.run(accounts.filter(condition).result.headOption)
+  def findOneWhere(condition: UserTable => Rep[Boolean]) = db.run(users.filter(condition).result.headOption)
 }
 
 /**
@@ -77,41 +76,26 @@ trait UsersSchema {
   }
 
   private val colNames = database.driver.engine match {
-    case HsqldbEngine => ("ID", "USERNAME", "PASSWORD", "EMAIL", "CREATED_ON", "STATUS")
-    case PostgresqlEngine => ("id", "username", "password", "email", "created_on", "status")
+    case HsqldbEngine => ("ID", "USERNAME", "PASSWORD", "EMAIL", "EMAIL_VERIFIED", "CREATED_ON", "LAST_UPDATED_ON", "DISABLED_ON", "NICKNAME", "FIRSTNAME", "LASTNAME", "LOCALES")
+    case PostgresqlEngine => ("id", "username", "password", "email", "email_verified", "created_on", "last_updated_on", "disabled_on", "nickname", "firstname", "lastname", "locales")
   }
 
   class UserTable(tag: Tag) extends Table[User](tag, tableName) {
     def id = column[UUID](colNames._1, O.PrimaryKey)
     def login = column[String](colNames._2)
-    def passwordHash = column[String](colNames._3)
+    def password = column[String](colNames._3)
     def email = column[String](colNames._4)
-    def createdOn = column[OffsetDateTime](colNames._5)
-    def status = column[UserStatus](colNames._6)
+    def emailVerified = column[Boolean](colNames._5)
+    def createdOn = column[OffsetDateTime](colNames._6)
+    def lastUpdatedOn = column[OffsetDateTime](colNames._7)
+    def disabledOn = column[OffsetDateTime](colNames._8)
+    def nickName = column[String](colNames._9)
+    def firstName = column[String](colNames._10)
+    def lastName = column[String](colNames._11)
+    def locales = column[String](colNames._12)
 
-    def * = (id, login, passwordHash, email, createdOn, status) <> (User.tupled, User.unapply)
+    def * = (id, login, password, email, emailVerified, createdOn, lastUpdatedOn, disabledOn, nickName, firstName, lastName, locales) <> (User.tupled, User.unapply)
   }
 
-  val accounts = TableQuery[UserTable]
-
-
-  implicit val userStatusColumnType = MappedColumnType.base[UserStatus, String](
-    {
-      status => status match {
-        case NewAccount => "NewAccount"
-        case ConfirmWait => "ConfirmWait"
-        case Confirmed => "Confirmed"
-        case Active => "Active"
-        case Disabled => "Disabled"
-      }
-    },
-    {
-      str => str match {
-        case "NewAccount" => NewAccount
-        case "ConfirmWait" => ConfirmWait
-        case "Confirmed" => Confirmed
-        case "Active" => Active
-        case "Disabled" => Disabled
-      }
-    }
-  )}
+  val users = TableQuery[UserTable]
+}
