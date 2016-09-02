@@ -34,11 +34,11 @@ class UsersService(userConfig: UsersServiceConfig,
 
   implicit val timeout = Timeout(userConfig.actorWaitTimeout.toMillis, TimeUnit.MILLISECONDS)
 
-  def registerUser(registrationRequest: UserRegisterRequest): Future[UserRegisterResult] = {
+  def registerUser(request: UserRegisterRequest): Future[UserRegisterResult] = {
     def checkExistence(): Future[Validation[ErrorMessage]] = {
       for {
-        existingLoginOpt <- usersDao.findByLogin(registrationRequest.login, caseSensitive = false)
-        existingEmailOpt <- usersDao.findByEmail(registrationRequest.email)
+        existingLoginOpt <- usersDao.findByLogin(request.login, caseSensitive = false)
+        existingEmailOpt <- usersDao.findByEmail(request.email)
       } yield {
         existingLoginOpt.map(_ => Fail("UsersService.registerUser.username_alreadyUsed")).orElse(
           existingEmailOpt.map(_ => Fail("UsersService.registerUser.email_alreadyUsed"))
@@ -51,16 +51,27 @@ class UsersService(userConfig: UsersServiceConfig,
         logger.debug(s"account existence check failed with errors: $error")
         Future.successful(RegistrationFailure(Seq(error)))
       case Pass =>
+        val now = OffsetDateTime.now(ZoneId.of("UTC"))
         for {
-          passwordHash <- ask(cryptoActor, CryptoActor.HashPassword(registrationRequest.password)).mapTo[String]
-          account <- usersDao.createUser(registrationRequest.login, passwordHash, registrationRequest.email, OffsetDateTime.now(ZoneId.of("UTC")), NewAccount)
+          passwordHash <- ask(cryptoActor, CryptoActor.HashPassword(request.password)).mapTo[String]
+          account <- usersDao.createUser(
+            request.login,
+            passwordHash,
+            request.email,
+            false,  //EmailVerified
+            now,
+            request.nickName,
+            request.firstName,
+            request.lastName,
+            request.locales
+          )
         } yield account
-        logger.debug(s"Registration success for request: $registrationRequest")
+        logger.debug(s"Registration success for request: $request")
         Future.successful(RegistrationSuccess)
     }
 
-    logger.debug(s"registerAccount($registrationRequest)")
-    validateRegistrationRequest(registrationRequest).fold(
+    logger.debug(s"registerAccount($request)")
+    validateRegistrationRequest(request).fold(
       _ => register(),
       errors => {
         logger.warn(s"Account registration failed with errors: $errors")
@@ -88,18 +99,13 @@ class UsersService(userConfig: UsersServiceConfig,
       _ => findAccountByLoginOrEmail.flatMap {
         case Bad(err: ErrorMessage) => Future.successful(AuthenticateFailure(Seq(err)))
         case Good(None) => Future.successful(AuthenticateFailure(Seq("UsersService.authenticate.user_unknown")))
-        case Good(Some(account:User)) => account.status match {
-          case NewAccount | ConfirmWait => Future.successful(AuthenticateFailure(Seq("UsersService.authenticate.user_notYetActive")))
-          case Disabled => Future.successful(AuthenticateFailure(Seq("UsersService.authenticate.user_disabled")))
-          case Active | Confirmed =>
-            checkPassword(request.password, account.passwordHash).flatMap {
+        case Good(Some(user:User)) => checkPassword(request.password, user.password).flatMap {
               case Fail(err) => Future.successful(AuthenticateFailure(Seq(err)))
               case Pass => ask(uuidActor, GetUUID).mapTo[UUID].flatMap {
-                tokenId:UUID => Future.successful(AuthenticationSuccess(account.id, tokenId.toString))
+                tokenId:UUID => Future.successful(AuthenticationSuccess(user.id, tokenId.toString))
               }
             }
-        }
-      },
+        },
       errors => Future.successful(AuthenticateFailure(errors.toSeq))
     )
   }

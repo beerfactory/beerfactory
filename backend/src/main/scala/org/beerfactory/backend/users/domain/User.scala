@@ -13,7 +13,14 @@ import java.util.UUID
 
 case class User(id: UUID,
                 login: String,
-                passwordHash: String,
+                password: String,
                 email: String,
-                createdOn: OffsetDateTime
+                emailVerified: Boolean,
+                createdOn: OffsetDateTime,
+                lastUpdatedOn: Option[OffsetDateTime],
+                disabledOn: Option[OffsetDateTime],
+                nickName: Option[String],
+                firstName: Option[String],
+                lastName: Option[String],
+                locales: String
                   )

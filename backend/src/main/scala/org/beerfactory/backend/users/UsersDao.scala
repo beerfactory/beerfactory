@@ -31,19 +31,51 @@ class UsersDao(protected val database: SqlDatabase, uuidActor: ActorRef)(implici
 
   implicit val timeout = Timeout(5 seconds)
 
+  /**
+    * Create a user instance a insert it into the database
+    * @param login
+    * @param password
+    * @param email
+    * @param emailVerified
+    * @param createdOn
+    * @param lastUpdatedOn
+    * @param disabledOn
+    * @param nickName
+    * @param firstName
+    * @param lastName
+    * @param locales
+    * @return
+    */
   def createUser(login: String,
-                 passwordHash: String,
+                 password: String,
                  email: String,
-                 createdOn: OffsetDateTime): Future[User] = {
+                 emailVerified: Boolean,
+                 createdOn: OffsetDateTime,
+                 lastUpdatedOn: Option[OffsetDateTime],
+                 disabledOn: Option[OffsetDateTime],
+                 nickName: Option[String],
+                 firstName: Option[String],
+                 lastName: Option[String],
+                 locales: String): Future[User] = {
     ask(uuidActor, GetUUID).mapTo[UUID] flatMap {
       uuid =>
-//        val newAccount = Account(uuid, login, passwordHash, email, createdOn, status)
-//        db.run(accounts += newAccount).map(_ => newAccount)
         db.run(
           (users returning users.map(_.id) into ((account, _ ) => account))
-            += User(uuid, login, passwordHash, email, createdOn)
+            += User(uuid, login, password, email, emailVerified, createdOn, lastUpdatedOn, disabledOn, nickName, firstName, lastName, locales)
         ).mapTo[User]
     }
+  }
+
+  def createUser(login: String,
+                 password: String,
+                 email: String,
+                 emailVerified: Boolean,
+                 createdOn: OffsetDateTime,
+                 nickName: Option[String],
+                 firstName: Option[String],
+                 lastName: Option[String],
+                 locales: String): Future[User] = {
+    createUser(login, password, email, emailVerified, createdOn, None, None, nickName, firstName, lastName, locales)
   }
 
   def findById(userId: UUID): Future[Option[User]] = findOneWhere(_.id === userId)
@@ -85,13 +117,13 @@ trait UsersSchema {
     def login = column[String](colNames._2)
     def password = column[String](colNames._3)
     def email = column[String](colNames._4)
-    def emailVerified = column[Boolean](colNames._5)
+    def emailVerified = column[Boolean](colNames._5, O.Default(false))
     def createdOn = column[OffsetDateTime](colNames._6)
-    def lastUpdatedOn = column[OffsetDateTime](colNames._7)
-    def disabledOn = column[OffsetDateTime](colNames._8)
-    def nickName = column[String](colNames._9)
-    def firstName = column[String](colNames._10)
-    def lastName = column[String](colNames._11)
+    def lastUpdatedOn = column[Option[OffsetDateTime]](colNames._7)
+    def disabledOn = column[Option[OffsetDateTime]](colNames._8)
+    def nickName = column[Option[String]](colNames._9)
+    def firstName = column[Option[String]](colNames._10)
+    def lastName = column[Option[String]](colNames._11)
     def locales = column[String](colNames._12)
 
     def * = (id, login, password, email, emailVerified, createdOn, lastUpdatedOn, disabledOn, nickName, firstName, lastName, locales) <> (User.tupled, User.unapply)

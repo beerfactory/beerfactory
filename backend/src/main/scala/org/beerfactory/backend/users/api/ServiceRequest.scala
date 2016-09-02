@@ -8,11 +8,19 @@
  */
 package org.beerfactory.backend.users.api
 
+import java.time.OffsetDateTime
+
 import play.api.libs.json.{Format, Json}
 
 sealed trait ServiceRequest
 
-case class UserRegisterRequest(login: String, password: String, email: String) extends ServiceRequest
+case class UserRegisterRequest(login: String,
+                               password: String,
+                               email: String,
+                               nickName: Option[String],
+                               firstName: Option[String],
+                               lastName: Option[String],
+                               locales: String) extends ServiceRequest
 object UserRegisterRequest {
   implicit val format: Format[UserRegisterRequest] = Json.format[UserRegisterRequest]
 }
