@@ -11,7 +11,7 @@ package org.beerfactory.backend.users
 import java.time.{OffsetDateTime, ZoneId}
 
 import akka.actor.ActorSystem
-import org.beerfactory.backend.users.domain.{User, NewAccount}
+import org.beerfactory.backend.users.domain.User
 import org.beerfactory.backend.core.UUIDActor
 import org.beerfactory.backend.test.FlatSpecWithDb
 import org.scalatest.{BeforeAndAfterAll, Matchers}
@@ -32,28 +32,36 @@ class UsersDaoSpec extends FlatSpecWithDb with Matchers with BeforeAndAfterAll {
 
   it should "add new user" in {
     val now = OffsetDateTime.now()
-    val newUser = usersDao.createUser(
-      "username", "passwordHash", "toto@toto.com", now, NewAccount).futureValue
+    val newUser = usersDao.createUser("username", "passwordHash", "toto@toto.com", false, now, Some(now), Some(now),
+      Some("nickName"), Some("firstName"), Some("lastName"),"locales").futureValue
     newUser shouldBe a [User]
     newUser.login shouldEqual "username"
-    newUser.passwordHash shouldEqual "passwordHash"
+    newUser.password shouldEqual "passwordHash"
     newUser.email shouldEqual "toto@toto.com"
+    newUser.emailVerified shouldEqual false
     newUser.createdOn shouldEqual now
-    newUser.status shouldEqual NewAccount
+    newUser.lastUpdatedOn shouldEqual Some(now)
+    newUser.disabledOn shouldEqual Some(now)
+    newUser.nickName shouldEqual Some("nickName")
+    newUser.firstName shouldEqual Some("firstName")
+    newUser.lastName shouldEqual Some("lastName")
+    newUser.locales shouldEqual "locales"
   }
 
   it should "find an existing account by its Id" in {
+    val now = OffsetDateTime.now(ZoneId.of("UTC"))
     val usersDao = new UsersDao(sqlDatabase, uuidActor)
-    val someUser = usersDao.createUser(
-      "login", "passwordHash", "toto@toto.com", OffsetDateTime.now(ZoneId.of("UTC")), NewAccount).futureValue
+    val someUser = usersDao.createUser("username", "passwordHash", "toto@toto.com", false, now, Some(now), Some(now),
+      Some("nickName"), Some("firstName"), Some("lastName"),"locales").futureValue
     val testUser = usersDao.findById(someUser.id).futureValue
     testUser shouldEqual Some(someUser)
   }
 
   it should "find an existing account by its email" in {
+    val now = OffsetDateTime.now(ZoneId.of("UTC"))
     val usersDao = new UsersDao(sqlDatabase, uuidActor)
-    val someUser = usersDao.createUser(
-      "login", "passwordHash", "titi@toto.com", OffsetDateTime.now(ZoneId.of("UTC")), NewAccount).futureValue
+    val someUser = usersDao.createUser("username", "passwordHash", "user@domain.com", false, now, Some(now), Some(now),
+      Some("nickName"), Some("firstName"), Some("lastName"),"locales").futureValue
     val testUser = usersDao.findByEmail(someUser.email).futureValue
     testUser shouldEqual Some(someUser)
   }

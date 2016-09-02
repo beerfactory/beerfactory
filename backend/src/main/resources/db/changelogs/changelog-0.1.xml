@@ -14,16 +14,22 @@
             <column name="USERNAME" type="VARCHAR(100)">
                 <constraints nullable="false"/>
             </column>
-            <column name="PASSWORD" type="VARCHAR(100)">
+            <column name="PASSWORD" type="VARCHAR(1000)">
                 <constraints nullable="false"/>
             </column>
             <column name="EMAIL" type="VARCHAR(100)">
                 <constraints nullable="false"/>
             </column>
+            <column name="EMAIL_VERIFIED" type="BOOLEAN" />
             <column name="CREATED_ON" type="TIMESTAMP WITHOUT TIME ZONE">
                 <constraints nullable="false"/>
             </column>
-            <column name="STATUS" type="VARCHAR(100)">
+            <column name="LAST_UPDATED_ON" type="TIMESTAMP WITHOUT TIME ZONE" />
+            <column name="DISABLED_ON" type="TIMESTAMP WITHOUT TIME ZONE" />
+            <column name="NICKNAME" type="VARCHAR(100)" />
+            <column name="FIRSTNAME" type="VARCHAR(100)" />
+            <column name="LASTNAME" type="VARCHAR(100)" />
+            <column name="LOCALES" type="VARCHAR(1000)">
                 <constraints nullable="false"/>
             </column>
         </createTable>
