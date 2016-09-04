@@ -21,6 +21,7 @@ object Dependencies {
     val hsqldb = "2.3.4"
     val akkaHttpJson = "1.9.0"
     val jwtScala = "0.8.0"
+    val scalatags = "0.6.0"
   }
 
   object jsV {
@@ -60,22 +61,21 @@ object Dependencies {
     "com.typesafe.slick" %% "slick-hikaricp" % V.slick
   )
 
-  val serverDependencies = commonDependencies ++ dbDependencies ++ Seq(jwtScala, playJson, akkaActor, akkaStream, akkaHttp, akkaHttpJson, akkaTestKit)
+  val webDependencies = Seq(
+    "com.lihaoyi" %% "scalatags" % V.scalatags,
+    "org.webjars" % "font-awesome" % "4.6.3",
+    "org.webjars" % "Semantic-UI" % jsV.semanticUI % Provided
+  )
 
-  val scalajsDependencies = Def.setting(Seq(
+  val backendDependencies = commonDependencies ++ dbDependencies ++ webDependencies ++ Seq(jwtScala, playJson, akkaActor, akkaStream, akkaHttp, akkaHttpJson, akkaTestKit)
+
+  val frontendDependencies = Def.setting(Seq(
     "com.github.japgolly.scalajs-react" %%% "core" % V.scalajsReact,
     "com.github.japgolly.scalajs-react" %%% "extra" % V.scalajsReact,
     "com.github.japgolly.scalacss" %%% "ext-react" % V.scalaCSS,
     "me.chrons" %%% "diode" % V.diode,
     "me.chrons" %%% "diode-react" % V.diode,
     "org.scala-js" %%% "scalajs-dom" % V.scalaDom
-  ))
-
-  /** Dependencies only used by the JVM project */
-  val frontendServerDependencies = Def.setting(Seq(
-    "org.webjars" %% "webjars-play" % "2.5.0",
-    "org.webjars" % "font-awesome" % "4.6.3",
-    "org.webjars" % "Semantic-UI" % jsV.semanticUI % Provided
   ))
 
   val jsDependencies = Def.setting(Seq(

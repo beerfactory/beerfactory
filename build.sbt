@@ -4,6 +4,8 @@ lazy val commonSettings = Seq(
   version := "0.1.0-SNAPSHOT"
 )
 
+logBuffered in Test := false
+
 lazy val beerfactoryBackend = (project in file("backend"))
   .settings(commonSettings:_*)
   .enablePlugins(BuildInfoPlugin)
@@ -15,8 +17,28 @@ lazy val beerfactoryBackend = (project in file("backend"))
       name, version,buildInfoBuildNumber,
       "projectName" -> "Beerfactory"),
     buildInfoOptions += BuildInfoOption.BuildTime,
-    libraryDependencies ++= Dependencies.serverDependencies
+    libraryDependencies ++= Dependencies.backendDependencies
   )
 
-logBuffered in Test := false
-//parallelExecution in Test := false
+lazy val beerfactoryFrontend = (project in file("frontend"))
+  .settings(commonSettings)
+  .enablePlugins(ScalaJSPlugin)
+  .settings(
+    persistLauncher in Compile := true,
+    persistLauncher in Test := false,
+    libraryDependencies ++= Dependencies.frontendDependencies.value,
+    jsDependencies ++= Dependencies.jsDependencies.value,
+    scalaJSUseRhino in Global := false
+  )
+
+lazy val beerfactoryShared = (crossProject.crossType(CrossType.Pure) in file("shared")).
+  settings(commonSettings:_*).
+  jvmSettings(
+    // Add JVM-specific settings here
+  ).
+  jsSettings(
+    // Add JS-specific settings here
+  )
+
+lazy val beerfactorySharedJVM = beerfactoryShared.jvm.settings(name := "beerfactorySharedJVM")
+lazy val beerfactorySharedJS = beerfactoryShared.js.settings(name := "beerfactorySharedJS")
