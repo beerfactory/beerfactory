@@ -9,6 +9,7 @@ logBuffered in Test := false
 lazy val beerfactoryBackend = (project in file("backend"))
   .settings(commonSettings:_*)
   .enablePlugins(BuildInfoPlugin)
+  .enablePlugins(SbtWeb)
   .settings(
     name := "backend",
     buildInfoPackage := "org.beerfactory.backend.version",
@@ -28,7 +29,8 @@ lazy val beerfactoryFrontend = (project in file("frontend"))
     persistLauncher in Test := false,
     libraryDependencies ++= Dependencies.frontendDependencies.value,
     jsDependencies ++= Dependencies.jsDependencies.value,
-    scalaJSUseRhino in Global := false
+    scalaJSUseRhino in Global := false,
+    LessKeys.compress in Assets := true
   )
 
 lazy val beerfactoryShared = (crossProject.crossType(CrossType.Pure) in file("shared")).

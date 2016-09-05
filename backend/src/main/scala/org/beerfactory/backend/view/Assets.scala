@@ -11,6 +11,6 @@ package org.beerfactory.backend.view
 object Assets {
   val assetsDir = "/assets"
 
-  def public(relativePath: String): String = s"$assetsDir/$relativePath"
+  def public(relativePath: String): String = s"$assetsDir/beerfactory/$relativePath"
   def webJar(webJar: String, partialPath: String): String = s"$assetsDir/$webJar/$partialPath"
 }

@@ -29,18 +29,20 @@ trait Routes extends StrictLogging
       pathSingleSlash {
        complete(HttpResponse(entity=HttpEntity(ContentTypes.`text/html(UTF-8)`, Index.page.render)))
       } ~
+      pathPrefix("assets" / "beerfactory") {
+        getFromResourceDirectory("/")
+      } ~
       path("assets" / Segment / Remaining) { (webJar, partialPath) =>
         Try(webJarLocator.getFullPath(webJar, partialPath)) match {
           case Success(path) => getFromResource(path)
           case Failure(e) => {
-            logger.warn(s"file '$partialPath' or webjar '$webJar' not found")
+            logger.warn(s"file '$partialPath' and/or webjar '$webJar' not found")
             logger.debug(s"$e")
             complete(StatusCodes.NotFound)
           }
         }
       }
     } ~
-    getFromResourceDirectory("webapp") ~
     pathPrefix("api") {
       usersRoutes ~
         versionRoutes
