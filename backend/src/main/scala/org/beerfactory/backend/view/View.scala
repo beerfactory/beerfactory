@@ -7,26 +7,10 @@
  *********************************************************************************
  */
 package org.beerfactory.backend.view
-
 import scalatags.Text.all._
 
-/**
-  * Application root page
-  */
-object Index extends View {
-  val page =
-    html (
-      head (
-        meta(charset:="UTF-8"),
-        tag("title")("Beerfactory"),
-        meta(content:="'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'"),
-        css(Assets.webJar("Semantic-UI", "semantic.min.css")),
-        css("stylesheets/main.min.css")
-      ),
-      body(
-        h1("TEST"),
-        div(id:="root")
+trait View {
+  def css(path: String) = link(rel := "stylesheet", media := "screen", href := path)
 
-      )
-    )
+  def scriptPath(path: String) = script(src := path, tpe := "text/javascript")
 }

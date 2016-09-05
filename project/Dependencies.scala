@@ -63,8 +63,9 @@ object Dependencies {
 
   val webDependencies = Seq(
     "com.lihaoyi" %% "scalatags" % V.scalatags,
+    "org.webjars" % "webjars-locator" % "0.32",
     "org.webjars" % "font-awesome" % "4.6.3",
-    "org.webjars" % "Semantic-UI" % jsV.semanticUI % Provided
+    "org.webjars" % "Semantic-UI" % jsV.semanticUI
   )
 
   val backendDependencies = commonDependencies ++ dbDependencies ++ webDependencies ++ Seq(jwtScala, playJson, akkaActor, akkaStream, akkaHttp, akkaHttpJson, akkaTestKit)
