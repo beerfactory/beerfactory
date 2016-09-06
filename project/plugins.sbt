@@ -14,8 +14,4 @@ addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.1.0")
 
 addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.12")
 
-addSbtPlugin("com.typesafe.sbt" % "sbt-less" % "1.1.1")
-
-addSbtPlugin("com.typesafe.sbt" % "sbt-gzip" % "1.0.0")
-
-addSbtPlugin("com.typesafe.sbt" % "sbt-digest" % "1.1.1")
+addSbtPlugin("io.spray" % "sbt-revolver" % "0.8.0")

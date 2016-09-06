@@ -11,7 +11,7 @@ object Dependencies {
     val typeSafeLogging = "3.4.0"
     val logbackClassic = "1.1.7"
     val scalajsReact = "0.11.1"
-    val scalaCSS = "0.4.1"
+    val scalaCSS = "0.5.0"
     val diode = "1.0.0"
     val scalaDom = "0.9.1"
     val playJson = "2.5.0"
@@ -63,6 +63,7 @@ object Dependencies {
 
   val webDependencies = Seq(
     "com.lihaoyi" %% "scalatags" % V.scalatags,
+    "com.github.japgolly.scalacss" %% "core" % V.scalaCSS,
     "org.webjars" % "webjars-locator" % "0.32",
     "org.webjars" % "font-awesome" % "4.6.3",
     "org.webjars" % "Semantic-UI" % jsV.semanticUI
