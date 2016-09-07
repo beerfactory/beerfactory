@@ -77,13 +77,15 @@ object Dependencies {
     "com.github.japgolly.scalacss" %%% "ext-react" % V.scalaCSS,
     "me.chrons" %%% "diode" % V.diode,
     "me.chrons" %%% "diode-react" % V.diode,
-    "org.scala-js" %%% "scalajs-dom" % V.scalaDom
+    "org.scala-js" %%% "scalajs-dom" % V.scalaDom,
+    "org.scalatest" %%% "scalatest" % V.scalatest % "test"
   ))
 
   val jsDependencies = Def.setting(Seq(
-    "org.webjars.bower" % "react" % jsV.react / "react-with-addons.js" minified "react-with-addons.min.js" commonJSName "React",
-    "org.webjars.bower" % "react" % jsV.react / "react-dom.js" minified "react-dom.min.js" dependsOn "react-with-addons.js" commonJSName "ReactDOM",
-    "org.webjars" % "Semantic-UI" % jsV.semanticUI / "semantic.js" minified "semantic.min.js",
-    "org.webjars" % "jquery" % jsV.jQuery / "jquery.js" minified "jquery.min.js"
+    //RuntimeDOM,
+    //"org.webjars.bower" % "react" % jsV.react / "react-with-addons.js" minified "react-with-addons.min.js" commonJSName "React",
+    //"org.webjars.bower" % "react" % jsV.react / "react-dom.js" minified "react-dom.min.js" dependsOn "react-with-addons.js" commonJSName "ReactDOM",
+    //"org.webjars" % "Semantic-UI" % jsV.semanticUI / "semantic.js" minified "semantic.min.js",
+    //"org.webjars" % "jquery" % jsV.jQuery / "jquery.js" minified "jquery.min.js"
   ))
 }

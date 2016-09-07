@@ -14,12 +14,13 @@ lazy val commonSettings = Seq(
 logBuffered in Test := false
 
 lazy val root = (project in file("."))
-    .aggregate(beerfactoryBackend, beerfactoryFrontend)
+    .aggregate(backend, frontend)
 
-lazy val beerfactoryBackend = (project in file("backend"))
+lazy val backend = (project in file("backend"))
+  .settings(Revolver.settings: _*)
   .settings(commonSettings:_*)
   .enablePlugins(BuildInfoPlugin)
-  .dependsOn(beerfactorySharedJVM)
+  .dependsOn(sharedJVM)
   .settings(
     name := "backend",
     buildInfoPackage := "org.beerfactory.backend.version",
@@ -29,26 +30,23 @@ lazy val beerfactoryBackend = (project in file("backend"))
       "projectName" -> "Beerfactory"),
     buildInfoOptions += BuildInfoOption.BuildTime,
     libraryDependencies ++= Dependencies.backendDependencies,
-    //(resources in Compile) += (fastOptJS in (beerfactoryFrontend, Compile)).value.data,
-    (resourceGenerators in Compile) <+=
-      (fastOptJS in Compile in beerfactoryFrontend, packageScalaJSLauncher in Compile in beerfactoryFrontend)
-        .map((f1, f2) => Seq(f1.data, f2.data)),
-    watchSources <++= (watchSources in beerfactoryFrontend)
+    (resources in Compile) += (fastOptJS in (frontend, Compile)).value.data,
+    watchSources <++= (watchSources in frontend)
   )
 
-lazy val beerfactoryFrontend = (project in file("frontend"))
+lazy val frontend = (project in file("frontend"))
   .settings(commonSettings)
   .enablePlugins(ScalaJSPlugin)
-  .dependsOn(beerfactorySharedJS)
+  .dependsOn(sharedJS)
   .settings(
-    persistLauncher in Compile := true,
-    persistLauncher in Test := false,
+    //persistLauncher in Compile := true,
+    //persistLauncher in Test := false,
     libraryDependencies ++= Dependencies.frontendDependencies.value,
     jsDependencies ++= Dependencies.jsDependencies.value,
     scalaJSUseRhino in Global := false
   )
 
-lazy val beerfactoryShared = (crossProject.crossType(CrossType.Pure) in file("shared")).
+lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared")).
   settings(commonSettings:_*).
   jvmSettings(
     // Add JVM-specific settings here
@@ -57,5 +55,5 @@ lazy val beerfactoryShared = (crossProject.crossType(CrossType.Pure) in file("sh
     // Add JS-specific settings here
   )
 
-lazy val beerfactorySharedJVM = beerfactoryShared.jvm.settings(name := "beerfactorySharedJVM")
-lazy val beerfactorySharedJS = beerfactoryShared.js.settings(name := "beerfactorySharedJS")
+lazy val sharedJVM = shared.jvm.settings(name := "sharedJVM")
+lazy val sharedJS = shared.js.settings(name := "sharedJS")
