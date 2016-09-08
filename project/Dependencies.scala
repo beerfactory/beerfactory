@@ -66,7 +66,8 @@ object Dependencies {
     "com.github.japgolly.scalacss" %% "core" % V.scalaCSS,
     "org.webjars" % "webjars-locator" % "0.32",
     "org.webjars" % "font-awesome" % "4.6.3",
-    "org.webjars" % "Semantic-UI" % jsV.semanticUI
+    "org.webjars" % "Semantic-UI" % jsV.semanticUI,
+    "org.webjars" % "jquery" % jsV.jQuery
   )
 
   val backendDependencies = commonDependencies ++ dbDependencies ++ webDependencies ++ Seq(jwtScala, playJson, akkaActor, akkaStream, akkaHttp, akkaHttpJson, akkaTestKit)
@@ -78,14 +79,16 @@ object Dependencies {
     "me.chrons" %%% "diode" % V.diode,
     "me.chrons" %%% "diode-react" % V.diode,
     "org.scala-js" %%% "scalajs-dom" % V.scalaDom,
-    "org.scalatest" %%% "scalatest" % V.scalatest % "test"
+    "org.scalatest" %%% "scalatest" % V.scalatest % "test",
+    "org.scala-js" %%% "scalajs-dom" % "0.9.0"
   ))
 
   val jsDependencies = Def.setting(Seq(
     //RuntimeDOM,
     //"org.webjars.bower" % "react" % jsV.react / "react-with-addons.js" minified "react-with-addons.min.js" commonJSName "React",
-    //"org.webjars.bower" % "react" % jsV.react / "react-dom.js" minified "react-dom.min.js" dependsOn "react-with-addons.js" commonJSName "ReactDOM",
-    //"org.webjars" % "Semantic-UI" % jsV.semanticUI / "semantic.js" minified "semantic.min.js",
-    //"org.webjars" % "jquery" % jsV.jQuery / "jquery.js" minified "jquery.min.js"
+    //"org.webjars.bower" % "react" % jsV.react / "react-dom.js" minified "react-dom.min.js" dependsOn "react-dom.js" commonJSName "ReactDOM",
+    //"org.webjars.bower" % "react" % jsV.react / "react-dom-server.js" minified "react-dom-server.min.js" dependsOn "react-dom-server.js" commonJSName "ReactDOMServer"//,
+    //"org.webjars" % "jquery" % jsV.jQuery / "jquery.js" minified "jquery.min.js" commonJSName "jQuery"
+    //,"org.webjars" % "Semantic-UI" % jsV.semanticUI / "semantic.js" minified "semantic.min.js"
   ))
 }

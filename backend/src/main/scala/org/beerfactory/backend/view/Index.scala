@@ -21,7 +21,8 @@ object Index extends View {
         tag("title")("Beerfactory"),
         meta(content:="'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'"),
         css(Assets.webJar("Semantic-UI", "semantic.min.css")),
-        css(Assets.webJar("font-awesome", "font-awesome.min.css"))
+        css(Assets.webJar("font-awesome", "font-awesome.min.css")),
+        css(Assets.webJar("jquery", "jquery.min.css"))
       ),
       body(
         h1("TEST"),
