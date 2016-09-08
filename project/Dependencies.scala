@@ -5,7 +5,7 @@ import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
 object Dependencies {
   // Versions
   object V {
-    val akka = "2.4.9"
+    val akka = "2.4.10"
     val scalactic = "3.0.0"
     val scalatest = "3.0.0"
     val typeSafeLogging = "3.4.0"
@@ -14,7 +14,7 @@ object Dependencies {
     val scalaCSS = "0.5.0"
     val diode = "1.0.0"
     val scalaDom = "0.9.1"
-    val playJson = "2.5.0"
+    val playJson = "2.5.6"
     val slick = "3.1.1"
     val slickPg = "0.14.3"
     val liquibase = "3.5.1"
@@ -25,7 +25,7 @@ object Dependencies {
   }
 
   object jsV {
-    val react = "15.3.0"
+    val react = "15.3.1"
     val semanticUI = "2.2.2"
     val jQuery = "3.1.0"
   }
@@ -78,16 +78,12 @@ object Dependencies {
     "com.github.japgolly.scalacss" %%% "ext-react" % V.scalaCSS,
     "me.chrons" %%% "diode" % V.diode,
     "me.chrons" %%% "diode-react" % V.diode,
-    "org.scala-js" %%% "scalajs-dom" % V.scalaDom,
     "org.scalatest" %%% "scalatest" % V.scalatest % "test"
   ))
 
-  //val jsDependencies = Def.setting(Seq(
-    //RuntimeDOM,
-    //"org.webjars.bower" % "react" % jsV.react / "react-with-addons.js" minified "react-with-addons.min.js" commonJSName "React",
-    //"org.webjars.bower" % "react" % jsV.react / "react-dom.js" minified "react-dom.min.js" dependsOn "react-dom.js" commonJSName "ReactDOM",
-    //"org.webjars.bower" % "react" % jsV.react / "react-dom-server.js" minified "react-dom-server.min.js" dependsOn "react-dom-server.js" commonJSName "ReactDOMServer"//,
-    //"org.webjars" % "jquery" % jsV.jQuery / "jquery.js" minified "jquery.min.js" commonJSName "jQuery"
-    //,"org.webjars" % "Semantic-UI" % jsV.semanticUI / "semantic.js" minified "semantic.min.js"
-  //))
+  val jsDependencies = Seq(
+    "org.webjars.bower" % "react" % jsV.react / "react-with-addons.js" minified "react-with-addons.min.js" commonJSName "React",
+    "org.webjars.bower" % "react" % jsV.react / "react-dom.js" minified "react-dom.min.js" dependsOn "react-with-addons.js" commonJSName "ReactDOM",
+    "org.webjars.bower" % "react" % jsV.react / "react-dom-server.js" minified "react-dom-server.min.js" dependsOn "react-dom.js" commonJSName "ReactDOMServer"
+  )
 }

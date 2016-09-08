@@ -5,6 +5,8 @@ import org.scalajs.sbtplugin.ScalaJSPlugin
 import ScalaJSPlugin._
 import autoImport._
 
+scalacOptions += "-feature"
+
 lazy val commonSettings = Seq(
   organization := "org.beerfactory",
   scalaVersion := "2.11.8",
@@ -32,7 +34,10 @@ lazy val backend = (project in file("backend"))
     libraryDependencies ++= Dependencies.backendDependencies,
     (resources in Compile) ++= Seq(
       (fastOptJS in (frontend, Compile)).value.data,
-      (packageScalaJSLauncher in (frontend, Compile)).value.data),
+      (packageScalaJSLauncher in (frontend, Compile)).value.data,
+      (packageJSDependencies in (frontend, Compile)).value,
+      (packageMinifiedJSDependencies in (frontend, Compile)).value
+    ),
     watchSources <++= (watchSources in frontend)
   )
 
@@ -43,8 +48,8 @@ lazy val frontend = (project in file("frontend"))
   .settings(
     persistLauncher in Compile := true,
     persistLauncher in Test := false,
-    libraryDependencies ++= Dependencies.frontendDependencies.value//,
-    //jsDependencies ++= Dependencies.jsDependencies.value
+    libraryDependencies ++= Dependencies.frontendDependencies.value,
+    jsDependencies ++= Dependencies.jsDependencies
   )
 
 lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared")).

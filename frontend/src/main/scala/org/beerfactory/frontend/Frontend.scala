@@ -8,10 +8,42 @@
  */
 package org.beerfactory.frontend
 
+import japgolly.scalajs.react.ReactDOM
+import japgolly.scalajs.react.extra.router.{BaseUrl, Redirect, Resolution, Router, RouterConfigDsl, RouterCtl}
+import japgolly.scalajs.react.vdom.all._
+import org.beerfactory.frontend.components.MainMenu
+import org.beerfactory.frontend.pages.HomePage
+import org.scalajs.dom
+import scalacss.Defaults._
+import scalacss.ScalaCssReact._
+
 import scala.scalajs.js.JSApp
 
 object Frontend extends JSApp {
+  sealed trait Page
+  case object Home extends Page
+
+  val routerConfig = RouterConfigDsl[Page].buildConfig { dsl =>
+    import dsl._
+
+    ( trimSlashes
+      | staticRoute(root, Home) ~> render(HomePage.component()))
+      .notFound(redirectToPage(Home)(Redirect.Replace))
+      .renderWith(layout)
+  }
+
+  def layout(c: RouterCtl[Page], r: Resolution[Page]) =
+    div(
+      cls := "ui vertical center aligned",
+      MainMenu(c),
+      div(cls := "container", r.render())
+    )
+
   def main(): Unit = {
-    println("Hello world!")
+    GlobalStyles.addToDocument()
+
+    val router = Router(BaseUrl.until_#, routerConfig)
+    // tell React to render the router in the document body
+    ReactDOM.render(router(), dom.document.getElementById("root"))
   }
 }

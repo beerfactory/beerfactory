@@ -24,11 +24,12 @@ object Index extends View {
         css(Assets.webJar("font-awesome", "font-awesome.min.css"))
       ),
       body(
-        h1("TEST"),
         div(id:="root"),
+        script(src:=Assets.webJar("jquery", "jquery.min.js")),
         script(src:=Assets.webJar("Semantic-UI", "semantic.min.js")),
-        script(src:="frontend-fastopt.js"),
-        script(src:="frontend-launcher.js")
+        script(src:="/frontend-fastopt.js"),
+        script(src:="/frontend-jsdeps.js"),
+        script(src:="/frontend-launcher.js")
       )
     )
 }
