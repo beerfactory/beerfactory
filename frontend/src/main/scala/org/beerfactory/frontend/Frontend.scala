@@ -9,9 +9,7 @@
 package org.beerfactory.frontend
 
 import scala.scalajs.js.JSApp
-import scala.scalajs.js.annotation.JSExport
 
-@JSExport
 object Frontend extends JSApp {
   def main(): Unit = {
     println("Hello world!")

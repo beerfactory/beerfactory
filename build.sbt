@@ -30,7 +30,9 @@ lazy val backend = (project in file("backend"))
       "projectName" -> "Beerfactory"),
     buildInfoOptions += BuildInfoOption.BuildTime,
     libraryDependencies ++= Dependencies.backendDependencies,
-    (resources in Compile) += (fastOptJS in (frontend, Compile)).value.data,
+    (resources in Compile) ++= Seq(
+      (fastOptJS in (frontend, Compile)).value.data,
+      (packageScalaJSLauncher in (frontend, Compile)).value.data),
     watchSources <++= (watchSources in frontend)
   )
 
@@ -39,11 +41,10 @@ lazy val frontend = (project in file("frontend"))
   .enablePlugins(ScalaJSPlugin)
   .dependsOn(sharedJS)
   .settings(
-    //persistLauncher in Compile := true,
-    //persistLauncher in Test := false,
-    libraryDependencies ++= Dependencies.frontendDependencies.value
-    ,jsDependencies ++= Dependencies.jsDependencies.value
-    //,scalaJSUseRhino in Global := false
+    persistLauncher in Compile := true,
+    persistLauncher in Test := false,
+    libraryDependencies ++= Dependencies.frontendDependencies.value//,
+    //jsDependencies ++= Dependencies.jsDependencies.value
   )
 
 lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared")).
