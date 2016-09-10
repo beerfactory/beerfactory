@@ -39,6 +39,9 @@ trait Routes extends StrictLogging
           }
         }
       } ~
+      pathPrefix("resources") {
+        getFromResourceDirectory("")
+      } ~
       getFromResourceDirectory("")
     } ~
     pathPrefix("api") {

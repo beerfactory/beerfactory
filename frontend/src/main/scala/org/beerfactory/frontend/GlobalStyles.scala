@@ -9,8 +9,14 @@
 package org.beerfactory.frontend
 
 import scalacss.Defaults._
+import scalacss.internal.Attrs
 
 object GlobalStyles extends StyleSheet.Inline {
   import dsl._
 
+  val imgLogo = style(
+    unsafeExt(".ui.menu .item img" + _) (
+      Attrs.marginRight(1.5 em)
+    )
+  )
 }

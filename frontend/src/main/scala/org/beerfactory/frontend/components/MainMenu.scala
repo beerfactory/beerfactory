@@ -12,7 +12,9 @@ import japgolly.scalajs.react.{ReactComponentB, ReactElement}
 import japgolly.scalajs.react.extra.Reusability
 import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.all._
+import scalacss.ScalaCssReact._
 import org.beerfactory.frontend.Frontend.{Home, Page}
+import org.beerfactory.frontend.GlobalStyles
 
 object MainMenu {
   private val component = ReactComponentB[RouterCtl[Page]]("MainMenu")
@@ -23,10 +25,9 @@ object MainMenu {
           ctl.link(target)(name, cls := "ui inverted button")
         )
 
-      div(
-        cls := "ui inverted menu",
-        div(
-          cls := "header item",
+      div(cls := "ui fixed inverted menu",
+        ctl.link(Home)(cls:="header item") (
+          img(GlobalStyles.imgLogo, src:="/resources/images/logo.png"),
           "Beerfactory"
         ),
         div(
