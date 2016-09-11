@@ -11,7 +11,7 @@ package org.beerfactory.frontend
 import japgolly.scalajs.react.ReactDOM
 import japgolly.scalajs.react.extra.router.{BaseUrl, Redirect, Resolution, Router, RouterConfigDsl, RouterCtl}
 import japgolly.scalajs.react.vdom.all._
-import org.beerfactory.frontend.components.MainMenu
+import org.beerfactory.frontend.components.{MainMenu, Footer}
 import org.beerfactory.frontend.pages.HomePage
 import org.scalajs.dom
 import scalacss.Defaults._
@@ -36,7 +36,8 @@ object Frontend extends JSApp {
     div(
       cls := "ui vertical center aligned",
       MainMenu(c),
-      div(cls := "container", r.render())
+      div(GlobalStyles.mainSegment, r.render()),
+      Footer(c)
     )
 
   def main(): Unit = {

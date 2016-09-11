@@ -19,4 +19,10 @@ object GlobalStyles extends StyleSheet.Inline {
       Attrs.marginRight(1.5 em)
     )
   )
+
+  val mainSegment = style(
+    unsafeExt("ui vertical segment " + _) (
+      marginTop(7 em)
+    )
+  )
 }
