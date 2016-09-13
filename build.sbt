@@ -48,9 +48,10 @@ lazy val frontend = (project in file("frontend"))
   .settings(
     persistLauncher in Compile := true,
     persistLauncher in Test := false,
+    scalaJSUseRhino in Global := false,
     libraryDependencies ++= Dependencies.frontendDependencies.value,
     jsDependencies ++= Dependencies.jsDependencies,
-    jsDependencies += RuntimeDOM % "test"
+    jsEnv := JSDOMNodeJSEnv().value
   )
 
 lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared")).

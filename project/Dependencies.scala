@@ -86,6 +86,7 @@ object Dependencies {
     "org.webjars.bower" % "react" % jsV.react / "react-dom.js" minified "react-dom.min.js" dependsOn "react-with-addons.js" commonJSName "ReactDOM",
     "org.webjars.bower" % "react" % jsV.react / "react-dom-server.js" minified "react-dom-server.min.js" dependsOn "react-dom.js" commonJSName "ReactDOMServer",
     "org.webjars" % "jquery" % jsV.jQuery / "jquery.js" minified "jquery.min.js",
+    "org.webjars.bower" % "tether" % "1.3.3" / "tether.js" minified "tether.min.js",
     "org.webjars" % "bootstrap" % jsV.bootstrap / "bootstrap.js" minified "bootstrap.min.js" dependsOn "jquery.js"
   )
 }
