@@ -28,6 +28,7 @@ object Dependencies {
     val react = "15.3.1"
     val jQuery = "3.1.0"
     val bootstrap = "4.0.0-alpha.3"
+    val tether="1.3.3"
   }
 
   val typesafeConfig  = "com.typesafe" %% "config" % "1.3.0"
@@ -85,8 +86,8 @@ object Dependencies {
     "org.webjars.bower" % "react" % jsV.react / "react-with-addons.js" minified "react-with-addons.min.js" commonJSName "React",
     "org.webjars.bower" % "react" % jsV.react / "react-dom.js" minified "react-dom.min.js" dependsOn "react-with-addons.js" commonJSName "ReactDOM",
     "org.webjars.bower" % "react" % jsV.react / "react-dom-server.js" minified "react-dom-server.min.js" dependsOn "react-dom.js" commonJSName "ReactDOMServer",
-    "org.webjars" % "jquery" % jsV.jQuery / "jquery.js" minified "jquery.min.js",
-    "org.webjars.bower" % "tether" % "1.3.3" / "tether.js" minified "tether.min.js",
-    "org.webjars" % "bootstrap" % jsV.bootstrap / "bootstrap.js" minified "bootstrap.min.js" dependsOn "jquery.js"
+    "org.webjars" % "jquery" % jsV.jQuery / (jsV.jQuery + "/jquery.js") minified (jsV.jQuery + "/jquery.min.js"),
+    "org.webjars.bower" % "tether" % jsV.tether / "dist/js/tether.js" minified "dist/js/tether.min.js",
+    "org.webjars" % "bootstrap" % jsV.bootstrap / "bootstrap.js" minified "bootstrap.min.js" dependsOn jsV.jQuery + "/jquery.js"
   )
 }
