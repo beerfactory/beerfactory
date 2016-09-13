@@ -9,4 +9,4 @@ install:
   - nvm install stable
   - nvm use stable
   - npm install
-  = npm install jsdom
+  - npm install jsdom
