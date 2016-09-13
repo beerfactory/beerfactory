@@ -19,7 +19,7 @@ object Index extends View {
       head (
         meta(charset:="UTF-8"),
         tag("title")("Beerfactory"),
-        meta(content:="'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'"),
+        meta(content:="'width=device-width, initial-scale=1, shrink-to-fit=no'", name:="viewport"),
         css(Assets.webJar("bootstrap", "bootstrap.min.css")),
         css(Assets.webJar("font-awesome", "font-awesome.min.css"))
       ),
