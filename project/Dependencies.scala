@@ -26,8 +26,8 @@ object Dependencies {
 
   object jsV {
     val react = "15.3.1"
-    val semanticUI = "2.2.2"
     val jQuery = "3.1.0"
+    val bootstrap = "4.0.0-alpha.3"
   }
 
   val typesafeConfig  = "com.typesafe" %% "config" % "1.3.0"
@@ -66,7 +66,7 @@ object Dependencies {
     "com.github.japgolly.scalacss" %% "core" % V.scalaCSS,
     "org.webjars" % "webjars-locator" % "0.32",
     "org.webjars" % "font-awesome" % "4.6.3",
-    "org.webjars" % "Semantic-UI" % jsV.semanticUI,
+    "org.webjars" % "bootstrap" % jsV.bootstrap,
     "org.webjars" % "jquery" % jsV.jQuery
   )
 
@@ -84,6 +84,8 @@ object Dependencies {
   val jsDependencies = Seq(
     "org.webjars.bower" % "react" % jsV.react / "react-with-addons.js" minified "react-with-addons.min.js" commonJSName "React",
     "org.webjars.bower" % "react" % jsV.react / "react-dom.js" minified "react-dom.min.js" dependsOn "react-with-addons.js" commonJSName "ReactDOM",
-    "org.webjars.bower" % "react" % jsV.react / "react-dom-server.js" minified "react-dom-server.min.js" dependsOn "react-dom.js" commonJSName "ReactDOMServer"
+    "org.webjars.bower" % "react" % jsV.react / "react-dom-server.js" minified "react-dom-server.min.js" dependsOn "react-dom.js" commonJSName "ReactDOMServer",
+    "org.webjars" % "jquery" % jsV.jQuery / "jquery.js" minified "jquery.min.js",
+    "org.webjars" % "bootstrap" % jsV.bootstrap / "bootstrap.js" minified "bootstrap.min.js" dependsOn "jquery.js"
   )
 }

@@ -49,7 +49,8 @@ lazy val frontend = (project in file("frontend"))
     persistLauncher in Compile := true,
     persistLauncher in Test := false,
     libraryDependencies ++= Dependencies.frontendDependencies.value,
-    jsDependencies ++= Dependencies.jsDependencies
+    jsDependencies ++= Dependencies.jsDependencies,
+    jsDependencies += RuntimeDOM % "test"
   )
 
 lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared")).

@@ -20,13 +20,13 @@ object Index extends View {
         meta(charset:="UTF-8"),
         tag("title")("Beerfactory"),
         meta(content:="'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'"),
-        css(Assets.webJar("Semantic-UI", "semantic.min.css")),
+        css(Assets.webJar("bootstrap", "bootstrap.min.css")),
         css(Assets.webJar("font-awesome", "font-awesome.min.css"))
       ),
       body(
         div(id:="root"),
-        script(src:=Assets.webJar("jquery", "jquery.min.js")),
-        script(src:=Assets.webJar("Semantic-UI", "semantic.min.js")),
+        //script(src:=Assets.webJar("jquery", "jquery.min.js")),
+        //script(src:=Assets.webJar("bootstrap", "bootstrap.min.js")),
         script(src:="/frontend-fastopt.js"),
         script(src:="/frontend-jsdeps.js"),
         script(src:="/frontend-launcher.js")
