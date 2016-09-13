@@ -34,7 +34,7 @@ object Frontend extends JSApp {
 
   def layout(c: RouterCtl[Page], r: Resolution[Page]) =
     div(
-      cls := "ui vertical center aligned",
+      cls := "container",
       MainMenu(c),
       div(GlobalStyles.mainSegment, r.render()),
       Footer(c)
