@@ -9,20 +9,28 @@
 package org.beerfactory.frontend
 
 import scalacss.Defaults._
-import scalacss.internal.Attrs
 
 object GlobalStyles extends StyleSheet.Inline {
   import dsl._
 
   val imgLogo = style(
-    unsafeExt(".ui.menu .item img" + _) (
-      Attrs.marginRight(1.5 em)
-    )
+      addClassName("ui image"),
+      marginRight(1.5 em),
+      width(2.5 em)
   )
 
-  val mainSegment = style(
-    unsafeExt("ui vertical segment " + _) (
-      marginTop(7 em)
-    )
+  val mainContainer = style(
+    addClassName("ui container"),
+    marginTop(7 em)
+  )
+
+  val loginView = style(
+    addClassName("ui middle aligned center aligned grid"),
+    backgroundColor(c"#DADADA")
+  )
+
+  val loginFormColumn = style(
+    addClassName("column"),
+    maxWidth(450 px)
   )
 }

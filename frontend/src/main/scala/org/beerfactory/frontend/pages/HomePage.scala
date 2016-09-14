@@ -10,9 +10,11 @@ package org.beerfactory.frontend.pages
 
 import japgolly.scalajs.react.ReactComponentB
 import japgolly.scalajs.react.vdom.all._
+import org.beerfactory.frontend.components.LoginView
 
 object HomePage {
 
   val component = ReactComponentB.static("Home",
-    div("Welcome")).build
+    LoginView()
+  ).build
 }

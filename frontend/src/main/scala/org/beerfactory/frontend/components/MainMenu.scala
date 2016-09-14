@@ -22,7 +22,7 @@ object MainMenu {
       def button(name: String, target: Page) =
         div(
           cls:="item",
-          ctl.link(target)(name, cls := "ui inverted button")
+          ctl.link(target)(name, cls := "ui inverted basic blue button")
         )
 
       div(cls := "ui fixed inverted menu",
