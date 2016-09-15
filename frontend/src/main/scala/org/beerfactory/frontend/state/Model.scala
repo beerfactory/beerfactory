@@ -9,12 +9,18 @@
 package org.beerfactory.frontend.state
 
 import diode.data.Pot
-import diode.Action
+import diode.{Action, ActionHandler, ModelRW}
 
 // Application model
-case class RootModel(userModel: Pot[UserModel])
+case class RootModel(userModel: UserModel)
 
 case class UserModel(authToken: String)
 
 // Actions
 case class SetAuthToken(token: String) extends Action
+
+class UserModelHandler[M](modelRW: ModelRW[M, UserModel]) extends ActionHandler(modelRW) {
+  override def handle = {
+    case SetAuthToken(token) => updated(value.copy(authToken = token))
+  }
+}

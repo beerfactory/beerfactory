@@ -28,10 +28,9 @@ object Frontend extends JSApp {
     import dsl._
 
     ( trimSlashes
-      | staticRoute(root, Home) ~> renderR(ctl => AppCircuit.wrap(_.userModel)(proxy => HomePage.component(ctl, proxy)))
-      .notFound(redirectToPage(Home)(Redirect.Replace))
-      .renderWith(layout)
-  }
+      | staticRoute(root, Home) ~> renderR(ctl => AppCircuit.wrap(_.userModel)(proxy => HomePage(ctl, proxy)))
+      ).notFound(redirectToPage(Home)(Redirect.Replace))
+  }.renderWith(layout)
 
   def layout(c: RouterCtl[Page], r: Resolution[Page]) =
     div(

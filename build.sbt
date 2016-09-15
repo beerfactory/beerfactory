@@ -32,12 +32,14 @@ lazy val backend = (project in file("backend"))
       "projectName" -> "Beerfactory"),
     buildInfoOptions += BuildInfoOption.BuildTime,
     libraryDependencies ++= Dependencies.backendDependencies,
-    (resources in Compile) ++= Seq(
-      (fastOptJS in (frontend, Compile)).value.data,
-      (packageScalaJSLauncher in (frontend, Compile)).value.data,
-      (packageJSDependencies in (frontend, Compile)).value,
-      (packageMinifiedJSDependencies in (frontend, Compile)).value
-    ),
+    resourceGenerators in Compile <+= Def.task {
+      val f1 = (fastOptJS in Compile in frontend).value.data
+      val f1SourceMap = f1.getParentFile / (f1.getName + ".map")
+      val f2 = (packageScalaJSLauncher in Compile in frontend).value.data
+      val f3 = (packageJSDependencies in Compile in frontend).value
+      val f4 = (packageMinifiedJSDependencies in Compile in frontend).value
+      Seq(f1, f1SourceMap, f2, f3, f4)
+    },
     watchSources <++= (watchSources in frontend)
   )
 

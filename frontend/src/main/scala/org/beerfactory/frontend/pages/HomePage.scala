@@ -19,9 +19,9 @@ import org.beerfactory.frontend.state.UserModel
 
 object HomePage {
 
-  case class Props(router: RouterCtl[Page], proxy: ModelProxy[Pot[UserModel]])
+  case class Props(router: RouterCtl[Page], proxy: ModelProxy[UserModel])
 
-  case class State(userModelWrapper: ReactConnectProxy[Pot[UserModel]])
+  case class State(userModelWrapper: ReactConnectProxy[UserModel])
 
   private val component = ReactComponentB[Props]("Home")
     .initialState_P(props => State(props.proxy.connect(m => m)))
@@ -29,5 +29,5 @@ object HomePage {
       LoginView()
     }.build
 
-  def apply(router: RouterCtl[Page], proxy: ModelProxy[Pot[UserModel]]) = component(Props(router, proxy))
+  def apply(router: RouterCtl[Page], proxy: ModelProxy[UserModel]) = component(Props(router, proxy))
 }

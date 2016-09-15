@@ -8,13 +8,15 @@
  */
 package org.beerfactory.frontend.state
 
-import diode.Circuit
+import diode.{ActionHandler, Circuit}
 import diode.data.Empty
 import diode.react.ReactConnector
 
 object AppCircuit extends Circuit[RootModel] with ReactConnector[RootModel] {
 
-  override protected def initialModel = RootModel(Empty)
+  override protected def initialModel = RootModel(UserModel(""))
 
-  override protected val actionHandler = ???
+  override protected val actionHandler = composeHandlers(
+    new UserModelHandler(zoomRW(_.userModel)((m,v) => m.copy(userModel = v)))
+  )
 }
