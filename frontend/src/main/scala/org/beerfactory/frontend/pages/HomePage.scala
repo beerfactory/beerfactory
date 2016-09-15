@@ -8,13 +8,26 @@
  */
 package org.beerfactory.frontend.pages
 
+import diode.data.Pot
+import diode.react.{ModelProxy, ReactConnectProxy}
 import japgolly.scalajs.react.ReactComponentB
+import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.all._
+import org.beerfactory.frontend.Frontend.Page
 import org.beerfactory.frontend.components.LoginView
+import org.beerfactory.frontend.state.UserModel
 
 object HomePage {
 
-  val component = ReactComponentB.static("Home",
-    LoginView()
-  ).build
+  case class Props(router: RouterCtl[Page], proxy: ModelProxy[Pot[UserModel]])
+
+  case class State(userModelWrapper: ReactConnectProxy[Pot[UserModel]])
+
+  private val component = ReactComponentB[Props]("Home")
+    .initialState_P(props => State(props.proxy.connect(m => m)))
+    .renderPS { (_, props, state) =>
+      LoginView()
+    }.build
+
+  def apply(router: RouterCtl[Page], proxy: ModelProxy[Pot[UserModel]]) = component(Props(router, proxy))
 }

@@ -11,12 +11,13 @@ package org.beerfactory.frontend
 import japgolly.scalajs.react.ReactDOM
 import japgolly.scalajs.react.extra.router.{BaseUrl, Redirect, Resolution, Router, RouterConfigDsl, RouterCtl}
 import japgolly.scalajs.react.vdom.all._
-import org.beerfactory.frontend.components.{MainMenu, Footer}
+import org.beerfactory.frontend.components.{Footer, MainMenu}
 import org.beerfactory.frontend.pages.HomePage
+import org.beerfactory.frontend.state.AppCircuit
 import org.scalajs.dom
+
 import scalacss.Defaults._
 import scalacss.ScalaCssReact._
-
 import scala.scalajs.js.JSApp
 
 object Frontend extends JSApp {
@@ -27,7 +28,7 @@ object Frontend extends JSApp {
     import dsl._
 
     ( trimSlashes
-      | staticRoute(root, Home) ~> render(HomePage.component()))
+      | staticRoute(root, Home) ~> renderR(ctl => AppCircuit.wrap(_.userModel)(proxy => HomePage.component(ctl, proxy)))
       .notFound(redirectToPage(Home)(Redirect.Replace))
       .renderWith(layout)
   }
