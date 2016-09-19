@@ -38,8 +38,10 @@ object MainMenu {
         ),
         div(
           cls := "right menu",
-          button("Register", Home),
-          button("Login", Home)
+          if(!props.proxy.value.isAuthentified) {
+            button("Register", Home),
+            button("Login", Home)
+          }
         )
       )
     }

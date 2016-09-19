@@ -16,7 +16,6 @@ import org.beerfactory.frontend.DOMGlobalScope
 object AppCircuit extends Circuit[RootModel] with ReactConnector[RootModel] {
 
   override protected def initialModel = RootModel(UserModel(locale=DOMGlobalScope.acceptLang()))
-  println(initialModel)
 
   override protected val actionHandler = composeHandlers(
     new UserModelHandler(zoomRW(_.userModel)((m,v) => m.copy(userModel = v)))
