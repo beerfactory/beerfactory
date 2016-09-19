@@ -16,5 +16,10 @@ import scala.scalajs.js
 object DOMGlobalScope extends js.GlobalScope {
   val document: HTMLDocument = js.native
 
+  /**
+    * This Javascript method is added by the server on applcation load and return the user preferred language
+    * (ie : as set by HTTP-ACCEPT-LANGUAGE header)
+    * @return user preferred language code
+    */
   def acceptLang(): String = js.native
 }
