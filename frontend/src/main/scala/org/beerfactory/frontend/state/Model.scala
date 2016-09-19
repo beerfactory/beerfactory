@@ -14,13 +14,20 @@ import diode.{Action, ActionHandler, ModelRW}
 // Application model
 case class RootModel(userModel: UserModel)
 
-case class UserModel(authToken: String)
+case class UserModel(isAuthentified: Boolean = false,
+                     login: Option[String] = None,
+                     email: Option[String] = None,
+                     nickName: Option[String] = None,
+                     firstName: Option[String] = None,
+                     lastName: Option[String] = None,
+                     locale: String,
+                     authToken: Pot[String] = Pot.empty)
 
 // Actions
 case class SetAuthToken(token: String) extends Action
 
 class UserModelHandler[M](modelRW: ModelRW[M, UserModel]) extends ActionHandler(modelRW) {
   override def handle = {
-    case SetAuthToken(token) => updated(value.copy(authToken = token))
+    case SetAuthToken(token) => updated(value.copy(authToken = value.authToken.ready(token)))
   }
 }

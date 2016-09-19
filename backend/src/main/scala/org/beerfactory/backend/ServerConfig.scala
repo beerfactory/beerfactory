@@ -20,4 +20,7 @@ trait ServerConfig {
   lazy val jwtAlgorithmName: String = hoconConfig.getString("beerfactory.server.jwt.algorithm")
   lazy val jwtTTL:Duration = hoconConfig.getDuration("beerfactory.server.jwt.ttl")
   lazy val jwtSecretKey: String = hoconConfig.getString("beerfactory.server.jwt.secret-key")
+
+  lazy val mainLanguage: String = hoconConfig.getString("beerfactory.client.main-language")
+  lazy val alternateLanguages: String = hoconConfig.getString("beerfactory.client.alternate-languages")
 }

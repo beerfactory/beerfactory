@@ -8,6 +8,9 @@
  */
 package org.beerfactory.backend
 
+import java.util.Locale.LanguageRange
+
+import akka.http.scaladsl.model.headers.Language
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity, HttpResponse, StatusCodes}
 import akka.http.scaladsl.server.Directives._
 import com.typesafe.scalalogging.StrictLogging
@@ -22,12 +25,18 @@ import scala.util.{Failure, Success, Try}
 trait Routes extends StrictLogging
     with RoutesRequestWrapper with UsersRoutes with VersionRoutes {
 
+  def config: ServerConfig
+
+  lazy val alternateLanguages = config.alternateLanguages.replaceAll("\\s+","").split(",").map(Language(_))
+
   val webJarLocator = new WebJarAssetLocator()
 
   lazy val routes = requestWrapper {
     get {
       pathSingleSlash {
-       complete(HttpResponse(entity=HttpEntity(ContentTypes.`text/html(UTF-8)`, Index.page.render)))
+        selectPreferredLanguage(config.mainLanguage, alternateLanguages: _*) { lang =>
+          complete(HttpResponse(entity=HttpEntity(ContentTypes.`text/html(UTF-8)`, Index(lang.toString).render)))
+        }
       } ~
       path("assets" / Segment / Remaining) { (webJar, partialPath) =>
         Try(webJarLocator.getFullPath(webJar, partialPath)) match {

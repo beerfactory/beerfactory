@@ -8,25 +8,31 @@
  */
 package org.beerfactory.frontend.components
 
-import japgolly.scalajs.react.{ReactComponentB, ReactElement}
+import diode.react.ModelProxy
+import japgolly.scalajs.react.{BackendScope, ReactComponentB, ReactElement}
 import japgolly.scalajs.react.extra.Reusability
 import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.all._
+
 import scalacss.ScalaCssReact._
 import org.beerfactory.frontend.Frontend.{Home, Page}
 import org.beerfactory.frontend.GlobalStyles
+import org.beerfactory.frontend.state.UserModel
 
 object MainMenu {
-  private val component = ReactComponentB[RouterCtl[Page]]("MainMenu")
-    .render_P { ctl =>
+  case class Props(router: RouterCtl[Page], currentLoc: Page, proxy: ModelProxy[UserModel])
+
+
+  private class Backend($: BackendScope[Props, Unit]) {
+    def render(props: Props) = {
       def button(name: String, target: Page) =
-        div(
-          cls:="item",
-          ctl.link(target)(name, cls := "ui inverted basic blue button")
-        )
+      div(
+        cls:="item",
+        props.router.link(target)(name, cls := "ui inverted basic blue button")
+      )
 
       div(cls := "ui fixed inverted menu",
-        ctl.link(Home)(cls:="header item") (
+        props.router.link(Home)(cls:="header item") (
           img(GlobalStyles.imgLogo, src:="/resources/images/logo.png"),
           "Beerfactory"
         ),
@@ -37,9 +43,12 @@ object MainMenu {
         )
       )
     }
-    .configure(Reusability.shouldComponentUpdate)
+  }
+
+  private val component = ReactComponentB[Props]("MainMenu")
+    .renderBackend[Backend]
     .build
 
-  def apply(ctl: RouterCtl[Page]): ReactElement =
-    component(ctl)
+  def apply(ctl: RouterCtl[Page], currentPage: Page, proxy: ModelProxy[UserModel]): ReactElement =
+    component(Props(ctl, currentPage, proxy))
 }

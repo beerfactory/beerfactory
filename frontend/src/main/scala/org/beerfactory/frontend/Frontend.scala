@@ -24,6 +24,7 @@ object Frontend extends JSApp {
   sealed trait Page
   case object Home extends Page
 
+  val userWrapper = AppCircuit.connect(_.userModel)
   val routerConfig = RouterConfigDsl[Page].buildConfig { dsl =>
     import dsl._
 
@@ -35,7 +36,7 @@ object Frontend extends JSApp {
   def layout(c: RouterCtl[Page], r: Resolution[Page]) =
     div(
       cls := "ui vertical center aligned",
-      MainMenu(c),
+      userWrapper(proxy => MainMenu(c, r.page, proxy)),
       div(GlobalStyles.mainContainer, r.render()),
       Footer(c)
     )
