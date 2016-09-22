@@ -26,23 +26,26 @@ object MainMenu {
   private class Backend($: BackendScope[Props, Unit]) {
     def render(props: Props) = {
       def button(name: String, target: Page) =
-      div(
-        cls:="item",
-        props.router.link(target)(name, cls := "ui inverted basic blue button")
-      )
+        div(
+          cls:="item",
+          props.router.link(target)(name, cls := "ui inverted basic blue button")
+        )
 
       div(cls := "ui fixed inverted menu",
         props.router.link(Home)(cls:="header item") (
           img(GlobalStyles.imgLogo, src:="/resources/images/logo.png"),
           "Beerfactory"
         ),
-        div(
-          cls := "right menu",
-          if(!props.proxy.value.isAuthentified) {
+        if(props.proxy.value.isAuthentified) {
+          div()
+        }
+        else {
+          div(
+            cls := "right menu",
             button("Register", Home),
             button("Login", Home)
-          }
-        )
+          )
+        }
       )
     }
   }
