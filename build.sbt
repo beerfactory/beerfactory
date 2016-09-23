@@ -28,8 +28,7 @@ lazy val backend = (project in file("backend"))
     buildInfoPackage := "org.beerfactory.backend.version",
     buildInfoObject := "BuildInfo",
     buildInfoKeys := Seq[BuildInfoKey](
-      name, version,buildInfoBuildNumber,
-      "projectName" -> "Beerfactory"),
+      name, version, "projectName" -> "Beerfactory"),
     buildInfoOptions += BuildInfoOption.BuildTime,
     libraryDependencies ++= Dependencies.backendDependencies,
     resourceGenerators in Compile <+= Def.task {
