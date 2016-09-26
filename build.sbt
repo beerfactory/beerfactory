@@ -5,7 +5,12 @@ import org.scalajs.sbtplugin.ScalaJSPlugin
 import ScalaJSPlugin._
 import autoImport._
 
-scalacOptions += "-feature"
+val scOptions = Seq(
+  "-Xlint",
+  "-unchecked",
+  "-deprecation",
+  "-feature"
+)
 
 lazy val commonSettings = Seq(
   organization := "org.beerfactory",
@@ -16,33 +21,29 @@ lazy val commonSettings = Seq(
 logBuffered in Test := false
 
 lazy val root = (project in file("."))
-    .aggregate(backend, frontend)
+    .aggregate(server, client)
 
-lazy val backend = (project in file("backend"))
-  .settings(Revolver.settings: _*)
+lazy val server = (project in file("server"))
   .settings(commonSettings:_*)
   .enablePlugins(BuildInfoPlugin)
+  .enablePlugins(PlayScala)
+  .disablePlugins(PlayLayoutPlugin)
   .dependsOn(sharedJVM)
   .settings(
-    name := "backend",
-    buildInfoPackage := "org.beerfactory.backend.version",
+    name := "server",
+    scalacOptions ++= scOptions,
+    pipelineStages := Seq(scalaJSProd, digest, gzip),
+    scalaJSProjects := Seq(client),
+    LessKeys.compress in Assets := true,
+    buildInfoPackage := "org.beerfactory.server.version",
     buildInfoObject := "BuildInfo",
     buildInfoKeys := Seq[BuildInfoKey](
       name, version, "projectName" -> "Beerfactory"),
     buildInfoOptions += BuildInfoOption.BuildTime,
-    libraryDependencies ++= Dependencies.backendDependencies,
-    resourceGenerators in Compile <+= Def.task {
-      val f1 = (fastOptJS in Compile in frontend).value.data
-      val f1SourceMap = f1.getParentFile / (f1.getName + ".map")
-      val f2 = (packageScalaJSLauncher in Compile in frontend).value.data
-      val f3 = (packageJSDependencies in Compile in frontend).value
-      val f4 = (packageMinifiedJSDependencies in Compile in frontend).value
-      Seq(f1, f1SourceMap, f2, f3, f4)
-    },
-    watchSources <++= (watchSources in frontend)
+    libraryDependencies ++= Dependencies.sharedDependencies.value ++ Dependencies.serverDependencies.value
   )
 
-lazy val frontend = (project in file("frontend"))
+lazy val client = (project in file("client"))
   .settings(commonSettings)
   .enablePlugins(ScalaJSPlugin)
   .dependsOn(sharedJS)
@@ -50,19 +51,24 @@ lazy val frontend = (project in file("frontend"))
     persistLauncher in Compile := true,
     persistLauncher in Test := false,
     scalaJSUseRhino in Global := false,
-    libraryDependencies ++= Dependencies.frontendDependencies.value,
+    libraryDependencies ++= Dependencies.sharedDependencies.value ++ Dependencies.clientDependencies.value,
     jsDependencies ++= Dependencies.jsDependencies,
-    jsEnv := JSDOMNodeJSEnv().value
+    jsEnv := JSDOMNodeJSEnv().value,
+    skip in packageJSDependencies := false
   )
 
-lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared")).
-  settings(commonSettings:_*).
-  jvmSettings(
+lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared"))
+    .settings(commonSettings:_*)
+    .jsConfigure(_ enablePlugins ScalaJSWeb)
+    .jvmSettings(
     // Add JVM-specific settings here
-  ).
-  jsSettings(
+    )
+    .jsSettings(
     // Add JS-specific settings here
-  )
+    )
 
 lazy val sharedJVM = shared.jvm.settings(name := "sharedJVM")
 lazy val sharedJS = shared.js.settings(name := "sharedJS")
+
+// loads the server project at sbt startup
+onLoad in Global := (Command.process("project server", _: State)) compose (onLoad in Global).value
