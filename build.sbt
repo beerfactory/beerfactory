@@ -32,7 +32,7 @@ lazy val server = (project in file("server"))
   .settings(
     name := "server",
     scalacOptions ++= scOptions,
-    pipelineStages := Seq(scalaJSProd, digest, gzip),
+    pipelineStages := Seq(scalaJSProd, digest), //, gzip),
     scalaJSProjects := Seq(client),
     LessKeys.compress in Assets := true,
     buildInfoPackage := "org.beerfactory.server.version",
