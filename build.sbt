@@ -15,7 +15,8 @@ val scOptions = Seq(
 lazy val commonSettings = Seq(
   organization := "org.beerfactory",
   scalaVersion := "2.11.8",
-  version := "0.1.0-SNAPSHOT"
+  version := "0.1.0-SNAPSHOT",
+  resolvers += "Atlassian Releases" at "https://maven.atlassian.com/public/"
 )
 
 logBuffered in Test := false

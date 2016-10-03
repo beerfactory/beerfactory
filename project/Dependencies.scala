@@ -23,6 +23,7 @@ object Dependencies {
     val jwtScala = "0.8.0"
     val scalatags = "0.6.0"
     val playScripts = "1.0.0"
+    val silhouette = "4.0.0"
   }
 
   object jsV {
@@ -40,6 +41,7 @@ object Dependencies {
 
   val serverDependencies = Def.setting(Seq(
     "com.typesafe.slick" %% "slick" % V.slick,
+    "com.typesafe.play" %% "play-slick" % "2.0.0",
     "org.hsqldb" % "hsqldb" % V.hsqldb,
     "org.liquibase" % "liquibase-core" % V.liquibase,
     "org.postgresql" % "postgresql" % "9.4.1209",
@@ -56,7 +58,12 @@ object Dependencies {
     "org.webjars" % "jquery" % jsV.jQuery,
     "com.typesafe.akka" %% "akka-actor" % V.akka,
     "com.typesafe.akka" % "akka-stream_2.11" % V.akka,
-    "com.typesafe.akka" % "akka-testkit_2.11" % V.akka % Test
+    "com.typesafe.akka" % "akka-testkit_2.11" % V.akka % Test,
+    "com.mohiva" %% "play-silhouette" % V.silhouette,
+    "com.mohiva" %% "play-silhouette-password-bcrypt" % V.silhouette,
+    "com.mohiva" %% "play-silhouette-crypto-jca" % V.silhouette,
+    "com.mohiva" %% "play-silhouette-persistence" % V.silhouette,
+    "com.mohiva" %% "play-silhouette-testkit" % V.silhouette % Test
   ))
 
   val clientDependencies = Def.setting(Seq(
