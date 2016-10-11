@@ -28,7 +28,6 @@ lazy val server = (project in file("server"))
   .settings(commonSettings:_*)
   .enablePlugins(BuildInfoPlugin)
   .enablePlugins(PlayScala)
-  .disablePlugins(PlayLayoutPlugin)
   .dependsOn(sharedJVM)
   .settings(
     name := "server",

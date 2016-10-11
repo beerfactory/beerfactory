@@ -19,7 +19,7 @@ class UsersServiceActorSpec extends FlatSpecWithDb with Matchers with BeforeAndA
 
   val uuidActor = actorSystem.actorOf(UUIDActor.props(), name = "uuidActor")
   val cryptoActor = actorSystem.actorOf(CryptoActor.props(), name = "cryptoActor")
-  val accountDao = new UsersDao(sqlDatabase, uuidActor)
+  val accountDao = new UserDao(sqlDatabase, uuidActor)
   val serviceConfig = new UsersServiceConfig {
     override def hoconConfig: Config = ConfigFactory.load()
   }

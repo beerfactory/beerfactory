@@ -6,7 +6,7 @@
  * this stuff is worth it, you can buy me a beer in return.   Nicolas JOUANIN
  *********************************************************************************
  */
-package org.beerfactory.server.models
+package models
 
 import java.time.OffsetDateTime
 import java.util.UUID
@@ -15,16 +15,11 @@ import com.mohiva.play.silhouette.api.util.PasswordInfo
 import com.mohiva.play.silhouette.api.{Identity, LoginInfo}
 import com.mohiva.play.silhouette.impl.providers.{OAuth1Info, OAuth2Info}
 
-case class Profile()
-
-case class User(userId: UUID,
+case class User(userId: String,
                 loginInfo: LoginInfo,
-                confirmed: Boolean,
+                activated: Boolean,
                 email: Option[String],
                 firstName: Option[String],
                 lastName: Option[String],
                 fullName: Option[String],
-                passwordInfo: Option[PasswordInfo],
-                oauth1Info: Option[OAuth1Info],
-                oAuth2Info: Option[OAuth2Info],
-                avatarUrl: Option[String]) extends Identity
+                locales: String) extends Identity

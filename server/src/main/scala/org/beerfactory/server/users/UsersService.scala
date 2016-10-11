@@ -38,7 +38,7 @@ class UsersService @Inject()(
   @Named("uuidActor") uuidActor: ActorRef
   ) extends Actor with HasDatabaseConfigProvider[JdbcProfile] with StrictLogging {
 
-  val usersDao = new UsersDao(driver)
+  val usersDao = new UserDao(driver)
 
   override def receive = {
 

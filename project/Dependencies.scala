@@ -8,6 +8,7 @@ object Dependencies {
     val akka = "2.4.10"
     val scalactic = "3.0.0"
     val scalatest = "3.0.0"
+    val scalatestPlay = "1.5.0"
     val typeSafeLogging = "3.4.0"
     val logbackClassic = "1.1.7"
     val scalajsReact = "0.11.1"
@@ -18,12 +19,15 @@ object Dependencies {
     val slick = "3.1.1"
     val slickPg = "0.14.3"
     val liquibase = "3.5.1"
-    val hsqldb = "2.3.4"
+    val h2 = "1.4.192"
     val akkaHttpJson = "1.9.0"
     val jwtScala = "0.8.0"
     val scalatags = "0.6.0"
     val playScripts = "1.0.0"
     val silhouette = "4.0.0"
+    val scalaGuice = "4.1.0"
+    val webJar = "2.5.0"
+    val flyway = "3.0.1"
   }
 
   object jsV {
@@ -42,7 +46,8 @@ object Dependencies {
   val serverDependencies = Def.setting(Seq(
     "com.typesafe.slick" %% "slick" % V.slick,
     "com.typesafe.play" %% "play-slick" % "2.0.0",
-    "org.hsqldb" % "hsqldb" % V.hsqldb,
+    "org.flywaydb" %% "flyway-play" % V.flyway,
+    "com.h2database" % "h2" % V.h2,
     "org.liquibase" % "liquibase-core" % V.liquibase,
     "org.postgresql" % "postgresql" % "9.4.1209",
     "com.mattbertolini" % "liquibase-slf4j" % "2.0.0",
@@ -53,6 +58,7 @@ object Dependencies {
     "com.vmunier" %% "scalajs-scripts" % V.playScripts,
     "com.lihaoyi" %% "scalatags" % V.scalatags,
     "com.github.japgolly.scalacss" %% "core" % V.scalaCSS,
+    "org.webjars" %% "webjars-play" % V.webJar,
     "org.webjars" % "font-awesome" % "4.6.3" % Provided,
     "org.webjars" % "Semantic-UI" % jsV.semanticUI % Provided,
     "org.webjars" % "jquery" % jsV.jQuery,
@@ -63,7 +69,9 @@ object Dependencies {
     "com.mohiva" %% "play-silhouette-password-bcrypt" % V.silhouette,
     "com.mohiva" %% "play-silhouette-crypto-jca" % V.silhouette,
     "com.mohiva" %% "play-silhouette-persistence" % V.silhouette,
-    "com.mohiva" %% "play-silhouette-testkit" % V.silhouette % Test
+    "com.mohiva" %% "play-silhouette-testkit" % V.silhouette % Test,
+    "org.scalatestplus.play" %% "scalatestplus-play" % V.scalatestPlay % Test,
+    "net.codingwell" %% "scala-guice" % V.scalaGuice
   ))
 
   val clientDependencies = Def.setting(Seq(
