@@ -8,7 +8,7 @@ object Dependencies {
     val akka = "2.4.11"
     val scalactic = "3.0.0"
     val scalatest = "3.0.0"
-    val scalatestPlay = "1.5.0"
+    val scalatestPlay = "1.5.1"
     val typeSafeLogging = "3.4.0"
     val logbackClassic = "1.1.7"
     val scalajsReact = "0.11.1"

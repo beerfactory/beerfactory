@@ -14,14 +14,14 @@ import akka.actor.ActorSystem
 import com.mohiva.play.silhouette.api.LoginInfo
 import models.User
 import models.daos.UserDao
-import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
+import org.scalatestplus.play._
 import utils.TestConfiguration
 
 class UsersDaoSpec extends PlaySpec with OneAppPerSuite with TestConfiguration {
 
   val usersDao = app.injector.instanceOf[UserDao]
 
-  "UserDao" must {
+  "UserDao" should {
     "save new user" in {
       val newUser = User("ID", LoginInfo("testProvider", "testKey"), true, Some("email@test.com"), Some("firstName"), Some("LastName"), Some("fullName"), "fr")
       usersDao.save(newUser)

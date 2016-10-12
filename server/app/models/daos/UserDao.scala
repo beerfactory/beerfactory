@@ -17,11 +17,20 @@ import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import play.api.libs.concurrent.Execution.Implicits._
 import slick.driver.JdbcProfile
 
+import scala.concurrent.Future
+
 /**
   * Created by nico on 12/06/2016.
   */
-class UserDao @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
-  extends DBUserSchema with DBLoginInfoSchema with HasDatabaseConfigProvider[JdbcProfile] {
+
+trait UserDao {
+  def save(user: User): Future[User]
+  def find(userId: String): Future[Option[User]]
+  def find(loginInfo: LoginInfo): Future[Option[User]]
+}
+
+class UserDaoImpl @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
+  extends UserDao with DBUserSchema with DBLoginInfoSchema with HasDatabaseConfigProvider[JdbcProfile] {
 
   import driver.api._
 
@@ -38,35 +47,39 @@ class UserDao @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
       _ ← dbUsers += dbUser
       _ ← dbLoginInfos += dbLoginInfo
     } yield()).transactionally
-    db.run(actions)
+    db.run(actions).map { _ ⇒ user }
   }
 
-  def find(userId: String) = {
+  def find(userId: String): Future[Option[User]] = {
     val q = for {
       u ← dbUsers if u.id === userId
       l ← dbLoginInfos if l.id === userId
     } yield(u, l)
-    db.run( q.result.headOption).map { resultOption ⇒
-      resultOption match {
-        case Some((dbUser, dbLoginInfo)) ⇒ User(
-          dbUser.id,
-          LoginInfo(dbLoginInfo.providerID, dbLoginInfo.providerKey),
-          dbUser.activated,
-          dbUser.email,
-          dbUser.firstName,
-          dbUser.lastName,
-          dbUser.fullName,
-          dbUser.locales
-        )
-      }
-    }
+    db.run( q.result.headOption).map(mapToUser)
   }
 
-  def find(loginInfo: LoginInfo) = {
+  def find(loginInfo: LoginInfo): Future[Option[User]] = {
     val q = for {
       l ← dbLoginInfos.filter(dBLoginInfo => dBLoginInfo.providerID === loginInfo.providerID && dBLoginInfo.providerKey === loginInfo.providerKey)
       u ← dbUsers.filter(_.id === l.id)
-    } yield u
+    } yield (u, l)
+    db.run( q.result.headOption).map(mapToUser)
+  }
+
+  private def mapToUser(dbResult: Option[(DBUser, DBLoginInfo)]): Option[User] = {
+    dbResult match {
+      case Some((dbUser, dbLoginInfo)) ⇒ Some(User(
+        dbUser.id,
+        LoginInfo(dbLoginInfo.providerID, dbLoginInfo.providerKey),
+        dbUser.activated,
+        dbUser.email,
+        dbUser.firstName,
+        dbUser.lastName,
+        dbUser.fullName,
+        dbUser.locales
+      ))
+      case _ ⇒ None
+    }
   }
 
   def findByEmail(email: String) =

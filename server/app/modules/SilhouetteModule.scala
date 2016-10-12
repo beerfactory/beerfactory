@@ -18,6 +18,8 @@ import com.mohiva.play.silhouette.crypto.{JcaCrypter, JcaCrypterSettings}
 import com.mohiva.play.silhouette.impl.authenticators.{JWTAuthenticator, JWTAuthenticatorService, JWTAuthenticatorSettings}
 import com.mohiva.play.silhouette.impl.util.SecureRandomIDGenerator
 import models.User
+import models.daos.{UserDao, UserDaoImpl}
+import models.services.{UserService, UserServiceImpl}
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
 import utils.auth.DefaultEnv
@@ -29,6 +31,8 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
 
   def configure() {
     bind[Silhouette[DefaultEnv]].to[SilhouetteProvider[DefaultEnv]]
+    bind[UserDao].to[UserDaoImpl]
+    bind[UserService].to[UserServiceImpl]
     bind[Clock].toInstance(Clock())
     bind[IDGenerator].toInstance(new SecureRandomIDGenerator())
   }
@@ -55,7 +59,7 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     */
   @Provides
   def provideEnvironment(
-                          userService: IdentityService[User],
+                          userService: UserService,
                           authenticatorService: AuthenticatorService[JWTAuthenticator],
                           eventBus: EventBus): Environment[DefaultEnv] = {
 
