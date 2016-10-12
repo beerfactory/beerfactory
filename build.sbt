@@ -1,6 +1,5 @@
-import sbt._
+import sbt.{Resolver, _}
 import Keys._
-
 import org.scalajs.sbtplugin.ScalaJSPlugin
 import ScalaJSPlugin._
 import autoImport._
@@ -16,7 +15,8 @@ lazy val commonSettings = Seq(
   organization := "org.beerfactory",
   scalaVersion := "2.11.8",
   version := "0.1.0-SNAPSHOT",
-  resolvers += "Atlassian Releases" at "https://maven.atlassian.com/public/"
+  resolvers += "Atlassian Releases" at "https://maven.atlassian.com/public/",
+  resolvers += Resolver.jcenterRepo
 )
 
 logBuffered in Test := false

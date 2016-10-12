@@ -5,7 +5,7 @@ import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
 object Dependencies {
   // Versions
   object V {
-    val akka = "2.4.10"
+    val akka = "2.4.11"
     val scalactic = "3.0.0"
     val scalatest = "3.0.0"
     val scalatestPlay = "1.5.0"
@@ -28,6 +28,7 @@ object Dependencies {
     val scalaGuice = "4.1.0"
     val webJar = "2.5.0"
     val flyway = "3.0.1"
+    val ficus = "1.3.0"
   }
 
   object jsV {
@@ -71,7 +72,8 @@ object Dependencies {
     "com.mohiva" %% "play-silhouette-persistence" % V.silhouette,
     "com.mohiva" %% "play-silhouette-testkit" % V.silhouette % Test,
     "org.scalatestplus.play" %% "scalatestplus-play" % V.scalatestPlay % Test,
-    "net.codingwell" %% "scala-guice" % V.scalaGuice
+    "net.codingwell" %% "scala-guice" % V.scalaGuice,
+    "com.iheart" %% "ficus" % V.ficus
   ))
 
   val clientDependencies = Def.setting(Seq(

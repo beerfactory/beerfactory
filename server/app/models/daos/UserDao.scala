@@ -14,7 +14,7 @@ import com.mohiva.play.silhouette.api.LoginInfo
 import models.User
 import models.daos.db.{DBLoginInfo, DBLoginInfoSchema, DBUser, DBUserSchema}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
-import play.api.inject.guice.GuiceInjectorBuilder
+import play.api.libs.concurrent.Execution.Implicits._
 import slick.driver.JdbcProfile
 
 /**
