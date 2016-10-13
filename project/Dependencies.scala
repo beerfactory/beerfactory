@@ -16,19 +16,15 @@ object Dependencies {
     val diode = "1.0.0"
     val scalaDom = "0.9.1"
     val playJson = "2.5.6"
-    val slick = "3.1.1"
-    val slickPg = "0.14.3"
-    val liquibase = "3.5.1"
     val h2 = "1.4.192"
     val akkaHttpJson = "1.9.0"
-    val jwtScala = "0.8.0"
     val scalatags = "0.6.0"
     val playScripts = "1.0.0"
     val silhouette = "4.0.0"
     val scalaGuice = "4.1.0"
     val webJar = "2.5.0"
-    val flyway = "3.0.1"
     val ficus = "1.3.0"
+    val playSlick = "2.0.0"
   }
 
   object jsV {
@@ -45,17 +41,11 @@ object Dependencies {
   ))
 
   val serverDependencies = Def.setting(Seq(
-    "com.typesafe.slick" %% "slick" % V.slick,
-    "com.typesafe.play" %% "play-slick" % "2.0.0",
-    "org.flywaydb" %% "flyway-play" % V.flyway,
+    "com.typesafe.play" %% "play-slick" % V.playSlick,
+    "com.typesafe.play" %% "play-slick-evolutions" % V.playSlick,
     "com.h2database" % "h2" % V.h2,
-    "org.liquibase" % "liquibase-core" % V.liquibase,
     "org.postgresql" % "postgresql" % "9.4.1209",
-    "com.mattbertolini" % "liquibase-slf4j" % "2.0.0",
-    "com.github.tminglei" %% "slick-pg" % V.slickPg,
-    "com.github.tminglei" %% "slick-pg_date2" % V.slickPg,
-    "com.github.tminglei" %% "slick-pg_play-json" % V.slickPg,
-    "com.typesafe.slick" %% "slick-hikaricp" % V.slick,
+//    "com.typesafe.slick" %% "slick-hikaricp" % V.slick,
     "com.vmunier" %% "scalajs-scripts" % V.playScripts,
     "com.lihaoyi" %% "scalatags" % V.scalatags,
     "com.github.japgolly.scalacss" %% "core" % V.scalaCSS,
