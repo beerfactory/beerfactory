@@ -23,7 +23,7 @@ case class DBUser(id: String,
 trait DBUserSchema { self: HasDatabaseConfigProvider[JdbcProfile] ⇒
   import driver.api._
 
-  class DBUserTable(tag: Tag) extends Table[DBUser](tag, "USER") {
+  class DBUserTable(tag: Tag) extends Table[DBUser](tag, "users_nnn") {
     def id = column[String]("ID", O.PrimaryKey)
     def loginInfoId = column[String]("LOGIN_INFO_FK")
     def activated = column[Boolean]("ACTIVATED", O.Default(false))
