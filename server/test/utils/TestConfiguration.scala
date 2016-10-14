@@ -4,7 +4,7 @@ import com.typesafe.config.ConfigFactory
 import org.scalatest.{BeforeAndAfterAll, FlatSpec, Matchers, Suite}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatestplus.play.OneAppPerSuite
-import play.api.{Configuration, Play}
+import play.api.{Configuration, Mode, Play}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.Helpers
 
@@ -21,6 +21,7 @@ trait TestConfiguration extends BeforeAndAfterAll with ScalaFutures with Integra
   implicit val app = new GuiceApplicationBuilder()
     .configure(Configuration(ConfigFactory.load("test.conf")))
     .configure(Helpers.inMemoryDatabase())
+    .in(Mode.Test)
     .build()
 
   override protected def beforeAll() {
