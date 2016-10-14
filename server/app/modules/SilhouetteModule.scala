@@ -34,6 +34,7 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     bind[UserDao].to[UserDaoImpl]
     bind[UserService].to[UserServiceImpl]
     bind[Clock].toInstance(Clock())
+    bind[EventBus].toInstance(EventBus())
     bind[IDGenerator].toInstance(new SecureRandomIDGenerator())
   }
 
