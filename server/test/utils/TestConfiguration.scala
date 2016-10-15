@@ -5,7 +5,7 @@ import models.daos.UserDao
 import org.scalatest._
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatestplus.play.OneAppPerSuite
-import play.api.db.Database
+import play.api.db.{DBApi, Database}
 import play.api.db.evolutions.Evolutions
 import play.api.{Configuration, Mode, Play}
 import play.api.inject.guice.GuiceApplicationBuilder
@@ -21,31 +21,16 @@ import play.api.inject.bind
  */
 trait TestConfiguration extends BeforeAndAfterAll with BeforeAndAfterEach with ScalaFutures with IntegrationPatience { this: Suite =>
 
-  //val database = Databases.inMemory()
-  implicit val app = new GuiceApplicationBuilder(configuration = Configuration(ConfigFactory.load("conf/application.conf")))
-    //.overrides(bind[Database].toInstance(database))
-    //.configure(Configuration(ConfigFactory.load("test.conf")))
-    //.in(Mode.Dev)
-    .build()
-
-  override protected def beforeAll() {
-    super.beforeAll()
-  }
-
-  override protected def afterAll() {
-    super.afterAll()
-//    Play.stop(app)
-  }
+  val app = new GuiceApplicationBuilder().build()
+  val dbapi = app.injector.instanceOf[DBApi]
 
   override protected def beforeEach() {
     super.beforeEach()
-    println("beforeEach")
-    //Evolutions.applyEvolutions(app.injector.instanceOf[Database])
+    //Evolutions.applyEvolutions(dbapi.database("default"))
   }
 
   override protected def afterEach() {
-    println("afterEach")
-    //Evolutions.cleanupEvolutions(database)
+    //Evolutions.cleanupEvolutions(dbapi.database("default"))
     super.afterEach()
   }
 }

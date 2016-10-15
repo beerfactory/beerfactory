@@ -8,8 +8,11 @@
  */
 package models.daos
 
-import javax.inject.Inject
+import javax.inject.{Inject, Named}
 
+import actors.UUIDActor.GetUUID
+import akka.actor.ActorRef
+import akka.util.Timeout
 import com.mohiva.play.silhouette.api.LoginInfo
 import models.User
 import models.daos.db.{DBLoginInfo, DBLoginInfoSchema, DBUser, DBUserSchema}
@@ -17,7 +20,9 @@ import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import play.api.libs.concurrent.Execution.Implicits._
 import slick.driver.JdbcProfile
 
-import scala.concurrent.Future
+import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.concurrent.duration._
+import akka.pattern.ask
 
 /**
   * Created by nico on 12/06/2016.
@@ -29,39 +34,43 @@ trait UserDao {
   def find(loginInfo: LoginInfo): Future[Option[User]]
 }
 
-class UserDaoImpl @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
+class UserDaoImpl @Inject()(
+                             @Named("uuidActor") configuredActor: ActorRef,
+                             protected val dbConfigProvider: DatabaseConfigProvider)
   extends UserDao with DBUserSchema with DBLoginInfoSchema with HasDatabaseConfigProvider[JdbcProfile] {
 
   import driver.api._
 
-//  def insert(user: User) = {
-//    db.run(users += user)
-//  }
+  implicit val timeout: Timeout = 5.seconds
+
+  private def getRandomId():String = {
+    Await.result((configuredActor ? GetUUID).mapTo[String], timeout.duration)
+  }
 
   def save(user: User) = {
-    val user_pk = user.userId
-    val dbLoginInfo = DBLoginInfo(user_pk, user.loginInfo.providerID, user.loginInfo.providerKey)
-    val dbUser = DBUser(user_pk, user_pk, user.activated, user.email, user.firstName, user.lastName, user.fullName, user.locales)
+    val loginInfoPK = getRandomId()
+    val dbLoginInfo = DBLoginInfo(loginInfoPK, user.loginInfo.providerID, user.loginInfo.providerKey)
+    val dbUser = DBUser(user.userId, loginInfoPK, user.activated, user.email, user.firstName, user.lastName, user.fullName, user.locales)
 
     val actions = (for {
-      _ ← dbUsers += dbUser
-      _ ← dbLoginInfos += dbLoginInfo
+      _ ← DBLoginInfos += dbLoginInfo
+      _ ← DBUsers += dbUser
     } yield()).transactionally
     db.run(actions).map { _ ⇒ user }
   }
 
   def find(userId: String): Future[Option[User]] = {
     val q = for {
-      u ← dbUsers if u.id === userId
-      l ← dbLoginInfos if l.id === userId
+      u ← DBUsers if u.id === userId
+      l ← DBLoginInfos if l.id === userId
     } yield(u, l)
     db.run( q.result.headOption).map(mapToUser)
   }
 
   def find(loginInfo: LoginInfo): Future[Option[User]] = {
     val q = for {
-      l ← dbLoginInfos.filter(dBLoginInfo => dBLoginInfo.providerID === loginInfo.providerID && dBLoginInfo.providerKey === loginInfo.providerKey)
-      u ← dbUsers.filter(_.id === l.id)
+      l ← DBLoginInfos.filter(dBLoginInfo => dBLoginInfo.providerID === loginInfo.providerID && dBLoginInfo.providerKey === loginInfo.providerKey)
+      u ← DBUsers.filter(_.id === l.id)
     } yield (u, l)
     db.run( q.result.headOption).map(mapToUser)
   }
@@ -83,5 +92,5 @@ class UserDaoImpl @Inject()(protected val dbConfigProvider: DatabaseConfigProvid
   }
 
   def findByEmail(email: String) =
-    db.run( dbUsers.filter(_.email.getOrElse("").toLowerCase === email.toLowerCase).result.headOption)
+    db.run( DBUsers.filter(_.email.getOrElse("").toLowerCase === email.toLowerCase).result.headOption)
 }

@@ -8,25 +8,24 @@
  */
 package models.dao
 
-import java.time.{OffsetDateTime, ZoneId}
-
-import akka.actor.ActorSystem
 import com.mohiva.play.silhouette.api.LoginInfo
-import com.typesafe.config.ConfigFactory
 import models.User
 import models.daos.UserDao
+import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatestplus.play._
-import play.api.Configuration
 import play.api.inject.guice.GuiceApplicationBuilder
-import utils.TestConfiguration
 
-class UsersDaoSpec extends PlaySpec with TestConfiguration {
+class UsersDaoSpec extends PlaySpec with OneAppPerSuite with ScalaFutures with IntegrationPatience {
 
-  "UserDao" should {
+  override lazy val app = new GuiceApplicationBuilder().build()
+
+  "UserDao" must {
     "save new user" in {
       val usersDao = app.injector.instanceOf[UserDao]
       val newUser = User("ID", LoginInfo("testProvider", "testKey"), true, Some("email@test.com"), Some("firstName"), Some("LastName"), Some("fullName"), "fr")
-      usersDao.save(newUser).futureValue
+      val u = usersDao.save(newUser).futureValue
+      u mustBe newUser
     }
   }
+
 }

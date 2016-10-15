@@ -1,13 +1,22 @@
-package org.beerfactory.server.utils
+package utils
 
-import java.util.Base64
+import java.nio.ByteBuffer
+import java.util.{Base64, UUID}
 
 object Codecs {
-  def base64Encode(bytes: Array[Byte]): String = Base64.getEncoder.encodeToString(bytes)
-  def base64Decode(str: String): Array[Byte] = Base64.getDecoder.decode(str)
+  def toBase64(uuid: UUID): String = {
+    val (high, low) = (uuid.getMostSignificantBits, uuid.getLeastSignificantBits)
+    val buffer = ByteBuffer.allocate(java.lang.Long.BYTES * 2)
+    buffer.putLong(high)
+    buffer.putLong(low)
+    Codecs.toBase64(buffer.array())
+  }
 
-  def hexEncode(bytes: Array[Byte], sep: String = ""): String = bytes.map("%02x".format(_)).mkString(sep)
-  def hexDecode(hex: String): Array[Byte] = {
+  def toBase64(bytes: Array[Byte]): String = Base64.getEncoder.encodeToString(bytes).split("=")(0)
+  def fromBase64(str: String): Array[Byte] = Base64.getDecoder.decode(str)
+
+  def toHex(bytes: Array[Byte], sep: String = ""): String = bytes.map("%02x".format(_)).mkString(sep)
+  def fromHex(hex: String): Array[Byte] = {
     hex.replaceAll("[^0-9A-Fa-f]", "").sliding(2, 2).toArray.map(Integer.parseInt(_, 16).toByte)
   }
 }

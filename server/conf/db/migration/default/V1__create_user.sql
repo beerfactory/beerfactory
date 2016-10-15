@@ -1,4 +1,0 @@
-
-CREATE TABLE users_nnn (
-    id VARCHAR PRIMARY KEY NOT NULL
-)

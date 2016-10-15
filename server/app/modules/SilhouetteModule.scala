@@ -8,6 +8,7 @@
  */
 package modules
 
+import actors.UUIDActor
 import play.api.libs.concurrent.Execution.Implicits._
 import com.google.inject.{AbstractModule, Provides}
 import com.mohiva.play.silhouette.api.crypto.{Crypter, CrypterAuthenticatorEncoder}
@@ -26,8 +27,9 @@ import utils.auth.DefaultEnv
 import net.ceedubs.ficus.Ficus._
 import net.ceedubs.ficus.readers.ArbitraryTypeReader._
 import net.ceedubs.ficus.readers.EnumerationReader._
+import play.api.libs.concurrent.AkkaGuiceSupport
 
-class SilhouetteModule extends AbstractModule with ScalaModule {
+class SilhouetteModule extends AbstractModule with ScalaModule with AkkaGuiceSupport {
 
   def configure() {
     bind[Silhouette[DefaultEnv]].to[SilhouetteProvider[DefaultEnv]]
@@ -36,6 +38,7 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     bind[Clock].toInstance(Clock())
     bind[EventBus].toInstance(EventBus())
     bind[IDGenerator].toInstance(new SecureRandomIDGenerator())
+    bindActor[UUIDActor]("uuidActor")
   }
 
   /**
@@ -59,8 +62,7 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     * @return The Silhouette environment.
     */
   @Provides
-  def provideEnvironment(
-                          userService: UserService,
+  def provideEnvironment( userService: UserService,
                           authenticatorService: AuthenticatorService[JWTAuthenticator],
                           eventBus: EventBus): Environment[DefaultEnv] = {
 

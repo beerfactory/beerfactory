@@ -16,13 +16,13 @@ case class DBLoginInfo(id: String, providerID: String, providerKey: String)
 trait DBLoginInfoSchema { self: HasDatabaseConfigProvider[JdbcProfile] ⇒
   import driver.api._
 
-  class DBLoginInfoTable(tag: Tag) extends Table[DBLoginInfo](tag, "LOGIN_INFO") {
-    def id = column[String]("ID", O.PrimaryKey)
-    def providerID = column[String]("PROVIDER_ID")
-    def providerKey = column[String]("PROVIDER_KEY")
+  class DBLoginInfoTable(tag: Tag) extends Table[DBLoginInfo](tag, "login_info") {
+    def id = column[String]("login_info_id", O.PrimaryKey)
+    def providerID = column[String]("provider_id")
+    def providerKey = column[String]("provider_key")
 
     def * = (id, providerID, providerKey) <> (DBLoginInfo.tupled, DBLoginInfo.unapply)
   }
 
-  val dbLoginInfos = TableQuery[DBLoginInfoTable]
+  protected val DBLoginInfos = TableQuery[DBLoginInfoTable]
 }
