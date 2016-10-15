@@ -9,9 +9,7 @@ object Dependencies {
     val scalactic = "2.2.6"
     val scalatest = "2.2.6"
     val scalatestPlay = "1.5.1"
-    val typeSafeLogging = "3.4.0"
-    val logbackClassic = "1.1.7"
-    val scalajsReact = "0.11.1"
+    val scalajsReact = "0.11.2"
     val scalaCSS = "0.5.0"
     val diode = "1.0.0"
     val scalaDom = "0.9.1"
@@ -34,8 +32,6 @@ object Dependencies {
   }
 
   val sharedDependencies = Def.setting(Seq(
-    "com.typesafe.scala-logging" % "scala-logging_2.11" % V.typeSafeLogging,
-    "ch.qos.logback" % "logback-classic" % V.logbackClassic,
     "org.scalactic" %% "scalactic" % V.scalactic,
     "org.scalatest" %% "scalatest" % V.scalatest % "test"
   ))
@@ -45,17 +41,12 @@ object Dependencies {
     "com.typesafe.play" %% "play-slick-evolutions" % V.playSlick,
     "com.h2database" % "h2" % V.h2,
     "org.postgresql" % "postgresql" % "9.4.1209",
-//    "com.typesafe.slick" %% "slick-hikaricp" % V.slick,
     "com.vmunier" %% "scalajs-scripts" % V.playScripts,
     "com.lihaoyi" %% "scalatags" % V.scalatags,
     "com.github.japgolly.scalacss" %% "core" % V.scalaCSS,
-    "org.webjars" %% "webjars-play" % V.webJar,
     "org.webjars" % "font-awesome" % "4.6.3" % Provided,
     "org.webjars" % "Semantic-UI" % jsV.semanticUI % Provided,
     "org.webjars" % "jquery" % jsV.jQuery,
-    "com.typesafe.akka" %% "akka-actor" % V.akka,
-    "com.typesafe.akka" % "akka-stream_2.11" % V.akka,
-    "com.typesafe.akka" % "akka-testkit_2.11" % V.akka % Test,
     "com.mohiva" %% "play-silhouette" % V.silhouette,
     "com.mohiva" %% "play-silhouette-password-bcrypt" % V.silhouette,
     "com.mohiva" %% "play-silhouette-crypto-jca" % V.silhouette,
@@ -72,7 +63,7 @@ object Dependencies {
     "com.github.japgolly.scalacss" %%% "ext-react" % V.scalaCSS,
     "me.chrons" %%% "diode" % V.diode,
     "me.chrons" %%% "diode-react" % V.diode,
-    "org.scalatest" %%% "scalatest" % V.scalatest % "test"
+    "org.scalatest" %%% "scalatest" % "3.0.0" % "test"
   ))
 
   val jsDependencies = Seq(

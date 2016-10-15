@@ -27,13 +27,16 @@ lazy val root = (project in file("."))
 lazy val server = (project in file("server"))
   .settings(commonSettings:_*)
   .enablePlugins(BuildInfoPlugin)
+  .enablePlugins(SbtWeb)
   .enablePlugins(PlayScala)
   .dependsOn(sharedJVM)
   .settings(
     name := "server",
     scalacOptions ++= scOptions,
-    pipelineStages := Seq(scalaJSProd, digest), //, gzip),
     scalaJSProjects := Seq(client),
+    pipelineStages in Assets := Seq(scalaJSPipeline),
+    pipelineStages := Seq(digest), //, gzip),
+    compile in Compile <<= (compile in Compile) dependsOn scalaJSPipeline,
     LessKeys.compress in Assets := true,
     buildInfoPackage := "org.beerfactory.server.version",
     buildInfoObject := "BuildInfo",
