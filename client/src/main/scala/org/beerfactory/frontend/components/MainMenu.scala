@@ -33,7 +33,7 @@ object MainMenu {
 
       div(cls := "ui fixed inverted menu",
         props.router.link(Home)(cls:="header item") (
-          img(GlobalStyles.imgLogo, src:="/resources/images/logo.png"),
+          img(GlobalStyles.imgLogo, src:="/assets/images/logo.png"),
           "Beerfactory"
         ),
         if(props.proxy.value.isAuthentified) {
