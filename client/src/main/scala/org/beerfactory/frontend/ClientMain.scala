@@ -20,7 +20,7 @@ import scalacss.Defaults._
 import scalacss.ScalaCssReact._
 import scala.scalajs.js.JSApp
 
-object Frontend extends JSApp {
+object ClientMain extends JSApp {
   sealed trait Page
   case object Home extends Page
 

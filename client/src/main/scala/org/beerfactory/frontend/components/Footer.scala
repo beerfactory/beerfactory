@@ -12,7 +12,7 @@ import japgolly.scalajs.react.{ReactComponentB, ReactElement}
 import japgolly.scalajs.react.extra.Reusability
 import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.all._
-import org.beerfactory.frontend.Frontend.Page
+import org.beerfactory.frontend.ClientMain.Page
 import org.beerfactory.frontend.GlobalStyles
 
 object Footer {

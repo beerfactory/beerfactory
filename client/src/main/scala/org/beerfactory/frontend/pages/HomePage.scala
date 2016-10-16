@@ -13,7 +13,7 @@ import diode.react.{ModelProxy, ReactConnectProxy}
 import japgolly.scalajs.react.ReactComponentB
 import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.all._
-import org.beerfactory.frontend.Frontend.Page
+import org.beerfactory.frontend.ClientMain.Page
 import org.beerfactory.frontend.components.LoginView
 import org.beerfactory.frontend.state.UserModel
 

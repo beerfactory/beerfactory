@@ -15,7 +15,7 @@ import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.all._
 
 import scalacss.ScalaCssReact._
-import org.beerfactory.frontend.Frontend.{Home, Page}
+import org.beerfactory.frontend.ClientMain.{Home, Page}
 import org.beerfactory.frontend.GlobalStyles
 import org.beerfactory.frontend.state.UserModel
 
