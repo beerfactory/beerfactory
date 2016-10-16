@@ -38,6 +38,6 @@ class ApplicationController @Inject() (
     * @return The result to display.
     */
   def index = silhouette.UnsecuredAction {
-    Ok(views.html.home("Beerfactory"))
+    Ok(views.html.index("Beerfactory"))
   }
 }

@@ -1,4 +1,22 @@
-GET     /                                 controllers.ApplicationController.index
+GET    /                          controllers.RestApplicationController.index
+GET    /onlygodoruser             controllers.RestApplicationController.onlyGodOrUser
+
+# Login/SignUp
+POST   /auth/signin/credentials   controllers.security.rest.RestCredentialsAuthController.authenticate
+POST   /auth/signin/:provider     controllers.security.rest.RestSocialAuthController.authenticate(provider)
+POST   /auth/link/:provider       controllers.security.rest.RestSocialAuthController.link(provider)
+POST   /auth/signup               controllers.security.rest.RestSignUpController.signUp
+GET    /auth/signout              controllers.security.rest.RestSignUpController.signOut
+
+GET         /password/forgot                 controllers.ForgotPasswordController.view
+POST        /password/forgot                 controllers.ForgotPasswordController.submit
+GET         /password/reset/:token           controllers.ResetPasswordController.view(token: java.util.UUID)
+POST        /password/reset/:token           controllers.ResetPasswordController.submit(token: java.util.UUID)
+GET         /password/change                 controllers.ChangePasswordController.view
+POST        /password/change                 controllers.ChangePasswordController.submit
+
+GET         /account/email/:email            controllers.ActivateAccountController.send(email: String)
+GET         /account/activate/:token         controllers.ActivateAccountController.activate(token: java.util.UUID)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file                     controllers.Assets.at(path="/public", file)
