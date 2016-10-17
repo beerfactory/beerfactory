@@ -11,6 +11,7 @@ package modules
 import actors.UUIDActor
 import play.api.libs.concurrent.Execution.Implicits._
 import com.google.inject.{AbstractModule, Provides}
+import com.mohiva.play.silhouette.api.actions.{SecuredErrorHandler, UnsecuredErrorHandler}
 import com.mohiva.play.silhouette.api.crypto.{Crypter, CrypterAuthenticatorEncoder}
 import com.mohiva.play.silhouette.api.services.{AuthenticatorService, IdentityService}
 import com.mohiva.play.silhouette.api.util.{Clock, IDGenerator}
@@ -23,7 +24,7 @@ import models.daos.{UserDao, UserDaoImpl}
 import models.services.{UserService, UserServiceImpl}
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
-import utils.auth.DefaultEnv
+import utils.auth.{CustomSecuredErrorHandler, DefaultEnv}
 import net.ceedubs.ficus.Ficus._
 import net.ceedubs.ficus.readers.ArbitraryTypeReader._
 import net.ceedubs.ficus.readers.EnumerationReader._
@@ -33,6 +34,7 @@ class SilhouetteModule extends AbstractModule with ScalaModule with AkkaGuiceSup
 
   def configure() {
     bind[Silhouette[DefaultEnv]].to[SilhouetteProvider[DefaultEnv]]
+    //bind[SecuredErrorHandler].to[CustomSecuredErrorHandler]
     bind[UserDao].to[UserDaoImpl]
     bind[UserService].to[UserServiceImpl]
     bind[Clock].toInstance(Clock())

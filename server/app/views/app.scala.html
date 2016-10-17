@@ -1,0 +1,7 @@
+@(user: models.User)(implicit request: RequestHeader, messages: Messages)
+
+@main(Messages("app.title"), Some(user)) {
+<div id="root">
+</div>
+<srcipt src="@routes.Assets.at("lib/Semantic-UI/semantic.min.js")" />
+}

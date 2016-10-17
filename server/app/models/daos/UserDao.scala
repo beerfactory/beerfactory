@@ -43,20 +43,18 @@ class UserDaoImpl @Inject()(
 
   implicit val timeout: Timeout = 5.seconds
 
-  private def getRandomId():String = {
-    Await.result((configuredActor ? GetUUID).mapTo[String], timeout.duration)
+  private def getRandomId(): Future[String] = {
+    (configuredActor ? GetUUID).mapTo[String]
   }
 
   def save(user: User) = {
-    val loginInfoPK = getRandomId()
-    val dbLoginInfo = DBLoginInfo(loginInfoPK, user.loginInfo.providerID, user.loginInfo.providerKey)
-    val dbUser = DBUser(user.userId, loginInfoPK, user.activated, user.email, user.firstName, user.lastName, user.fullName, user.locales)
-
-    val actions = (for {
-      _ ← DBLoginInfos += dbLoginInfo
-      _ ← DBUsers += dbUser
-    } yield()).transactionally
-    db.run(actions).map { _ ⇒ user }
+    getRandomId.flatMap { loginInfoPK ⇒
+      val actions = (for {
+        _ ← DBLoginInfos += DBLoginInfo(loginInfoPK, user.loginInfo.providerID, user.loginInfo.providerKey)
+        _ ← DBUsers += DBUser(user.userId, loginInfoPK, user.activated, user.email, user.firstName, user.lastName, user.fullName, user.locales)
+      } yield()).transactionally
+      db.run(actions)
+    }.map { _ ⇒ user }
   }
 
   def find(userId: String): Future[Option[User]] = {

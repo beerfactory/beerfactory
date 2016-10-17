@@ -37,7 +37,18 @@ class ApplicationController @Inject() (
     *
     * @return The result to display.
     */
-  def index = silhouette.UnsecuredAction {
-    Ok(views.html.home("Beerfactory"))
+  def index = silhouette.SecuredAction { implicit request =>
+    Ok(views.html.app(request.identity))
+  }
+
+  /**
+    * Handles the Sign Out action.
+    *
+    * @return The result to display.
+    */
+  def signOut = silhouette.SecuredAction.async { implicit request =>
+    val result = Redirect(routes.ApplicationController.index())
+    silhouette.env.eventBus.publish(LogoutEvent(request.identity, request))
+    silhouette.env.authenticatorService.discard(request.authenticator, result)
   }
 }
