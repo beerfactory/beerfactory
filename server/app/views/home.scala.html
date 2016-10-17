@@ -14,7 +14,9 @@
 <body>
 <div id="root">
 </div>
-<srcipt src="@routes.Assets.at("lib/Semantic-UI/semantic.min.js")" />
-
+@scalajs.html.scripts(
+    "client",
+    name => routes.Assets.at(name).toString,
+    name => getClass.getResource(s"/public/$name") != null)
 </body>
 </html>
