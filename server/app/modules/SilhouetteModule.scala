@@ -34,7 +34,7 @@ class SilhouetteModule extends AbstractModule with ScalaModule with AkkaGuiceSup
 
   def configure() {
     bind[Silhouette[DefaultEnv]].to[SilhouetteProvider[DefaultEnv]]
-    //bind[SecuredErrorHandler].to[CustomSecuredErrorHandler]
+    bind[SecuredErrorHandler].to[CustomSecuredErrorHandler]
     bind[UserDao].to[UserDaoImpl]
     bind[UserService].to[UserServiceImpl]
     bind[Clock].toInstance(Clock())
