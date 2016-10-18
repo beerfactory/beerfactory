@@ -21,6 +21,7 @@ object Dependencies {
     val webJar = "2.5.0"
     val ficus = "1.3.0"
     val playSlick = "2.0.0"
+    val playMailer = "5.0.0"
   }
 
   object jsV {
@@ -37,6 +38,7 @@ object Dependencies {
   val serverDependencies = Def.setting(Seq(
     "com.typesafe.play" %% "play-slick" % V.playSlick,
     "com.typesafe.play" %% "play-slick-evolutions" % V.playSlick,
+    "com.typesafe.play" %% "play-mailer" % V.playMailer,
     "com.h2database" % "h2" % V.h2,
     "org.postgresql" % "postgresql" % "9.4.1209",
     "com.vmunier" %% "scalajs-scripts" % V.playScripts,
