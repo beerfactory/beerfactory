@@ -5,8 +5,9 @@ import javax.inject.{Inject, Named}
 
 import akka.actor.ActorRef
 import models.AuthToken
-import models.daos.db.{DBAuthTokenSchema, DBLoginInfoSchema, DBUserSchema}
+import models.daos.db.{DBAuthToken, DBAuthTokenSchema}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
+import play.api.libs.concurrent.Execution.Implicits._
 import slick.driver.JdbcProfile
 
 import scala.concurrent.Future
@@ -52,6 +53,8 @@ class AuthTokenDaoImpl @Inject()(
                                   protected val dbConfigProvider: DatabaseConfigProvider)
   extends AuthTokenDao with DBAuthTokenSchema with HasDatabaseConfigProvider[JdbcProfile] {
 
+  import driver.api._
+
   /**
     * Finds a token by its ID.
     *
@@ -60,7 +63,7 @@ class AuthTokenDaoImpl @Inject()(
     */
   override def find(id: String): Future[Option[AuthToken]] = {
     db.run(DBAuthTokens.filter(_.tokenId === id).result.headOption).map {
-      ???
+      case Some(dbAuthToken:DBAuthToken) ⇒ Some(AuthToken(dbAuthToken.tokenId, dbAuthToken.userId, dbAuthToken.expiry))
     }
   }
 
@@ -77,7 +80,10 @@ class AuthTokenDaoImpl @Inject()(
     * @param token The token to save.
     * @return The saved token.
     */
-  override def save(token: AuthToken): Future[AuthToken] = ???
+  override def save(token: AuthToken): Future[AuthToken] = {
+    db.run( DBAuthTokens += DBAuthToken(token.tokenId, token.userId, token.expiry))
+      .map(_ ⇒ token)
+  }
 
   /**
     * Removes the token for the given ID.
