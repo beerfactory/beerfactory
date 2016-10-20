@@ -1,6 +1,7 @@
 package models.daos.db
 
-import java.time.ZonedDateTime
+import java.sql.Timestamp
+import java.time.{Instant, LocalDateTime, OffsetDateTime, ZonedDateTime}
 
 import play.api.db.slick.HasDatabaseConfigProvider
 import slick.driver.JdbcProfile
@@ -10,18 +11,23 @@ import slick.driver.JdbcProfile
   */
 
 
-case class DBAuthToken(tokenId: String, userId: String, expiry: ZonedDateTime)
+case class DBAuthToken(tokenId: String, userId: String, expiry: Instant)
 
 trait DBAuthTokenSchema { self: HasDatabaseConfigProvider[JdbcProfile] ⇒
   import driver.api._
 
-  class DBUserTable(tag: Tag) extends Table[DBAuthToken](tag, "auth_token") {
+  class DBAuthTokenTable(tag: Tag) extends Table[DBAuthToken](tag, "auth_token") {
     def tokenId = column[String]("token_id", O.PrimaryKey)
-    def userFK = column[String]("user_fk")
-    def expiry = column[ZonedDateTime]("expiry")
+    def userId = column[String]("user_fk")
+    def expiry = column[Instant]("expiry")
 
-    def * = (tokenId, userFK, expiry) <> (DBAuthToken.tupled, DBAuthToken.unapply)
+    def * = (tokenId, userId, expiry) <> (DBAuthToken.tupled, DBAuthToken.unapply)
   }
 
-  protected val DBAuthTokens = TableQuery[DBAuthToken]
+  implicit val JavaLocalDateTimeMapper = MappedColumnType.base[Instant, Timestamp](
+    instant => Timestamp.from(instant),
+    ts => ts.toInstant
+  )
+
+  protected val DBAuthTokens = TableQuery[DBAuthTokenTable]
 }

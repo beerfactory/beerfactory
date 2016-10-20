@@ -18,7 +18,7 @@ case class DBUser(id: String,
                   firstName: Option[String],
                   lastName: Option[String],
                   fullName: Option[String],
-                  locales: String)
+                  avatarUrl: Option[String])
 
 trait DBUserSchema { self: HasDatabaseConfigProvider[JdbcProfile] ⇒
   import driver.api._
@@ -31,9 +31,9 @@ trait DBUserSchema { self: HasDatabaseConfigProvider[JdbcProfile] ⇒
     def firstName = column[Option[String]]("firstname")
     def lastName = column[Option[String]]("lastname")
     def fullName = column[Option[String]]("fullname")
-    def locales = column[String]("locales")
+    def avatarUrl = column[Option[String]]("avatar_url")
 
-    def * = (id, loginInfoFK, activated, email, firstName, lastName, fullName, locales) <> (DBUser.tupled, DBUser.unapply)
+    def * = (id, loginInfoFK, activated, email, firstName, lastName, fullName, avatarUrl) <> (DBUser.tupled, DBUser.unapply)
   }
 
   protected val DBUsers = TableQuery[DBUserTable]

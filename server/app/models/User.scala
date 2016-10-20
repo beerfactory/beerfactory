@@ -22,4 +22,4 @@ case class User(userId: String,
                 firstName: Option[String],
                 lastName: Option[String],
                 fullName: Option[String],
-                locales: String) extends Identity
+                avatarUrl: Option[String]) extends Identity

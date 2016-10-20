@@ -8,6 +8,7 @@
  */
 package models.services
 
+import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.services.IdentityService
 import com.mohiva.play.silhouette.impl.providers.CommonSocialProfile
 import models.User
@@ -19,10 +20,15 @@ trait UserService extends IdentityService[User] {
   /**
     * Saves a user.
     *
-    * @param user The user to save.
     * @return The saved user.
     */
-  def save(user: User): Future[User]
+  def save(loginInfo: LoginInfo,
+           activated: Boolean = false,
+           email: Option[String],
+           firstName: Option[String],
+           lastName: Option[String],
+           fullName: Option[String],
+           avatarUrl: Option[String]): Future[User]
 
   /**
     * Saves the social profile for a user.

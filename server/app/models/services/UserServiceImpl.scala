@@ -9,8 +9,12 @@
 package models.services
 
 import java.util.UUID
-import javax.inject.Inject
+import javax.inject.{Inject, Named}
 
+import actors.UUIDActor.GetUUID
+import akka.actor.ActorRef
+import akka.pattern.ask
+import akka.util.Timeout
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.impl.providers.CommonSocialProfile
 import models.User
@@ -18,14 +22,16 @@ import models.daos.UserDao
 import play.api.libs.concurrent.Execution.Implicits._
 
 import scala.concurrent.Future
+import scala.concurrent.duration._
 
 /**
   * Handles actions to users.
   *
   * @param userDAO The user DAO implementation.
   */
-class UserServiceImpl @Inject() (userDAO: UserDao) extends UserService {
+class UserServiceImpl @Inject() (@Named("uuidActor") uuidActor: ActorRef, userDAO: UserDao) extends UserService {
 
+  implicit val timeout = Timeout(5 seconds)
   /**
     * Retrieves a user that matches the specified login info.
     *
@@ -37,10 +43,21 @@ class UserServiceImpl @Inject() (userDAO: UserDao) extends UserService {
   /**
     * Saves a user.
     *
-    * @param user The user to save.
     * @return The saved user.
     */
-  def save(user: User) = userDAO.save(user)
+  def save(loginInfo: LoginInfo,
+           activated: Boolean = false,
+           email: Option[String],
+           firstName: Option[String],
+           lastName: Option[String],
+           fullName: Option[String],
+           avatarUrl: Option[String]): Future[User] = {
+    for {
+      uid ← ask(uuidActor, GetUUID).mapTo[String]
+      dbUser ← userDAO.save(User(uid, loginInfo, activated, email, firstName, lastName, fullName, avatarUrl))
+    } yield User(dbUser.userId, loginInfo, dbUser.activated, dbUser.email, dbUser.firstName, dbUser.lastName, dbUser.fullName, dbUser.avatarUrl)
+
+  }
 
   /**
     * Saves the social profile for a user.
@@ -51,28 +68,26 @@ class UserServiceImpl @Inject() (userDAO: UserDao) extends UserService {
     * @return The user for whom the profile was saved.
     */
 
-  def save(profile: CommonSocialProfile) = {
+  def save(profile: CommonSocialProfile): Future[User] = {
     userDAO.find(profile.loginInfo).flatMap {
       case Some(user) => // Update user with profile
-        userDAO.save(user.copy(
-          firstName = profile.firstName,
-          lastName = profile.lastName,
-          fullName = profile.fullName,
-          email = profile.email
-          //avatarUrl = profile.avatarURL
-        ))
+        save(user.loginInfo,
+          user.activated,
+          profile.firstName,
+          profile.lastName,
+          profile.fullName,
+          profile.email,
+          profile.avatarURL
+        )
       case None => // Insert a new user
-        userDAO.save(User(
-          userId = UUID.randomUUID().toString,
-          loginInfo = profile.loginInfo,
-          activated = false,
-          firstName = profile.firstName,
-          lastName = profile.lastName,
-          fullName = profile.fullName,
-          email = profile.email,
-          locales = ""
-          //avatarURL = profile.avatarURL
-        ))
+        save(profile.loginInfo,
+          false,
+          profile.firstName,
+          profile.lastName,
+          profile.fullName,
+          profile.email,
+          profile.avatarURL
+        )
     }
   }
 }

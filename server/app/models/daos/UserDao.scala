@@ -48,10 +48,13 @@ class UserDaoImpl @Inject()(
   }
 
   def save(user: User) = {
-    getRandomId.flatMap { loginInfoPK ⇒
+    db.run(DBUsers.filter(_.id === user.userId).result.headOption).flatMap {
+      case Some(dbUser) => Future.successful(dbUser.loginInfoFK)
+      case None ⇒ getRandomId
+    }.flatMap { loginInfoPK ⇒
       val actions = (for {
-        _ ← DBLoginInfos += DBLoginInfo(loginInfoPK, user.loginInfo.providerID, user.loginInfo.providerKey)
-        _ ← DBUsers += DBUser(user.userId, loginInfoPK, user.activated, user.email, user.firstName, user.lastName, user.fullName, user.locales)
+        _ ← DBLoginInfos.insertOrUpdate(DBLoginInfo(loginInfoPK, user.loginInfo.providerID, user.loginInfo.providerKey))
+        _ ← DBUsers.insertOrUpdate(DBUser(user.userId, loginInfoPK, user.activated, user.email, user.firstName, user.lastName, user.fullName, user.avatarUrl))
       } yield()).transactionally
       db.run(actions)
     }.map { _ ⇒ user }
@@ -60,7 +63,7 @@ class UserDaoImpl @Inject()(
   def find(userId: String): Future[Option[User]] = {
     val q = for {
       u ← DBUsers if u.id === userId
-      l ← DBLoginInfos if l.id === userId
+      l ← DBLoginInfos if l.id === u.loginInfoFK
     } yield(u, l)
     db.run( q.result.headOption).map(mapToUser)
   }
@@ -83,7 +86,7 @@ class UserDaoImpl @Inject()(
         dbUser.firstName,
         dbUser.lastName,
         dbUser.fullName,
-        dbUser.locales
+        dbUser.avatarUrl
       ))
       case _ ⇒ None
     }

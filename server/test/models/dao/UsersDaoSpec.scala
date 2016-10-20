@@ -22,10 +22,9 @@ class UsersDaoSpec extends PlaySpec with OneAppPerSuite with ScalaFutures with I
   "UserDao" must {
     "save new user" in {
       val usersDao = app.injector.instanceOf[UserDao]
-      val newUser = User("ID", LoginInfo("testProvider", "testKey"), true, Some("email@test.com"), Some("firstName"), Some("LastName"), Some("fullName"), "fr")
+      val newUser = User("ID", LoginInfo("testProvider", "testKey"), true, Some("email@test.com"), Some("firstName"), Some("LastName"), Some("fullName"), None)
       val u = usersDao.save(newUser).futureValue
       u mustBe newUser
     }
   }
-
 }
