@@ -8,7 +8,8 @@ val scOptions = Seq(
   "-Xlint",
   "-unchecked",
   "-deprecation",
-  "-feature"
+  "-feature",
+  "-language:postfixOps"
 )
 
 lazy val commonSettings = Seq(
@@ -43,7 +44,8 @@ lazy val server = (project in file("server"))
     buildInfoKeys := Seq[BuildInfoKey](
       name, version, "projectName" -> "Beerfactory"),
     buildInfoOptions += BuildInfoOption.BuildTime,
-    libraryDependencies ++= Dependencies.sharedDependencies.value ++ Dependencies.serverDependencies.value
+    libraryDependencies ++= Dependencies.sharedDependencies.value ++ Dependencies.serverDependencies.value,
+    libraryDependencies += filters
   )
 
 lazy val client = (project in file("client"))

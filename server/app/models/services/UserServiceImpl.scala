@@ -40,6 +40,8 @@ class UserServiceImpl @Inject() (@Named("uuidActor") uuidActor: ActorRef, userDA
     */
   def retrieve(loginInfo: LoginInfo): Future[Option[User]] = userDAO.find(loginInfo)
 
+  def retrieve(userId: String): Future[Option[User]] = userDAO.find(userId)
+
   /**
     * Saves a user.
     *
@@ -55,9 +57,11 @@ class UserServiceImpl @Inject() (@Named("uuidActor") uuidActor: ActorRef, userDA
     for {
       uid ← ask(uuidActor, GetUUID).mapTo[String]
       dbUser ← userDAO.save(User(uid, loginInfo, activated, email, firstName, lastName, fullName, avatarUrl))
-    } yield User(dbUser.userId, loginInfo, dbUser.activated, dbUser.email, dbUser.firstName, dbUser.lastName, dbUser.fullName, dbUser.avatarUrl)
+    } yield dbUser
 
   }
+
+  def save(user: User): Future[User] = userDAO.save(user)
 
   /**
     * Saves the social profile for a user.

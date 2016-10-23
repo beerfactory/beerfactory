@@ -17,6 +17,8 @@ import scala.concurrent.Future
 
 trait UserService extends IdentityService[User] {
 
+  def retrieve(userId: String): Future[Option[User]]
+
   /**
     * Saves a user.
     *
@@ -29,6 +31,8 @@ trait UserService extends IdentityService[User] {
            lastName: Option[String],
            fullName: Option[String],
            avatarUrl: Option[String]): Future[User]
+
+  def save(user: User): Future[User]
 
   /**
     * Saves the social profile for a user.

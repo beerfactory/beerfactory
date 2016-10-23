@@ -76,23 +76,13 @@ class SignUpController @Inject() (
             Future.successful(result)
           case None =>
             val authInfo = passwordHasherRegistry.current.hash(data.password)
-            val user = User(
-              userID = UUID.randomUUID(),
-              loginInfo = loginInfo,
-              firstName = Some(data.firstName),
-              lastName = Some(data.lastName),
-              fullName = Some(data.firstName + " " + data.lastName),
-              email = Some(data.email),
-              avatarURL = None,
-              activated = false
-            )
             for {
               avatar <- avatarService.retrieveURL(data.email)
-              user <- userService.save(user.copy(avatarURL = avatar))
+              user <- userService.save(loginInfo, false, Some(data.email), Some(data.firstName), Some(data.lastName), Some(data.firstName + " " + data.lastName), avatar)
               authInfo <- authInfoRepository.add(loginInfo, authInfo)
-              authToken <- authTokenService.create(user.userID)
+              authToken <- authTokenService.create(user.userId)
             } yield {
-              val url = routes.ActivateAccountController.activate(authToken.id).absoluteURL()
+              val url = routes.ActivateAccountController.activate(authToken.tokenId).absoluteURL()
               mailerClient.send(Email(
                 subject = Messages("email.sign.up.subject"),
                 from = Messages("email.from"),

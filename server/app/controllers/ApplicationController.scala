@@ -27,7 +27,7 @@ import utils.auth.DefaultEnv
 class ApplicationController @Inject() (
   val messagesApi: MessagesApi,
   silhouette: Silhouette[DefaultEnv],
-  //socialProviderRegistry: SocialProviderRegistry,
+  socialProviderRegistry: SocialProviderRegistry,
   implicit val config: Configuration,
   implicit val env: Environment)
   extends Controller with I18nSupport {

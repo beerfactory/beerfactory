@@ -46,7 +46,12 @@ class AuthTokenServiceImpl @Inject()(@Named("uuidActor") uuidActor: ActorRef, au
     * @param id The token ID to validate.
     * @return The token if it's valid, None otherwise.
     */
-  override def validate(id: String): Future[Option[AuthToken]] = ???
+  override def validate(id: String): Future[Option[AuthToken]] = {
+    authTokenDao.find(id).flatMap {
+      case Some(token) ⇒ Future.successful { if(Instant.now.isBefore(token.expiry)) Some(token) else None }
+    }
+  }
+
 
   /**
     * Cleans expired tokens.

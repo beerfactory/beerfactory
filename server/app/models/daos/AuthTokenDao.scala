@@ -51,7 +51,7 @@ trait AuthTokenDao {
 class AuthTokenDaoImpl @Inject()(
                                   @Named("uuidActor") configuredActor: ActorRef,
                                   protected val dbConfigProvider: DatabaseConfigProvider)
-  extends AuthTokenDao with DBAuthTokenSchema with HasDatabaseConfigProvider[JdbcProfile] {
+  extends AuthTokenDao with HasDatabaseConfigProvider[JdbcProfile] with DBAuthTokenSchema  {
 
   import driver.api._
 

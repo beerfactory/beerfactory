@@ -23,3 +23,18 @@ case class User(userId: String,
                 lastName: Option[String],
                 fullName: Option[String],
                 avatarUrl: Option[String]) extends Identity
+{
+  /**
+    * Tries to construct a name.
+    *
+    * @return Maybe a name.
+    */
+  def name = fullName.orElse {
+    firstName -> lastName match {
+      case (Some(f), Some(l)) => Some(f + " " + l)
+      case (Some(f), None) => Some(f)
+      case (None, Some(l)) => Some(l)
+      case _ => None
+    }
+  }
+}
