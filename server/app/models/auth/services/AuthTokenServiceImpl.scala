@@ -6,19 +6,19 @@
  * this stuff is worth it, you can buy me a beer in return.   Nicolas JOUANIN
  *********************************************************************************
  */
-package models.services
+package models.auth.services
 import java.time.Instant
 import javax.inject.{Inject, Named}
 
 import actors.UUIDActor.GetUUID
 import akka.actor.ActorRef
-import models.AuthToken
-import models.daos.AuthTokenDao
+import models.auth.daos.AuthTokenDao
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
 import akka.pattern.ask
 import akka.util.Timeout
+import models.auth.AuthToken
 import play.api.libs.concurrent.Execution.Implicits._
 
 
@@ -49,6 +49,7 @@ class AuthTokenServiceImpl @Inject()(@Named("uuidActor") uuidActor: ActorRef, au
   override def validate(id: String): Future[Option[AuthToken]] = {
     authTokenDao.find(id).flatMap {
       case Some(token) ⇒ Future.successful { if(Instant.now.isBefore(token.expiry)) Some(token) else None }
+      case _ ⇒ Future.successful(None)
     }
   }
 
