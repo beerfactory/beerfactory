@@ -13,11 +13,10 @@ import models.auth.User
 import models.auth.daos.UserDao
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatestplus.play._
-import play.api.inject.guice.GuiceApplicationBuilder
+import utils.TestHelper
+import views.html.app
 
-class UsersDaoSpec extends PlaySpec with OneAppPerSuite with ScalaFutures with IntegrationPatience {
-
-  override lazy val app = new GuiceApplicationBuilder().build()
+class UsersDaoSpec extends TestHelper {
 
   "UserDao" must {
     "save new user" in {
@@ -25,6 +24,8 @@ class UsersDaoSpec extends PlaySpec with OneAppPerSuite with ScalaFutures with I
       val newUser = User("ID", LoginInfo("testProvider", "testKey"), true, Some("email@test.com"), Some("firstName"), Some("LastName"), Some("fullName"), None)
       val u = usersDao.save(newUser).futureValue
       u mustBe newUser
+      val ret = usersDao.find("ID").futureValue
+      ret mustBe Some(newUser)
     }
   }
 }
