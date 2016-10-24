@@ -6,7 +6,7 @@
  * this stuff is worth it, you can buy me a beer in return.   Nicolas JOUANIN
  *********************************************************************************
  */
-package models.daos.db
+package models.auth.daos.db
 
 import play.api.db.slick.HasDatabaseConfigProvider
 import slick.driver.JdbcProfile
@@ -23,7 +23,7 @@ case class DBUser(id: String,
 trait DBUserSchema { self: HasDatabaseConfigProvider[JdbcProfile] ⇒
   import driver.api._
 
-  class DBUserTable(tag: Tag) extends Table[DBUser](tag, "user") {
+  class DBUserTable(tag: Tag) extends Table[DBUser](tag, "auth_user") {
     def id = column[String]("user_id", O.PrimaryKey)
     def loginInfoFK = column[String]("login_info_fk")
     def activated = column[Boolean]("activated", O.Default(false))

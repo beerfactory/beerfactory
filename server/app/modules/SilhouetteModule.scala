@@ -25,8 +25,8 @@ import com.mohiva.play.silhouette.impl.util.SecureRandomIDGenerator
 import com.mohiva.play.silhouette.password.BCryptPasswordHasher
 import com.mohiva.play.silhouette.persistence.daos.{DelegableAuthInfoDAO, InMemoryAuthInfoDAO}
 import com.mohiva.play.silhouette.persistence.repositories.DelegableAuthInfoRepository
-import models.daos.{AuthTokenDao, AuthTokenDaoImpl, UserDao, UserDaoImpl}
-import models.services.{AuthTokenService, AuthTokenServiceImpl, UserService, UserServiceImpl}
+import models.auth.daos._
+import models.auth.services.{AuthTokenService, AuthTokenServiceImpl, UserService, UserServiceImpl}
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
 import utils.auth.{CustomSecuredErrorHandler, CustomUnsecuredErrorHandler, DefaultEnv}
@@ -53,7 +53,7 @@ class SilhouetteModule extends AbstractModule with ScalaModule with AkkaGuiceSup
     bindActor[UUIDActor]("uuidActor")
 
     // Replace this with the bindings to your concrete DAOs
-    bind[DelegableAuthInfoDAO[PasswordInfo]].toInstance(new InMemoryAuthInfoDAO[PasswordInfo])
+    bind[DelegableAuthInfoDAO[PasswordInfo]].to[PasswordInfoDao]
     bind[DelegableAuthInfoDAO[OAuth1Info]].toInstance(new InMemoryAuthInfoDAO[OAuth1Info])
     bind[DelegableAuthInfoDAO[OAuth2Info]].toInstance(new InMemoryAuthInfoDAO[OAuth2Info])
     bind[DelegableAuthInfoDAO[OpenIDInfo]].toInstance(new InMemoryAuthInfoDAO[OpenIDInfo])

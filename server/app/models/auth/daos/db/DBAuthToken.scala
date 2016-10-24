@@ -1,4 +1,4 @@
-package models.daos.db
+package models.auth.daos.db
 
 import java.sql.Timestamp
 import java.time.{Instant, LocalDateTime, OffsetDateTime, ZonedDateTime}

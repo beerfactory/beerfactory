@@ -8,7 +8,7 @@ import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.util.{ PasswordHasherRegistry, PasswordInfo }
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import forms.ResetPasswordForm
-import models.services.{ AuthTokenService, UserService }
+import models.auth.services.{ AuthTokenService, UserService }
 import play.api.i18n.{ I18nSupport, Messages, MessagesApi }
 import play.api.libs.concurrent.Execution.Implicits._
 import play.api.mvc.Controller

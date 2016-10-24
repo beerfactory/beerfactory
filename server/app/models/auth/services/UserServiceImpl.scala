@@ -6,7 +6,7 @@
  * this stuff is worth it, you can buy me a beer in return.   Nicolas JOUANIN
  *********************************************************************************
  */
-package models.services
+package models.auth.services
 
 import java.util.UUID
 import javax.inject.{Inject, Named}
@@ -17,8 +17,8 @@ import akka.pattern.ask
 import akka.util.Timeout
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.impl.providers.CommonSocialProfile
-import models.User
-import models.daos.UserDao
+import models.auth.User
+import models.auth.daos.UserDao
 import play.api.libs.concurrent.Execution.Implicits._
 
 import scala.concurrent.Future

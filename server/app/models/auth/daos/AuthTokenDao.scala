@@ -1,11 +1,11 @@
-package models.daos
+package models.auth.daos
 
 import java.time.ZonedDateTime
 import javax.inject.{Inject, Named}
 
 import akka.actor.ActorRef
-import models.AuthToken
-import models.daos.db.{DBAuthToken, DBAuthTokenSchema}
+import models.auth.AuthToken
+import models.auth.daos.db.{DBAuthToken, DBAuthTokenSchema}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import play.api.libs.concurrent.Execution.Implicits._
 import slick.driver.JdbcProfile
@@ -64,6 +64,7 @@ class AuthTokenDaoImpl @Inject()(
   override def find(id: String): Future[Option[AuthToken]] = {
     db.run(DBAuthTokens.filter(_.tokenId === id).result.headOption).map {
       case Some(dbAuthToken:DBAuthToken) ⇒ Some(AuthToken(dbAuthToken.tokenId, dbAuthToken.userId, dbAuthToken.expiry))
+      case _ ⇒ None
     }
   }
 

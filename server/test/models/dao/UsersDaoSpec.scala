@@ -9,8 +9,8 @@
 package models.dao
 
 import com.mohiva.play.silhouette.api.LoginInfo
-import models.User
-import models.daos.UserDao
+import models.auth.User
+import models.auth.daos.UserDao
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatestplus.play._
 import play.api.inject.guice.GuiceApplicationBuilder

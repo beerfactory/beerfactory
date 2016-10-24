@@ -6,7 +6,7 @@
  * this stuff is worth it, you can buy me a beer in return.   Nicolas JOUANIN
  *********************************************************************************
  */
-package models.daos.db
+package models.auth.daos.db
 
 import play.api.db.slick.HasDatabaseConfigProvider
 import slick.driver.JdbcProfile
@@ -16,7 +16,7 @@ case class DBLoginInfo(id: String, providerID: String, providerKey: String)
 trait DBLoginInfoSchema { self: HasDatabaseConfigProvider[JdbcProfile] ⇒
   import driver.api._
 
-  class DBLoginInfoTable(tag: Tag) extends Table[DBLoginInfo](tag, "login_info") {
+  class DBLoginInfoTable(tag: Tag) extends Table[DBLoginInfo](tag, "auth_login_info") {
     def id = column[String]("login_info_id", O.PrimaryKey)
     def providerID = column[String]("provider_id")
     def providerKey = column[String]("provider_key")

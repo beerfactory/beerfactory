@@ -6,13 +6,15 @@
  * this stuff is worth it, you can buy me a beer in return.   Nicolas JOUANIN
  *********************************************************************************
  */
-package utils.auth
+package models.auth
 
-import com.mohiva.play.silhouette.api.Env
-import com.mohiva.play.silhouette.impl.authenticators.JWTAuthenticator
-import models.auth.User
+import java.time.Instant
 
-trait DefaultEnv extends Env {
-  type I = User
-  type A = JWTAuthenticator
-}
+/**
+  * A token to authenticate a user against an endpoint for a short time period.
+  *
+  * @param tokenId The unique token ID.
+  * @param userId The user Id the token is associated with.
+  * @param expiry The date-time the token expires.
+  */
+case class AuthToken(tokenId: String, userId: String, expiry: Instant)

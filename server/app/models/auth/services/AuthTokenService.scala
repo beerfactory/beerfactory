@@ -6,9 +6,9 @@
  * this stuff is worth it, you can buy me a beer in return.   Nicolas JOUANIN
  *********************************************************************************
  */
-package models.services
+package models.auth.services
 
-import models.AuthToken
+import models.auth.AuthToken
 
 import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration

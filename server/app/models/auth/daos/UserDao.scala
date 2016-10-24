@@ -6,7 +6,7 @@
  * this stuff is worth it, you can buy me a beer in return.   Nicolas JOUANIN
  *********************************************************************************
  */
-package models.daos
+package models.auth.daos
 
 import javax.inject.{Inject, Named}
 
@@ -14,15 +14,15 @@ import actors.UUIDActor.GetUUID
 import akka.actor.ActorRef
 import akka.util.Timeout
 import com.mohiva.play.silhouette.api.LoginInfo
-import models.User
-import models.daos.db.{DBLoginInfo, DBLoginInfoSchema, DBUser, DBUserSchema}
+import models.auth.daos.db.{DBLoginInfo, DBLoginInfoSchema, DBUser, DBUserSchema}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import play.api.libs.concurrent.Execution.Implicits._
 import slick.driver.JdbcProfile
 
-import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration._
 import akka.pattern.ask
+import models.auth.User
 
 /**
   * Created by nico on 12/06/2016.
@@ -34,8 +34,7 @@ trait UserDao {
   def find(loginInfo: LoginInfo): Future[Option[User]]
 }
 
-class UserDaoImpl @Inject()(
-                             @Named("uuidActor") configuredActor: ActorRef,
+class UserDaoImpl @Inject()( @Named("uuidActor") configuredActor: ActorRef,
                              protected val dbConfigProvider: DatabaseConfigProvider)
   extends UserDao with HasDatabaseConfigProvider[JdbcProfile] with DBUserSchema with DBLoginInfoSchema {
 

@@ -6,14 +6,9 @@
  * this stuff is worth it, you can buy me a beer in return.   Nicolas JOUANIN
  *********************************************************************************
  */
-package models
+package models.auth
 
-import java.time.OffsetDateTime
-import java.util.UUID
-
-import com.mohiva.play.silhouette.api.util.PasswordInfo
 import com.mohiva.play.silhouette.api.{Identity, LoginInfo}
-import com.mohiva.play.silhouette.impl.providers.{OAuth1Info, OAuth2Info}
 
 case class User(userId: String,
                 loginInfo: LoginInfo,

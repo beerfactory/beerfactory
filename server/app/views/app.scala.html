@@ -1,4 +1,4 @@
-@(user: models.User)(implicit request: RequestHeader, messages: Messages)
+@(user: models.auth.User)(implicit request: RequestHeader, messages: Messages)
 
 @main(Messages("app.title"), Some(user)) {
 <div id="root">

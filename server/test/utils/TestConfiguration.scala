@@ -1,7 +1,7 @@
 package utils
 
 import com.typesafe.config.ConfigFactory
-import models.daos.UserDao
+import models.auth.daos.UserDao
 import org.scalatest._
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatestplus.play.OneAppPerSuite
