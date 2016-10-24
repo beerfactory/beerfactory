@@ -72,12 +72,10 @@ class UserDaoImpl @Inject()( @Named("uuidActor") configuredActor: ActorRef,
       l ← DBLoginInfos.filter(dBLoginInfo => dBLoginInfo.providerID === loginInfo.providerID && dBLoginInfo.providerKey === loginInfo.providerKey)
       u ← DBUsers.filter(_.loginInfoFK === l.id)
     } yield (u, l)
-    q.result.statements.foreach(println)
     db.run( q.result.headOption).map(mapToUser)
   }
 
   private def mapToUser(dbResult: Option[(DBUser, DBLoginInfo)]): Option[User] = {
-    println(dbResult)
     dbResult match {
       case Some((dbUser, dbLoginInfo)) ⇒ Some(User(
         dbUser.id,
