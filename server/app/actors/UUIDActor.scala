@@ -30,9 +30,9 @@ class UUIDActor @Inject()(config: Configuration) extends Actor with Stash {
 
   val uuidQueue = mutable.Queue[String]()
 
-  val initSize = config.getInt("uuidactor.queue.size.init").getOrElse(1000)
+  val initSize = config.getInt("uuidactor.queue.size.init").getOrElse(100)
   val minSize = config.getInt("uuidactor.queue.size.min").getOrElse(10)
-  val maxSize = config.getInt("uuidactor.queue.size.max").getOrElse(1000)
+  val maxSize = config.getInt("uuidactor.queue.size.max").getOrElse(100)
 
   override def preStart(): Unit = {
     logger.debug(s"""Actor configuration: UUID queue size($initSize, $minSize, $maxSize)""")
@@ -44,7 +44,9 @@ class UUIDActor @Inject()(config: Configuration) extends Actor with Stash {
     * @param queueSize targeted queue size after refill
     */
   private def refill(queueSize: Int) = {
+    logger.debug(s"Refilling UUID queue up to $queueSize")
     for (i <- uuidQueue.size to queueSize) uuidQueue.enqueue(Codecs.toBase64(UUID.randomUUID))
+    logger.debug("Refilled")
   }
 
   /**
