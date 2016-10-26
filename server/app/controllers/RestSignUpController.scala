@@ -44,11 +44,9 @@ class RestSignUpController @Inject()(
   implicit val tokenFormat: Format[Token] = Json.format[Token]
 
   def signUp = silhouette.UnsecuredAction.async(parse.json) { implicit request =>
-    request.body.validate[SignUp].flatMap { signUp ⇒
+    request.body.validate[SignUp].map { signUp ⇒
         val loginInfo = LoginInfo(CredentialsProvider.ID, signUp.email)
-        userService.retrieve(loginInfo).flatMap {
-          case Some(user) => /* User already exists */
-            Future.successful(Conflict(Json.toJson(Bad("signUp.user.alreadyExist"))))
+      userService.retrieve(loginInfo).flatMap {
           case None =>
             val authInfo = passwordHasherRegistry.current.hash(signUp.password)
             val fullName = (signUp.firstName, signUp.lastName) match {
@@ -62,6 +60,7 @@ class RestSignUpController @Inject()(
               user <- userService.save(loginInfo, false, Some(signUp.email), signUp.firstName, signUp.lastName, fullName, avatar)
               authInfo <- authInfoRepository.add(loginInfo, authInfo)
               authToken <- authTokenService.create(user.userId)
+              result <- Future.successful(Ok(Json.toJson(Token(authToken.expiry))))
             } yield {
               val url = routes.ActivateAccountController.activate(authToken.tokenId).absoluteURL()
               mailerClient.send(Email(
@@ -73,10 +72,14 @@ class RestSignUpController @Inject()(
               ))
 
               silhouette.env.eventBus.publish(SignUpEvent(user, request))
-              Future.successful(Ok(Json.toJson(Token(authToken.expiry))))
+              result
             }
+          case Some(user) => /* User already exists */
+            Future.successful(Conflict(Json.toJson(Bad("signUp.user.alreadyExist"))))
         }
-      }
+      }.recoverTotal {
+      case error =>
+        Future.successful(BadRequest(Json.toJson(Bad(JsError.toJson(error).toString()))))
+    }
   }
-
 }

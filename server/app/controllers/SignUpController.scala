@@ -8,9 +8,6 @@ import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.services.AvatarService
 import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
 import com.mohiva.play.silhouette.impl.providers._
-import controllers.api.Bad
-import controllers.auth.api.{SignUp, Token}
-import controllers.auth.routes
 import forms.SignUpForm
 import models.auth.services.{AuthTokenService, UserService}
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
