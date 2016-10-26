@@ -21,9 +21,9 @@ import akka.util.Timeout
 import models.auth.AuthToken
 import play.api.libs.concurrent.Execution.Implicits._
 
-
-
-class AuthTokenServiceImpl @Inject()(@Named("uuidActor") uuidActor: ActorRef, authTokenDao: AuthTokenDao) extends AuthTokenService {
+class AuthTokenServiceImpl @Inject()(@Named("uuidActor") uuidActor: ActorRef,
+                                     authTokenDao: AuthTokenDao)
+    extends AuthTokenService {
   implicit val timeout = Timeout(5 seconds)
 
   /**
@@ -36,7 +36,8 @@ class AuthTokenServiceImpl @Inject()(@Named("uuidActor") uuidActor: ActorRef, au
   override def create(userId: String, expiry: FiniteDuration): Future[AuthToken] = {
     for {
       uid ← ask(uuidActor, GetUUID).mapTo[String]
-      token <- authTokenDao.save(AuthToken(uid, userId, Instant.now().plusSeconds(expiry.toSeconds)))
+      token <- authTokenDao.save(
+        AuthToken(uid, userId, Instant.now().plusSeconds(expiry.toSeconds)))
     } yield AuthToken(token.tokenId, token.userId, token.expiry)
   }
 
@@ -48,11 +49,11 @@ class AuthTokenServiceImpl @Inject()(@Named("uuidActor") uuidActor: ActorRef, au
     */
   override def validate(id: String): Future[Option[AuthToken]] = {
     authTokenDao.find(id).flatMap {
-      case Some(token) ⇒ Future.successful { if(Instant.now.isBefore(token.expiry)) Some(token) else None }
+      case Some(token) ⇒
+        Future.successful { if (Instant.now.isBefore(token.expiry)) Some(token) else None }
       case _ ⇒ Future.successful(None)
     }
   }
-
 
   /**
     * Cleans expired tokens.

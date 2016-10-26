@@ -8,7 +8,6 @@
  */
 package actors
 
-import java.nio.ByteBuffer
 import java.util.UUID
 import javax.inject.Inject
 
@@ -19,8 +18,8 @@ import utils.Codecs
 import scala.collection.mutable
 
 object UUIDActor {
-case object GenerateUUID
-case object GetUUID
+  case object GenerateUUID
+  case object GetUUID
 }
 
 class UUIDActor @Inject()(config: Configuration) extends Actor with Stash {
@@ -31,8 +30,8 @@ class UUIDActor @Inject()(config: Configuration) extends Actor with Stash {
   val uuidQueue = mutable.Queue[String]()
 
   val initSize = config.getInt("uuidactor.queue.size.init").getOrElse(100)
-  val minSize = config.getInt("uuidactor.queue.size.min").getOrElse(10)
-  val maxSize = config.getInt("uuidactor.queue.size.max").getOrElse(100)
+  val minSize  = config.getInt("uuidactor.queue.size.min").getOrElse(10)
+  val maxSize  = config.getInt("uuidactor.queue.size.max").getOrElse(100)
 
   override def preStart(): Unit = {
     logger.debug(s"""Actor configuration: UUID queue size($initSize, $minSize, $maxSize)""")
@@ -61,8 +60,7 @@ class UUIDActor @Inject()(config: Configuration) extends Actor with Stash {
     case GetUUID ⇒
       sender() ! getNextUUID()
       logger.debug("UUID request served.")
-      if(uuidQueue.size < minSize)
-      {
+      if (uuidQueue.size < minSize) {
         logger.debug("queue reaching low watermark.")
         context.become({
           case GenerateUUID ⇒
