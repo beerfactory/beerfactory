@@ -8,7 +8,7 @@
  */
 package controllers.api
 
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json._
 
 sealed trait Response {
   def status: String
@@ -21,14 +21,13 @@ case class Good() extends Response {
 object Good {
   implicit val format: Format[Good] = Json.format[Good]
 }
-*/
+ */
 
-case class Bad(errors: Seq[String]) extends Response {
-  val status = "KO"
+case class Bad(error: JsValue) extends Response {
+  def status = "KO"
 }
 object Bad {
   implicit val format: Format[Bad] = Json.format[Bad]
-
-  def apply(error: String) = new Bad(Seq(error))
+  def apply(error: String)         = new Bad(JsString(error))
+  def apply(errors: Seq[String])   = new Bad(JsArray(errors.map(e ⇒ JsString(e))))
 }
-
