@@ -14,12 +14,14 @@ sealed trait Response {
   def status: String
 }
 
+/*
 case class Good() extends Response {
   val status = "OK"
 }
 object Good {
   implicit val format: Format[Good] = Json.format[Good]
 }
+*/
 
 case class Bad(errors: Seq[String]) extends Response {
   val status = "KO"

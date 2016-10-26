@@ -6,7 +6,7 @@
  * this stuff is worth it, you can buy me a beer in return.   Nicolas JOUANIN
  *********************************************************************************
  */
-package controllers.auth
+package controllers
 
 import javax.inject.Inject
 
@@ -16,21 +16,20 @@ import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
 import com.mohiva.play.silhouette.api.{LoginInfo, SignUpEvent, Silhouette}
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import controllers.api.Bad
-import controllers.auth.api.SignUp
-import controllers.routes
-import forms.SignUpForm
+import controllers.auth.api.{SignUp, Token}
 import models.auth.services.{AuthTokenService, UserService}
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.mailer.{Email, MailerClient}
 import play.api.mvc.Controller
-import play.libs.Json
+import play.api.libs.json._
 import utils.auth.DefaultEnv
 
 import scala.concurrent.Future
 
 
 
-class SignUpController @Inject() (
+class RestSignUpController @Inject()(
                                    val messagesApi: MessagesApi,
                                    silhouette: Silhouette[DefaultEnv],
                                    userService: UserService,
@@ -41,8 +40,11 @@ class SignUpController @Inject() (
                                    mailerClient: MailerClient)
   extends Controller with I18nSupport {
 
+  implicit val badFormat: Format[Bad] = Json.format[Bad]
+  implicit val tokenFormat: Format[Token] = Json.format[Token]
+
   def signUp = silhouette.UnsecuredAction.async(parse.json) { implicit request =>
-    request.body.validate[SignUp].map { signUp ⇒
+    request.body.validate[SignUp].flatMap { signUp ⇒
         val loginInfo = LoginInfo(CredentialsProvider.ID, signUp.email)
         userService.retrieve(loginInfo).flatMap {
           case Some(user) => /* User already exists */
@@ -71,11 +73,10 @@ class SignUpController @Inject() (
               ))
 
               silhouette.env.eventBus.publish(SignUpEvent(user, request))
-              //TODO : Future.successfull(Ok(Json.toJson(Token(token = token, expiresOn = authenticator.expirationDate))))
+              Future.successful(Ok(Json.toJson(Token(authToken.expiry))))
             }
         }
       }
-    )
   }
 
 }

@@ -8,12 +8,16 @@ import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.services.AvatarService
 import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
 import com.mohiva.play.silhouette.impl.providers._
+import controllers.api.Bad
+import controllers.auth.api.{SignUp, Token}
+import controllers.auth.routes
 import forms.SignUpForm
 import models.auth.services.{AuthTokenService, UserService}
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.mailer.{Email, MailerClient}
 import play.api.mvc.Controller
+import play.libs.Json
 import utils.auth.DefaultEnv
 
 import scala.concurrent.Future
@@ -30,15 +34,15 @@ import scala.concurrent.Future
   * @param passwordHasherRegistry The password hasher registry.
   * @param mailerClient           The mailer client.
   */
-class SignUpController @Inject() (
-                                   val messagesApi: MessagesApi,
-                                   silhouette: Silhouette[DefaultEnv],
-                                   userService: UserService,
-                                   authInfoRepository: AuthInfoRepository,
-                                   authTokenService: AuthTokenService,
-                                   avatarService: AvatarService,
-                                   passwordHasherRegistry: PasswordHasherRegistry,
-                                   mailerClient: MailerClient)
+class SignUpController @Inject()(
+                                  val messagesApi: MessagesApi,
+                                  silhouette: Silhouette[DefaultEnv],
+                                  userService: UserService,
+                                  authInfoRepository: AuthInfoRepository,
+                                  authTokenService: AuthTokenService,
+                                  avatarService: AvatarService,
+                                  passwordHasherRegistry: PasswordHasherRegistry,
+                                  mailerClient: MailerClient)
   extends Controller with I18nSupport {
 
   /**

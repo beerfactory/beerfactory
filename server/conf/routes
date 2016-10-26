@@ -20,7 +20,7 @@ GET         /account/email/:email            controllers.ActivateAccountControll
 GET         /account/activate/:token         controllers.ActivateAccountController.activate(token: String)
 
 #REST API
-POST        /auth/signup                     controllers.auth.SignUpController.signUp
+POST        /auth/signup                     controllers.RestSignUpController.signUp
 
 
 # Map static resources from the /public folder to the /assets URL path

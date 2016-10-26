@@ -8,8 +8,13 @@
  */
 package controllers.auth.api
 
+import play.api.libs.json.{Format, Json}
+
 case class SignUp( email: String,
                    password: String,
                    identifier: String,
                    firstName: Option[String],
                    lastName: Option[String])
+object SignUp {
+  implicit val format: Format[SignUp] = Json.format[SignUp]
+}
