@@ -8,8 +8,10 @@
  */
 package controllers
 
-import javax.inject.Inject
+import javax.inject.{Inject, Named}
 
+import actors.MailerActor.Send
+import akka.actor.ActorRef
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.services.AvatarService
 import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
@@ -34,7 +36,7 @@ class SignUpController @Inject()(val messagesApi: MessagesApi,
                                  authTokenService: AuthTokenService,
                                  avatarService: AvatarService,
                                  passwordHasherRegistry: PasswordHasherRegistry,
-                                 mailerClient: MailerClient)
+                                 @Named("mailerActor") mailerActor: ActorRef)
     extends Controller
     with I18nSupport {
 
@@ -67,14 +69,14 @@ class SignUpController @Inject()(val messagesApi: MessagesApi,
               result    <- Future.successful(Ok(Json.toJson(Token(authToken.expiry))))
             } yield {
               val url = routes.ActivateAccountController.activate(authToken.tokenId).absoluteURL()
-              mailerClient.send(
-                Email(
-                  subject = Messages("email.sign.up.subject"),
-                  from = Messages("email.from"),
-                  to = Seq(signUp.email),
-                  bodyText = Some(views.txt.emails.signUp(user, url).body),
-                  bodyHtml = Some(views.html.emails.signUp(user, url).body)
-                ))
+              val email = Email(
+                subject = Messages("email.sign.up.subject"),
+                from = Messages("email.from"),
+                to = Seq(signUp.email),
+                bodyText = Some(views.txt.emails.signUp(user, url).body),
+                bodyHtml = Some(views.html.emails.signUp(user, url).body)
+              )
+              mailerActor ! Send(email)
 
               silhouette.env.eventBus.publish(SignUpEvent(user, request))
               result

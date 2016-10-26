@@ -8,17 +8,25 @@
  */
 package modules
 
-import actors.UUIDActor
+import actors.{MailerActor, UUIDActor}
 import play.api.libs.concurrent.Execution.Implicits._
 import com.google.inject.{AbstractModule, Provides}
 import com.mohiva.play.silhouette.api.actions.{SecuredErrorHandler, UnsecuredErrorHandler}
 import com.mohiva.play.silhouette.api.crypto.{Crypter, CrypterAuthenticatorEncoder}
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
-import com.mohiva.play.silhouette.api.services.{AuthenticatorService, AvatarService, IdentityService}
+import com.mohiva.play.silhouette.api.services.{
+  AuthenticatorService,
+  AvatarService,
+  IdentityService
+}
 import com.mohiva.play.silhouette.api.util._
 import com.mohiva.play.silhouette.api.{Environment, EventBus, Silhouette, SilhouetteProvider}
 import com.mohiva.play.silhouette.crypto.{JcaCrypter, JcaCrypterSettings}
-import com.mohiva.play.silhouette.impl.authenticators.{JWTAuthenticator, JWTAuthenticatorService, JWTAuthenticatorSettings}
+import com.mohiva.play.silhouette.impl.authenticators.{
+  JWTAuthenticator,
+  JWTAuthenticatorService,
+  JWTAuthenticatorSettings
+}
 import com.mohiva.play.silhouette.impl.providers._
 import com.mohiva.play.silhouette.impl.services.GravatarService
 import com.mohiva.play.silhouette.impl.util.SecureRandomIDGenerator
@@ -51,6 +59,7 @@ class SilhouetteModule extends AbstractModule with ScalaModule with AkkaGuiceSup
     bind[AuthTokenService].to[AuthTokenServiceImpl]
     bind[PasswordHasher].toInstance(new BCryptPasswordHasher)
     bindActor[UUIDActor]("uuidActor")
+    bindActor[MailerActor]("mailerActor")
 
     // Replace this with the bindings to your concrete DAOs
     bind[DelegableAuthInfoDAO[PasswordInfo]].to[PasswordInfoDao]
@@ -67,7 +76,8 @@ class SilhouetteModule extends AbstractModule with ScalaModule with AkkaGuiceSup
     */
   @Provides
   def provideAuthenticatorCrypter(configuration: Configuration): Crypter = {
-    val config = configuration.underlying.as[JcaCrypterSettings]("silhouette.authenticator.crypter")
+    val config =
+      configuration.underlying.as[JcaCrypterSettings]("silhouette.authenticator.crypter")
     new JcaCrypter(config)
   }
 
@@ -80,9 +90,9 @@ class SilhouetteModule extends AbstractModule with ScalaModule with AkkaGuiceSup
     * @return The Silhouette environment.
     */
   @Provides
-  def provideEnvironment( userService: UserService,
-                          authenticatorService: AuthenticatorService[JWTAuthenticator],
-                          eventBus: EventBus): Environment[DefaultEnv] = {
+  def provideEnvironment(userService: UserService,
+                         authenticatorService: AuthenticatorService[JWTAuthenticator],
+                         eventBus: EventBus): Environment[DefaultEnv] = {
 
     Environment[DefaultEnv](
       userService,
@@ -93,8 +103,11 @@ class SilhouetteModule extends AbstractModule with ScalaModule with AkkaGuiceSup
   }
 
   @Provides
-  def provideAuthenticatorService(configuration: Configuration, crypter: Crypter, idGenerator: IDGenerator, clock: Clock): AuthenticatorService[JWTAuthenticator] = {
-    val config = configuration.underlying.as[JWTAuthenticatorSettings]("silhouette.authenticator")
+  def provideAuthenticatorService(configuration: Configuration,
+                                  crypter: Crypter,
+                                  idGenerator: IDGenerator,
+                                  clock: Clock): AuthenticatorService[JWTAuthenticator] = {
+    val config  = configuration.underlying.as[JWTAuthenticatorSettings]("silhouette.authenticator")
     val encoder = new CrypterAuthenticatorEncoder(crypter)
     new JWTAuthenticatorService(config, None, encoder, idGenerator, clock)
   }
@@ -110,10 +123,10 @@ class SilhouetteModule extends AbstractModule with ScalaModule with AkkaGuiceSup
     */
   @Provides
   def provideAuthInfoRepository(
-                                 passwordInfoDAO: DelegableAuthInfoDAO[PasswordInfo],
-                                 oauth1InfoDAO: DelegableAuthInfoDAO[OAuth1Info],
-                                 oauth2InfoDAO: DelegableAuthInfoDAO[OAuth2Info],
-                                 openIDInfoDAO: DelegableAuthInfoDAO[OpenIDInfo]): AuthInfoRepository = {
+      passwordInfoDAO: DelegableAuthInfoDAO[PasswordInfo],
+      oauth1InfoDAO: DelegableAuthInfoDAO[OAuth1Info],
+      oauth2InfoDAO: DelegableAuthInfoDAO[OAuth2Info],
+      openIDInfoDAO: DelegableAuthInfoDAO[OpenIDInfo]): AuthInfoRepository = {
 
     new DelegableAuthInfoRepository(passwordInfoDAO, oauth1InfoDAO, oauth2InfoDAO, openIDInfoDAO)
   }
@@ -160,16 +173,17 @@ class SilhouetteModule extends AbstractModule with ScalaModule with AkkaGuiceSup
     * @return The Silhouette environment.
     */
   @Provides
-  def provideSocialProviderRegistry(/*
+  def provideSocialProviderRegistry( /*
                                      facebookProvider: FacebookProvider,
                                      googleProvider: GoogleProvider,
                                      vkProvider: VKProvider,
                                      clefProvider: ClefProvider,
                                      twitterProvider: TwitterProvider,
                                      xingProvider: XingProvider,
-                                     yahooProvider: YahooProvider*/): SocialProviderRegistry = {
+                                     yahooProvider: YahooProvider*/ ): SocialProviderRegistry = {
 
-    SocialProviderRegistry(Seq(/*
+    SocialProviderRegistry(
+      Seq( /*
       googleProvider,
       facebookProvider,
       twitterProvider,
@@ -177,7 +191,7 @@ class SilhouetteModule extends AbstractModule with ScalaModule with AkkaGuiceSup
       xingProvider,
       yahooProvider,
       clefProvider*/
-    ))
+      ))
   }
 
   /**
@@ -189,8 +203,8 @@ class SilhouetteModule extends AbstractModule with ScalaModule with AkkaGuiceSup
     */
   @Provides
   def provideCredentialsProvider(
-                                  authInfoRepository: AuthInfoRepository,
-                                  passwordHasherRegistry: PasswordHasherRegistry): CredentialsProvider = {
+      authInfoRepository: AuthInfoRepository,
+      passwordHasherRegistry: PasswordHasherRegistry): CredentialsProvider = {
 
     new CredentialsProvider(authInfoRepository, passwordHasherRegistry)
   }
