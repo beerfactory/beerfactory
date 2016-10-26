@@ -8,7 +8,6 @@
  */
 package models.auth.services
 
-import java.util.UUID
 import javax.inject.{Inject, Named}
 
 import actors.UUIDActor.GetUUID
@@ -29,9 +28,11 @@ import scala.concurrent.duration._
   *
   * @param userDAO The user DAO implementation.
   */
-class UserServiceImpl @Inject() (@Named("uuidActor") uuidActor: ActorRef, userDAO: UserDao) extends UserService {
+class UserServiceImpl @Inject()(@Named("uuidActor") uuidActor: ActorRef, userDAO: UserDao)
+    extends UserService {
 
   implicit val timeout = Timeout(5 seconds)
+
   /**
     * Retrieves a user that matches the specified login info.
     *
@@ -56,7 +57,8 @@ class UserServiceImpl @Inject() (@Named("uuidActor") uuidActor: ActorRef, userDA
            avatarUrl: Option[String]): Future[User] = {
     for {
       uid ← ask(uuidActor, GetUUID).mapTo[String]
-      dbUser ← userDAO.save(User(uid, loginInfo, activated, email, firstName, lastName, fullName, avatarUrl))
+      dbUser ← userDAO.save(
+        User(uid, loginInfo, activated, email, firstName, lastName, fullName, avatarUrl))
     } yield dbUser
 
   }
@@ -71,27 +73,24 @@ class UserServiceImpl @Inject() (@Named("uuidActor") uuidActor: ActorRef, userDA
     * @param profile The social profile to save.
     * @return The user for whom the profile was saved.
     */
-
   def save(profile: CommonSocialProfile): Future[User] = {
     userDAO.find(profile.loginInfo).flatMap {
       case Some(user) => // Update user with profile
         save(user.loginInfo,
-          user.activated,
-          profile.firstName,
-          profile.lastName,
-          profile.fullName,
-          profile.email,
-          profile.avatarURL
-        )
+             user.activated,
+             profile.firstName,
+             profile.lastName,
+             profile.fullName,
+             profile.email,
+             profile.avatarURL)
       case None => // Insert a new user
         save(profile.loginInfo,
-          false,
-          profile.firstName,
-          profile.lastName,
-          profile.fullName,
-          profile.email,
-          profile.avatarURL
-        )
+             false,
+             profile.firstName,
+             profile.lastName,
+             profile.fullName,
+             profile.email,
+             profile.avatarURL)
     }
   }
 }
