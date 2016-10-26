@@ -15,9 +15,13 @@ import play.api.inject.guice.GuiceApplicationBuilder
 class TestHelper extends PlaySpec with ScalaFutures with IntegrationPatience { self ⇒
 
   //Build add with in-memory database
-  lazy val app = new GuiceApplicationBuilder().configure(Map(
-    "slick.dbs.default.driver" -> "slick.driver.H2Driver$",
-    "slick.dbs.default.db.driver" -> "org.h2.Driver",
-    "slick.dbs.default.db.url" -> "jdbc:h2:mem:test;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=FALSE"
-  )).build()
+  lazy val app = new GuiceApplicationBuilder()
+    .configure(
+      Map(
+        "slick.dbs.default.driver"    -> "slick.driver.H2Driver$",
+        "slick.dbs.default.db.driver" -> "org.h2.Driver",
+        "slick.dbs.default.db.url"    -> "jdbc:h2:mem:test;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=FALSE",
+        "play.mailer.mock"            → "true"
+      ))
+    .build()
 }
