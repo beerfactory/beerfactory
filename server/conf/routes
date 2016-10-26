@@ -3,9 +3,6 @@ GET         /                                controllers.ApplicationController.i
 GET         /signOut                         controllers.ApplicationController.signOut
 GET         /authenticate/:provider          controllers.SocialAuthController.authenticate(provider)
 
-GET         /signUp                          controllers.SignUpController.view
-POST        /signUp                          controllers.SignUpController.submit
-
 GET         /signIn                          controllers.SignInController.view
 POST        /signIn                          controllers.SignInController.submit
 
@@ -20,7 +17,7 @@ GET         /account/email/:email            controllers.ActivateAccountControll
 GET         /account/activate/:token         controllers.ActivateAccountController.activate(token: String)
 
 #REST API
-POST        /auth/signup                     controllers.RestSignUpController.signUp
+POST        /auth/signup                     controllers.SignUpController.signUp
 
 
 # Map static resources from the /public folder to the /assets URL path
