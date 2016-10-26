@@ -6,14 +6,15 @@
  * this stuff is worth it, you can buy me a beer in return.   Nicolas JOUANIN
  *********************************************************************************
  */
-package controllers.auth.api
+package controllers.api.auth
 
 import play.api.libs.json.{Format, Json}
 
-case class SignUp( email: String,
-                   password: String,
-                   firstName: Option[String],
-                   lastName: Option[String])
+case class SignUp(email: String,
+                  password: String,
+                  firstName: Option[String],
+                  lastName: Option[String])
+
 object SignUp {
   implicit val format: Format[SignUp] = Json.format[SignUp]
 }

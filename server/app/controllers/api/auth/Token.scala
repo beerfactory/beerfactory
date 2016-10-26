@@ -1,4 +1,4 @@
-package controllers.auth.api
+package controllers.api.auth
 
 import java.time.Instant
 
