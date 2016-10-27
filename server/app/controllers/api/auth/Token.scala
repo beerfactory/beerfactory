@@ -7,7 +7,7 @@ import play.api.libs.json.{Format, Json}
 /**
   * Created by njouanin on 26/10/16.
   */
-case class Token(expiry: Instant)
+case class Token(tokenId: String, expiry: Instant, email: String)
 
 object Token {
   implicit val format: Format[Token] = Json.format[Token]

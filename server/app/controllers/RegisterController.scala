@@ -9,7 +9,7 @@ import com.mohiva.play.silhouette.api.services.AvatarService
 import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
 import com.mohiva.play.silhouette.api.{LoginInfo, SignUpEvent, Silhouette}
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
-import controllers.api.auth.{SignUp, Token}
+import controllers.api.auth.{RegisterRequest, Token}
 import controllers.api.Bad
 import models.auth.services.{AuthTokenService, UserService}
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
@@ -46,37 +46,38 @@ class RegisterController @Inject()(val messagesApi: MessagesApi,
 
   def register = silhouette.UnsecuredAction.async(parse.json) { implicit request =>
     request.body
-      .validate[SignUp]
-      .map { signUp ⇒
-        val loginInfo = LoginInfo(CredentialsProvider.ID, signUp.email)
+      .validate[RegisterRequest]
+      .map { registerRequest ⇒
+        val loginInfo = LoginInfo(CredentialsProvider.ID, registerRequest.email)
         userService.retrieve(loginInfo).flatMap {
           case None =>
             val authInfo =
-              passwordHasherRegistry.current.hash(signUp.password)
-            val fullName = (signUp.firstName, signUp.lastName) match {
+              passwordHasherRegistry.current.hash(registerRequest.password)
+            val fullName = (registerRequest.firstName, registerRequest.lastName) match {
               case (Some(f), Some(l)) => Some(f + " " + l)
               case (Some(f), None)    => Some(f)
               case (None, Some(l))    => Some(l)
               case _                  => None
             }
             for {
-              avatar <- avatarService.retrieveURL(signUp.email)
+              avatar <- avatarService.retrieveURL(registerRequest.email)
               user <- userService.save(loginInfo,
                                        false,
-                                       Some(signUp.email),
-                                       signUp.firstName,
-                                       signUp.lastName,
+                                       Some(registerRequest.email),
+                                       registerRequest.firstName,
+                                       registerRequest.lastName,
                                        fullName,
                                        avatar)
               authInfo  <- authInfoRepository.add(loginInfo, authInfo)
               authToken <- authTokenService.create(user.userId)
-              result    <- Future.successful(Ok(Json.toJson(Token(authToken.expiry))))
+              result <- Future.successful(
+                Ok(Json.toJson(Token(authToken.tokenId, authToken.expiry, registerRequest.email))))
             } yield {
               val url = routes.ActivateAccountController.activate(authToken.tokenId).absoluteURL()
               val email = Email(
                 subject = Messages("email.sign.up.subject"),
                 from = Messages("email.from"),
-                to = Seq(signUp.email),
+                to = Seq(registerRequest.email),
                 bodyText = Some(views.txt.emails.register(user, url).body),
                 bodyHtml = Some(views.html.emails.register(user, url).body)
               )
@@ -87,7 +88,7 @@ class RegisterController @Inject()(val messagesApi: MessagesApi,
             }
           case Some(user) =>
             /* User already exists */
-            Future.successful(Conflict(Json.toJson(Bad("signUp.user.alreadyExist"))))
+            Future.successful(Conflict(Json.toJson(Bad("register.user.alreadyExist"))))
         }
       }
       .recoverTotal {

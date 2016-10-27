@@ -8,9 +8,12 @@ import actors.MailerActor.Send
 import akka.actor.ActorRef
 import com.mohiva.play.silhouette.api._
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
+import controllers.api.Bad
+import controllers.api.auth.{ActivationRequest, Token}
 import models.auth.services.{AuthTokenService, UserService}
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.libs.concurrent.Execution.Implicits._
+import play.api.libs.json.{JsError, Json}
 import play.api.libs.mailer.{Email, MailerClient}
 import play.api.mvc.Controller
 import utils.auth.DefaultEnv
@@ -44,8 +47,6 @@ class ActivateAccountController @Inject()(val messagesApi: MessagesApi,
   def send(email: String) = silhouette.UnsecuredAction.async { implicit request =>
     val decodedEmail = URLDecoder.decode(email, "UTF-8")
     val loginInfo    = LoginInfo(CredentialsProvider.ID, decodedEmail)
-    val result = Redirect(routes.SignInController.view())
-      .flashing("info" -> Messages("activation.email.sent", decodedEmail))
 
     userService.retrieve(loginInfo).flatMap {
       case Some(user) if !user.activated =>
@@ -60,9 +61,9 @@ class ActivateAccountController @Inject()(val messagesApi: MessagesApi,
             bodyHtml = Some(views.html.emails.activateAccount(user, url).body)
           )
           mailerActor ! Send(email)
-          result
+          Ok(Json.toJson(Token(authToken.tokenId, authToken.expiry, decodedEmail)))
         }
-      case None => Future.successful(result)
+      case None => Future.successful(NotFound)
     }
   }
 
@@ -78,17 +79,13 @@ class ActivateAccountController @Inject()(val messagesApi: MessagesApi,
         userService.retrieve(authToken.userId).flatMap {
           case Some(user) if user.loginInfo.providerID == CredentialsProvider.ID =>
             userService.save(user.copy(activated = true)).map { _ =>
-              Redirect(routes.SignInController.view())
-                .flashing("success" -> Messages("account.activated"))
+              Accepted
             }
           case _ =>
-            Future.successful(Redirect(routes.SignInController.view())
-              .flashing("error" -> Messages("invalid.activation.link")))
+            Future.successful(Unauthorized(Json.toJson(Bad("account.activate.invalidUrl"))))
         }
       case None =>
-        Future.successful(
-          Redirect(routes.SignInController.view())
-            .flashing("error" -> Messages("invalid.activation.link")))
+        Future.successful(Unauthorized(Json.toJson(Bad("account.activate.invalidUrl"))))
     }
   }
 }

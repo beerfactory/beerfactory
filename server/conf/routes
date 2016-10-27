@@ -13,11 +13,12 @@ POST        /password/reset/:token           controllers.ResetPasswordController
 GET         /password/change                 controllers.ChangePasswordController.view
 POST        /password/change                 controllers.ChangePasswordController.submit
 
-GET         /account/email/:email            controllers.ActivateAccountController.send(email: String)
 GET         /account/activate/:token         controllers.ActivateAccountController.activate(token: String)
 
 #API
-POST        /api/v1/auth/register               controllers.RegisterController.register
+POST        /api/v1/auth/register            controllers.RegisterController.register
+POST        /api/v1/auth/email/:email        controllers.ActivateAccountController.send(email: String)
+POST        /api/v1/auth/activate/:token     controllers.ActivateAccountController.activate(token: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file                     controllers.Assets.at(path="/public", file)

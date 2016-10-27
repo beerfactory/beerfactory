@@ -10,7 +10,7 @@ package controllers
 
 import java.time.Instant
 
-import controllers.api.auth.{SignUp, Token}
+import controllers.api.auth.{RegisterRequest, Token}
 import play.api.libs.json.{JsString, Json}
 import play.api.test.FakeRequest
 import utils.TestHelper
@@ -28,17 +28,18 @@ class RegisterControllerSpec extends TestHelper {
     }
 
     "return token for a valid request" in {
-      val signUp = SignUp("email@test.com", "password", None, None)
+      val signUp = RegisterRequest("email@test.com", "password", None, None)
       val Some(result) =
         route(app, FakeRequest(POST, registerApiUrl).withJsonBody(Json.toJson(signUp)))
 
       status(result) mustEqual OK
       val Some(token) = Json.parse(contentAsString(result)).asOpt[Token]
       Instant.now().isBefore(token.expiry) mustBe true
+      token.email mustEqual "email@test.com"
     }
 
     "return error if user already exists (same email)" in {
-      val signUp = SignUp("some@test.com", "password", None, None)
+      val signUp = RegisterRequest("some@test.com", "password", None, None)
       val Some(result) =
         route(app, FakeRequest(POST, registerApiUrl).withJsonBody(Json.toJson(signUp)))
       status(result) mustEqual OK

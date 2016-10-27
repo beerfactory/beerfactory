@@ -10,11 +10,8 @@ package controllers.api.auth
 
 import play.api.libs.json.{Format, Json}
 
-case class SignUp(email: String,
-                  password: String,
-                  firstName: Option[String],
-                  lastName: Option[String])
+case class ActivationRequest(email: String)
 
-object SignUp {
-  implicit val format: Format[SignUp] = Json.format[SignUp]
+object ActivationRequest {
+  implicit val format: Format[ActivationRequest] = Json.format[ActivationRequest]
 }
