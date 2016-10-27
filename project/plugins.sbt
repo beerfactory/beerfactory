@@ -23,3 +23,7 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-digest" % "1.1.1")
 addSbtPlugin("com.typesafe.sbt" % "sbt-gzip" % "1.0.0")
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-less" % "1.1.1")
+
+addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.4.0")
+
+addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.1.0")
