@@ -29,14 +29,14 @@ import utils.auth.DefaultEnv
 
 import scala.concurrent.Future
 
-class SignUpController @Inject()(val messagesApi: MessagesApi,
-                                 silhouette: Silhouette[DefaultEnv],
-                                 userService: UserService,
-                                 authInfoRepository: AuthInfoRepository,
-                                 authTokenService: AuthTokenService,
-                                 avatarService: AvatarService,
-                                 passwordHasherRegistry: PasswordHasherRegistry,
-                                 @Named("mailerActor") mailerActor: ActorRef)
+class RestRegisterController @Inject()(val messagesApi: MessagesApi,
+                                       silhouette: Silhouette[DefaultEnv],
+                                       userService: UserService,
+                                       authInfoRepository: AuthInfoRepository,
+                                       authTokenService: AuthTokenService,
+                                       avatarService: AvatarService,
+                                       passwordHasherRegistry: PasswordHasherRegistry,
+                                       @Named("mailerActor") mailerActor: ActorRef)
     extends Controller
     with I18nSupport {
 
