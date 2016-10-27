@@ -58,7 +58,7 @@ class RegisterController @Inject()(val messagesApi: MessagesApi,
     */
   def submit = silhouette.UnsecuredAction.async { implicit request =>
     RegisterForm.form.bindFromRequest.fold(
-      form => Future.successful(BadRequest(views.html.signUp(form))),
+      form => Future.successful(BadRequest(views.html.register(form))),
       data => {
         val result = Redirect(routes.RegisterController.view())
           .flashing("info" -> Messages("sign.up.email.sent", data.email))
