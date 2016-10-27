@@ -8,45 +8,44 @@
  */
 package controllers
 
+import java.time.Instant
+
+import controllers.api.auth.{SignUp, Token}
+import play.api.libs.json.{JsString, Json}
 import play.api.test.FakeRequest
 import utils.TestHelper
+import play.api.test._
 import play.api.test.Helpers._
+import play.api.libs.json._
 
 class RegisterControllerSpec extends TestHelper {
+  val registerApiUrl = "/api/v1/auth/register"
 
   "RegisterController" must {
     "return BadRequest for invalid body" in {
-      val Some(result) = route(app, addCsrfToken(FakeRequest(POST, "/register")))
+      val Some(result) = route(app, FakeRequest(POST, registerApiUrl).withJsonBody(JsString("")))
       status(result) mustEqual BAD_REQUEST
     }
 
     "return token for a valid request" in {
+      val signUp = SignUp("email@test.com", "password", None, None)
       val Some(result) =
-        route(app,
-              addCsrfToken(
-                FakeRequest(POST, "/register").withFormUrlEncodedBody(
-                  "firstName" -> "test_firstName",
-                  "lastName"  -> "test_lastName",
-                  "email"     -> "email@test.com",
-                  "password"  -> "password"
-                )))
+        route(app, FakeRequest(POST, registerApiUrl).withJsonBody(Json.toJson(signUp)))
 
-      status(result) mustEqual SEE_OTHER
-      redirectLocation(result) mustEqual Some(routes.SignInController.view().url)
+      status(result) mustEqual OK
+      val Some(token) = Json.parse(contentAsString(result)).asOpt[Token]
+      Instant.now().isBefore(token.expiry) mustBe true
     }
-    /*
 
-        "return error if user already exists (same email)" in {
-          val signUp = SignUp("some@test.com", "password", None, None)
-          val Some(result) =
-            route(app, FakeRequest(POST, "/auth/signup").withJsonBody(Json.toJson(signUp)))
-          status(result) mustEqual OK
+    "return error if user already exists (same email)" in {
+      val signUp = SignUp("some@test.com", "password", None, None)
+      val Some(result) =
+        route(app, FakeRequest(POST, registerApiUrl).withJsonBody(Json.toJson(signUp)))
+      status(result) mustEqual OK
 
-          val Some(result2) =
-            route(app, FakeRequest(POST, "/auth/signup").withJsonBody(Json.toJson(signUp)))
-          status(result2) mustEqual CONFLICT
-        }
-      }
-   */
+      val Some(result2) =
+        route(app, FakeRequest(POST, registerApiUrl).withJsonBody(Json.toJson(signUp)))
+      status(result2) mustEqual CONFLICT
+    }
   }
 }

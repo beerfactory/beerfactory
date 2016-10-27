@@ -6,9 +6,6 @@ GET         /authenticate/:provider          controllers.SocialAuthController.au
 GET         /signIn                          controllers.SignInController.view
 POST        /signIn                          controllers.SignInController.submit
 
-GET         /register                        controllers.RegisterController.view
-POST        /register                        controllers.RegisterController.submit
-
 GET         /password/forgot                 controllers.ForgotPasswordController.view
 POST        /password/forgot                 controllers.ForgotPasswordController.submit
 GET         /password/reset/:token           controllers.ResetPasswordController.view(token: String)
@@ -18,6 +15,9 @@ POST        /password/change                 controllers.ChangePasswordControlle
 
 GET         /account/email/:email            controllers.ActivateAccountController.send(email: String)
 GET         /account/activate/:token         controllers.ActivateAccountController.activate(token: String)
+
+#API
+POST        /api/v1/auth/register               controllers.RegisterController.register
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file                     controllers.Assets.at(path="/public", file)
