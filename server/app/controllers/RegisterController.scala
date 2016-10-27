@@ -60,7 +60,7 @@ class RegisterController @Inject()(val messagesApi: MessagesApi,
     RegisterForm.form.bindFromRequest.fold(
       form => Future.successful(BadRequest(views.html.register(form))),
       data => {
-        val result = Redirect(routes.RegisterController.view())
+        val result = Redirect(routes.SignInController.view())
           .flashing("info" -> Messages("sign.up.email.sent", data.email))
         val loginInfo = LoginInfo(CredentialsProvider.ID, data.email)
         userService.retrieve(loginInfo).flatMap {
