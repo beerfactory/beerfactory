@@ -74,7 +74,10 @@ class ActivateAccountController @Inject()(val messagesApi: MessagesApi,
     * @return The result to display.
     */
   def activate(token: String) = silhouette.UnsecuredAction.async { implicit request =>
-    authTokenService.validate(token).flatMap {
+    val decodedToken = URLDecoder.decode(token, "UTF-8")
+    println("> " + token)
+    println(">> " + decodedToken)
+    authTokenService.validate(decodedToken).flatMap {
       case Some(authToken) =>
         userService.retrieve(authToken.userId).flatMap {
           case Some(user) if user.loginInfo.providerID == CredentialsProvider.ID =>

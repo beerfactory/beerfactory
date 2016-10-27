@@ -47,9 +47,10 @@ class ActivateAccountControllerSpec extends TestHelper {
                 Json.toJson(RegisterRequest("activate@test.com", "password", None, None))))
       status(result) mustEqual OK
       val Some(token) = Json.parse(contentAsString(result)).asOpt[Token]
+      println(token)
 
       val Some(activationResult) =
-        route(app, FakeRequest(POST, activateApiUrl + token.tokenId))
+        route(app, FakeRequest(POST, activateApiUrl + URLEncoder.encode(token.tokenId, "UTF-8")))
       status(activationResult) mustEqual ACCEPTED
     }
 
