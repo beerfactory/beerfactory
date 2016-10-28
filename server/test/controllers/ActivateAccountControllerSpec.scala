@@ -50,7 +50,7 @@ class ActivateAccountControllerSpec extends TestHelper {
       println(token)
 
       val Some(activationResult) =
-        route(app, FakeRequest(POST, activateApiUrl + URLEncoder.encode(token.tokenId, "UTF-8")))
+        route(app, FakeRequest(POST, activateApiUrl + token.tokenId))
       status(activationResult) mustEqual ACCEPTED
     }
 
