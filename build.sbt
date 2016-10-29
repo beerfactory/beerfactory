@@ -22,11 +22,10 @@ lazy val commonSettings = Seq(
 
 logBuffered in Test := false
 
-lazy val root = (project in file("."))
-    .aggregate(server, client)
+lazy val root = (project in file(".")).aggregate(server, client)
 
 lazy val server = (project in file("server"))
-  .settings(commonSettings:_*)
+  .settings(commonSettings: _*)
   .enablePlugins(BuildInfoPlugin)
   .enablePlugins(SbtWeb)
   .enablePlugins(PlayScala)
@@ -41,10 +40,9 @@ lazy val server = (project in file("server"))
     LessKeys.compress in Assets := true,
     buildInfoPackage := "org.beerfactory.server.version",
     buildInfoObject := "BuildInfo",
-    buildInfoKeys := Seq[BuildInfoKey](
-      name, version, "projectName" -> "Beerfactory"),
+    buildInfoKeys := Seq[BuildInfoKey](name, version, "projectName" -> "Beerfactory"),
     buildInfoOptions += BuildInfoOption.BuildTime,
-    libraryDependencies ++= Dependencies.sharedDependencies.value ++ Dependencies.serverDependencies.value,
+    libraryDependencies ++= Dependencies.commonDependencies.value ++ Dependencies.serverDependencies.value,
     libraryDependencies += filters
   )
 
@@ -56,24 +54,21 @@ lazy val client = (project in file("client"))
     persistLauncher in Compile := true,
     persistLauncher in Test := false,
     scalaJSUseRhino in Global := false,
-    libraryDependencies ++= Dependencies.sharedDependencies.value ++ Dependencies.clientDependencies.value,
+    libraryDependencies ++= Dependencies.commonDependencies.value ++ Dependencies.clientDependencies.value,
     jsDependencies ++= Dependencies.jsDependencies,
     jsEnv := JSDOMNodeJSEnv().value,
     skip in packageJSDependencies := false
   )
 
 lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared"))
-    .settings(commonSettings:_*)
-    .jsConfigure(_ enablePlugins ScalaJSWeb)
-    .jvmSettings(
-    // Add JVM-specific settings here
-    )
-    .jsSettings(
-    // Add JS-specific settings here
-    )
+  .settings(commonSettings: _*)
+  .jsConfigure(_ enablePlugins ScalaJSWeb)
+  .settings(
+    libraryDependencies ++= Dependencies.commonDependencies.value ++ Dependencies.sharedDependencies.value
+  )
 
 lazy val sharedJVM = shared.jvm.settings(name := "sharedJVM")
-lazy val sharedJS = shared.js.settings(name := "sharedJS")
+lazy val sharedJS  = shared.js.settings(name := "sharedJS")
 
 // loads the server project at sbt startup
 onLoad in Global := (Command.process("project server", _: State)) compose (onLoad in Global).value

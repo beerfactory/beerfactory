@@ -2,6 +2,10 @@ main.title=Beerfactory
 
 email.from = Beerfactory <noreply@beerfactory.org>
 
+#User
+create.user.alreadyExist = A User with the same email or username already exists
+
+
 # Sign Up
 email.sign.up.subject = Welcome
 email.sign.up.hello = Hello {0},

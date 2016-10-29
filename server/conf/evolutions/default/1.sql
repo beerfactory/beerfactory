@@ -18,13 +18,17 @@ create table auth_password_info (
 create table auth_user (
     user_id varchar not null primary key,
     login_info_fk VARCHAR unique,
-    activated boolean,
+    email_verified boolean,
     email varchar,
+    username varchar,
     firstname varchar,
     lastname varchar,
-    fullname varchar,
-    locales varchar,
+    nickname varchar,
+    locale varchar,
     avatar_url varchar,
+    created_at timestamp,
+    updated_at timestamp,
+    deleted_at timestamp,
     foreign key (login_info_fk) references auth_login_info(login_info_id)
 );
 

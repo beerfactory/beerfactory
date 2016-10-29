@@ -8,28 +8,21 @@
  */
 package models.auth
 
+import java.time.Instant
+
 import com.mohiva.play.silhouette.api.{Identity, LoginInfo}
 
 case class User(userId: String,
                 loginInfo: LoginInfo,
-                activated: Boolean,
-                email: Option[String],
-                firstName: Option[String],
-                lastName: Option[String],
-                fullName: Option[String],
-                avatarUrl: Option[String]) extends Identity
-{
-  /**
-    * Tries to construct a name.
-    *
-    * @return Maybe a name.
-    */
-  def name = fullName.orElse {
-    firstName -> lastName match {
-      case (Some(f), Some(l)) => Some(f + " " + l)
-      case (Some(f), None) => Some(f)
-      case (None, Some(l)) => Some(l)
-      case _ => None
-    }
-  }
-}
+                emailVerified: Boolean,
+                email: String,
+                userName: Option[String] = None,
+                firstName: Option[String] = None,
+                lastName: Option[String] = None,
+                nickName: Option[String] = None,
+                locale: Option[String] = None,
+                avatarUrl: Option[String] = None,
+                createdAt: Option[Instant] = None,
+                updatedAt: Option[Instant] = None,
+                deletedAt: Option[Instant] = None)
+    extends Identity

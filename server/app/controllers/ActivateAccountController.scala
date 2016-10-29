@@ -49,7 +49,7 @@ class ActivateAccountController @Inject()(val messagesApi: MessagesApi,
     val loginInfo    = LoginInfo(CredentialsProvider.ID, decodedEmail)
 
     userService.retrieve(loginInfo).flatMap {
-      case Some(user) if !user.activated =>
+      case Some(user) if !user.emailVerified =>
         authTokenService.create(user.userId).map { authToken =>
           val url = routes.ActivateAccountController.activate(authToken.tokenId).absoluteURL()
 
@@ -81,7 +81,7 @@ class ActivateAccountController @Inject()(val messagesApi: MessagesApi,
       case Some(authToken) =>
         userService.retrieve(authToken.userId).flatMap {
           case Some(user) if user.loginInfo.providerID == CredentialsProvider.ID =>
-            userService.save(user.copy(activated = true)).map { _ =>
+            userService.save(user.copy(emailVerified = true)).map { _ =>
               Accepted
             }
           case _ =>

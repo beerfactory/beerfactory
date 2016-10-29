@@ -8,6 +8,7 @@
  */
 package models.auth.daos
 
+import java.time.Instant
 import javax.inject.{Inject, Named}
 
 import actors.UUIDActor.GetUUID
@@ -30,6 +31,7 @@ import models.auth.User
 trait UserDao {
   def save(user: User): Future[User]
   def find(userId: String): Future[Option[User]]
+  def findByUserName(userName: String): Future[Option[User]]
   def find(loginInfo: LoginInfo): Future[Option[User]]
 }
 
@@ -48,36 +50,55 @@ class UserDaoImpl @Inject()(@Named("uuidActor") configuredActor: ActorRef,
     (configuredActor ? GetUUID).mapTo[String]
   }
 
-  def save(user: User) = {
-    db.run(DBUsers.filter(_.id === user.userId).result.headOption)
-      .flatMap {
+  def save(user: User): Future[User] = {
+    for {
+      existingUser <- db.run(DBUsers.filter(_.id === user.userId).result.headOption)
+      existingLoginInfoFK ← existingUser match {
         case Some(dbUser) => Future.successful(dbUser.loginInfoFK)
         case None         ⇒ getRandomId
       }
-      .flatMap { loginInfoPK ⇒
-        val actions = (for {
-          _ ← DBLoginInfos.insertOrUpdate(
-            DBLoginInfo(loginInfoPK, user.loginInfo.providerID, user.loginInfo.providerKey))
-          _ ← DBUsers.insertOrUpdate(
-            DBUser(user.userId,
-                   loginInfoPK,
-                   user.activated,
-                   user.email,
-                   user.firstName,
-                   user.lastName,
-                   user.fullName,
-                   user.avatarUrl))
-        } yield ()).transactionally
-        db.run(actions)
-      }
-      .map { _ ⇒
-        user
-      }
+      user ← doSave(user, existingLoginInfoFK)
+    } yield user
+  }
+
+  def doSave(user: User, loginInfoId: String): Future[User] = {
+    val now = Instant.now()
+    val dbUser = DBUser(id = user.userId,
+                        loginInfoFK = loginInfoId,
+                        emailVerified = user.emailVerified,
+                        email = user.email,
+                        userName = user.userName,
+                        firstName = user.firstName,
+                        lastName = user.lastName,
+                        nickName = user.nickName,
+                        avatarUrl = user.avatarUrl,
+                        createdAt = user.createdAt match {
+                          case None          ⇒ Some(now)
+                          case Some(instant) ⇒ Some(instant)
+                        },
+                        updatedAt = Some(now),
+                        deletedAt = user.deletedAt,
+                        locale = user.locale)
+    val dBLoginInfo =
+      DBLoginInfo(loginInfoId, user.loginInfo.providerID, user.loginInfo.providerKey)
+    val actions = (for {
+      _ ← DBLoginInfos.insertOrUpdate(dBLoginInfo)
+      _ ← DBUsers.insertOrUpdate(dbUser)
+    } yield ()).transactionally
+    db.run(actions).map(_ ⇒ mapToUser(Some((dbUser, dBLoginInfo))).get)
   }
 
   def find(userId: String): Future[Option[User]] = {
     val q = for {
       u ← DBUsers if u.id === userId
+      l ← DBLoginInfos if l.id === u.loginInfoFK
+    } yield (u, l)
+    db.run(q.result.headOption).map(mapToUser)
+  }
+
+  override def findByUserName(userName: String): Future[Option[User]] = {
+    val q = for {
+      u ← DBUsers if u.userName === userName
       l ← DBLoginInfos if l.id === u.loginInfoFK
     } yield (u, l)
     db.run(q.result.headOption).map(mapToUser)
@@ -97,20 +118,24 @@ class UserDaoImpl @Inject()(@Named("uuidActor") configuredActor: ActorRef,
       case Some((dbUser, dbLoginInfo)) ⇒
         Some(
           User(
-            dbUser.id,
-            LoginInfo(dbLoginInfo.providerID, dbLoginInfo.providerKey),
-            dbUser.activated,
-            dbUser.email,
-            dbUser.firstName,
-            dbUser.lastName,
-            dbUser.fullName,
-            dbUser.avatarUrl
+            userId = dbUser.id,
+            loginInfo = LoginInfo(dbLoginInfo.providerID, dbLoginInfo.providerKey),
+            emailVerified = dbUser.emailVerified,
+            email = dbUser.email,
+            userName = dbUser.userName,
+            firstName = dbUser.firstName,
+            lastName = dbUser.lastName,
+            nickName = dbUser.nickName,
+            avatarUrl = dbUser.avatarUrl,
+            locale = dbUser.locale,
+            createdAt = dbUser.createdAt,
+            updatedAt = dbUser.updatedAt,
+            deletedAt = dbUser.deletedAt
           ))
       case _ ⇒ None
     }
   }
 
   def findByEmail(email: String) =
-    db.run(
-      DBUsers.filter(_.email.getOrElse("").toLowerCase === email.toLowerCase).result.headOption)
+    db.run(DBUsers.filter(_.email.toLowerCase === email.toLowerCase).result.headOption)
 }

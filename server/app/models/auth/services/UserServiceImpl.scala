@@ -43,22 +43,35 @@ class UserServiceImpl @Inject()(@Named("uuidActor") uuidActor: ActorRef, userDAO
 
   def retrieve(userId: String): Future[Option[User]] = userDAO.find(userId)
 
+  def retrieveByUserName(userName: String) = userDAO.findByUserName(userName)
+
   /**
     * Saves a user.
     *
     * @return The saved user.
     */
   def save(loginInfo: LoginInfo,
-           activated: Boolean = false,
-           email: Option[String],
+           emailVerified: Boolean = false,
+           email: String,
+           userName: Option[String],
            firstName: Option[String],
            lastName: Option[String],
-           fullName: Option[String],
+           nickName: Option[String],
+           locale: Option[String],
            avatarUrl: Option[String]): Future[User] = {
     for {
       uid ← ask(uuidActor, GetUUID).mapTo[String]
       dbUser ← userDAO.save(
-        User(uid, loginInfo, activated, email, firstName, lastName, fullName, avatarUrl))
+        User(uid,
+             loginInfo,
+             emailVerified,
+             email,
+             userName,
+             firstName,
+             lastName,
+             nickName,
+             locale,
+             avatarUrl))
     } yield dbUser
 
   }
@@ -77,19 +90,23 @@ class UserServiceImpl @Inject()(@Named("uuidActor") uuidActor: ActorRef, userDAO
     userDAO.find(profile.loginInfo).flatMap {
       case Some(user) => // Update user with profile
         save(user.loginInfo,
-             user.activated,
+             user.emailVerified,
+             profile.email.getOrElse(""),
+             None,
              profile.firstName,
              profile.lastName,
              profile.fullName,
-             profile.email,
+             None,
              profile.avatarURL)
       case None => // Insert a new user
         save(profile.loginInfo,
              false,
+             profile.email.getOrElse(""),
+             None,
              profile.firstName,
              profile.lastName,
              profile.fullName,
-             profile.email,
+             None,
              profile.avatarURL)
     }
   }

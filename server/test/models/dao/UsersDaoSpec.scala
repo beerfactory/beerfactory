@@ -8,6 +8,8 @@
  */
 package models.dao
 
+import java.time.Instant
+
 import com.mohiva.play.silhouette.api.LoginInfo
 import models.auth.User
 import models.auth.daos.UserDao
@@ -21,11 +23,18 @@ class UsersDaoSpec extends TestHelper {
   "UserDao" must {
     "save new user" in {
       val usersDao = app.injector.instanceOf[UserDao]
-      val newUser = User("ID", LoginInfo("testProvider", "testKey"), true, Some("email@test.com"), Some("firstName"), Some("LastName"), Some("fullName"), None)
+      val newUser = User("ID",
+                         LoginInfo("testProvider", "testKey"),
+                         true,
+                         "email@test.com",
+                         Some("userName"),
+                         Some("firstName"),
+                         Some("LastName"),
+                         Some("nickName"))
       val u = usersDao.save(newUser).futureValue
-      u mustBe newUser
-      val ret = usersDao.find("ID").futureValue
-      ret mustBe Some(newUser)
+      u.createdAt.get mustBe a[Instant]
+      u.updatedAt.get mustBe a[Instant]
+      u.deletedAt mustBe None
     }
   }
 }

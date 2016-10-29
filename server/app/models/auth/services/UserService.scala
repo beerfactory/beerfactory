@@ -19,17 +19,21 @@ trait UserService extends IdentityService[User] {
 
   def retrieve(userId: String): Future[Option[User]]
 
+  def retrieveByUserName(userName: String): Future[Option[User]]
+
   /**
     * Saves a user.
     *
     * @return The saved user.
     */
   def save(loginInfo: LoginInfo,
-           activated: Boolean = false,
-           email: Option[String],
+           emailVerified: Boolean = false,
+           email: String,
+           userName: Option[String],
            firstName: Option[String],
            lastName: Option[String],
-           fullName: Option[String],
+           nickName: Option[String],
+           locale: Option[String],
            avatarUrl: Option[String]): Future[User]
 
   def save(user: User): Future[User]

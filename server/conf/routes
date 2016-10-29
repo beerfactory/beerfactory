@@ -1,22 +1,11 @@
 # Home page
 GET         /                                controllers.ApplicationController.index
 GET         /signOut                         controllers.ApplicationController.signOut
-GET         /authenticate/:provider          controllers.SocialAuthController.authenticate(provider)
-
-GET         /signIn                          controllers.SignInController.view
-POST        /signIn                          controllers.SignInController.submit
-
-GET         /password/forgot                 controllers.ForgotPasswordController.view
-POST        /password/forgot                 controllers.ForgotPasswordController.submit
-GET         /password/reset/:token           controllers.ResetPasswordController.view(token: String)
-POST        /password/reset/:token           controllers.ResetPasswordController.submit(token: String)
-GET         /password/change                 controllers.ChangePasswordController.view
-POST        /password/change                 controllers.ChangePasswordController.submit
 
 GET         /account/activate/:token         controllers.ActivateAccountController.activate(token: String)
 
 #API
-POST        /api/v1/auth/register            controllers.RegisterController.register
+POST        /api/v1/users/                   controllers.UsersController.create
 POST        /api/v1/auth/email/:email        controllers.ActivateAccountController.send(email: String)
 POST        /api/v1/auth/activate/:token     controllers.ActivateAccountController.activate(token: String)
 
