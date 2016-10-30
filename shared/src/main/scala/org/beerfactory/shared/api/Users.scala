@@ -8,22 +8,25 @@
  */
 package org.beerfactory.shared.api
 
+import java.time.Instant
+
 import play.api.libs.json._
 import play.api.libs.json.Reads._
 import play.api.libs.functional.syntax._
 
 case class UserCreateRequest(email: String,
                              password: String,
-                             userName: Option[String],
-                             firstName: Option[String],
-                             lastName: Option[String],
-                             nickName: Option[String],
-                             locale: Option[String])
+                             userName: Option[String] = None,
+                             firstName: Option[String] = None,
+                             lastName: Option[String] = None,
+                             nickName: Option[String] = None,
+                             locale: Option[String] = None)
 
 object UserCreateRequest {
   val userCreateRequestReads: Reads[UserCreateRequest] = (
     (__ \ "email").read[String](email) and
-      (__ \ "password").read[String] and
+      (__ \ "password")
+        .read[String](minLength[String](1)) and //avoid empty passwords. Real validation rules should go in controller
       (__ \ "userName").readNullable[String] and
       (__ \ "firstName").readNullable[String] and
       (__ \ "lastName").readNullable[String] and
@@ -45,4 +48,21 @@ object UserCreateRequest {
     Format(userCreateRequestReads, userCreateRequestWrites)
 }
 
-case class UserCreateResponse()
+case class UserCreateResponse(id: String,
+                              createdAt: Option[Instant],
+                              updatedAt: Option[Instant],
+                              deletedAt: Option[Instant],
+                              email: String,
+                              emailVerified: Boolean,
+                              userName: Option[String],
+                              firstName: Option[String],
+                              lastName: Option[String],
+                              nickName: Option[String],
+                              locale: Option[String],
+                              avatarUrl: Option[String],
+                              authService: String,
+                              authData: String)
+
+object UserCreateResponse {
+  implicit val format: Format[UserCreateResponse] = Json.format[UserCreateResponse]
+}

@@ -10,26 +10,21 @@ package controllers
 
 import javax.inject.{Inject, Named}
 
-import actors.MailerActor.Send
 import akka.actor.ActorRef
 import com.mohiva.play.silhouette.api.{LoginInfo, SignUpEvent, Silhouette}
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.services.AvatarService
 import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
-import controllers.api.auth.Token
-import models.auth.User
 import models.auth.services.{AuthTokenService, UserService}
-import org.beerfactory.shared.api.{Error, UserCreateRequest}
+import org.beerfactory.shared.api.{Error, UserCreateRequest, UserCreateResponse}
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import utils.auth.DefaultEnv
 import play.api.libs.json._
-import play.api.libs.mailer.Email
 import play.api.mvc.{Controller, Request, Result}
 import play.api.libs.concurrent.Execution.Implicits._
 
 import scala.concurrent.Future
-import scala.util.{Failure, Success}
 
 class UsersController @Inject()(val messagesApi: MessagesApi,
                                 silhouette: Silhouette[DefaultEnv],
@@ -42,6 +37,9 @@ class UsersController @Inject()(val messagesApi: MessagesApi,
     extends Controller
     with I18nSupport {
 
+  /**
+    * Handle User creation request
+    */
   def create = silhouette.UnsecuredAction.async(parse.json) { rawRequest =>
     rawRequest.body
       .validate[UserCreateRequest]
@@ -54,9 +52,15 @@ class UsersController @Inject()(val messagesApi: MessagesApi,
       )
   }
 
+  /**
+    * Create all information relative to a new user : user information, authentication info
+    * @param request User recreation request
+    * @param rawRequest raw HTTP request passed to inner functions
+    * @return a Future containing a HTTP result
+    */
   private def doCreateUser(request: UserCreateRequest, rawRequest: Request[_]): Future[Result] = {
     for {
-      loginInfo ← getLoginInfo(request)
+      loginInfo ← initLogInfo(request)
       user      <- userService.retrieve(loginInfo)
       result ← user match {
         case Some(_) =>
@@ -68,32 +72,53 @@ class UsersController @Inject()(val messagesApi: MessagesApi,
           val authInfo = passwordHasherRegistry.current.hash(request.password)
           for {
             avatar <- avatarService.retrieveURL(request.email)
-            newUser <- userService.save(loginInfo,
-                                        false,
-                                        request.email,
-                                        request.userName,
-                                        request.firstName,
-                                        request.lastName,
-                                        request.nickName,
-                                        request.locale,
-                                        avatar)
-            authInfo  <- authInfoRepository.add(loginInfo, authInfo)
-            authToken <- authTokenService.create(newUser.userId)
+            user <- userService.save(loginInfo,
+                                     false,
+                                     request.email,
+                                     request.userName,
+                                     request.firstName,
+                                     request.lastName,
+                                     request.nickName,
+                                     request.locale,
+                                     avatar)
+            _ <- authInfoRepository.add(loginInfo, authInfo)
           } yield {
-            silhouette.env.eventBus.publish(SignUpEvent(newUser, rawRequest))
-            Ok(Json.toJson(Token(authToken.tokenId, authToken.expiry, newUser.email)))
+            silhouette.env.eventBus.publish(SignUpEvent(user, rawRequest))
+            Ok(
+              Json.toJson(
+                UserCreateResponse(user.userId,
+                                   user.createdAt,
+                                   user.updatedAt,
+                                   user.deletedAt,
+                                   user.email,
+                                   user.emailVerified,
+                                   user.userName,
+                                   user.firstName,
+                                   user.lastName,
+                                   user.nickName,
+                                   user.locale,
+                                   user.avatarUrl,
+                                   user.loginInfo.providerID,
+                                   user.loginInfo.providerKey)))
           }
       }
     } yield result
   }
 
-  private def getLoginInfo(request: UserCreateRequest): Future[LoginInfo] = {
+  /**
+    * Initialize LoginInfo object from creation request
+    * Normally, the object is simply initalized with request data. A user existence check is also performed so a
+    * login info duplicate is detected
+    * @param request User creation request
+    * @return the LoginInfo initialized
+    */
+  private def initLogInfo(request: UserCreateRequest): Future[LoginInfo] = {
     request.userName match {
       case None ⇒
         // userName is empty. Create user credentials with request email
         Future.successful(LoginInfo(CredentialsProvider.ID, request.email))
       case Some(userName) =>
-        // userName is not empty. Retrieve the User and use its email insted of the request email
+        // userName is not empty. Retrieve the User and use its email instead of the request email
         // This means that a user already exists with this username
         userService.retrieveByUserName(userName).flatMap {
           case None       ⇒ Future.successful(LoginInfo(CredentialsProvider.ID, request.email))
