@@ -66,3 +66,9 @@ case class UserCreateResponse(id: String,
 object UserCreateResponse {
   implicit val format: Format[UserCreateResponse] = Json.format[UserCreateResponse]
 }
+
+case class UserLoginRequest(authData: String, password: String)
+
+object UserLoginRequest {
+  implicit val format: Format[UserLoginRequest] = Json.format[UserLoginRequest]
+}

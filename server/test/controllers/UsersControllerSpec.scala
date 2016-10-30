@@ -10,7 +10,7 @@ package controllers
 
 import java.time.Instant
 
-import org.beerfactory.shared.api.{Error, UserCreateRequest, UserCreateResponse}
+import org.beerfactory.shared.api.{Error, UserCreateRequest, UserCreateResponse, UserLoginRequest}
 import utils.TestHelper
 import play.api.libs.json.{JsString, Json}
 import play.api.test.FakeRequest
@@ -20,14 +20,14 @@ import play.api.test.Helpers._
 import play.api.libs.json._
 
 class UsersControllerSpec extends TestHelper {
-  "UsersController request validation" must {
+  "UsersController.create" must {
     "return BadRequest for invalid body" in {
       val Some(result) =
         route(app,
               FakeRequest(POST, routes.UsersController.create().url).withJsonBody(JsString("")))
       status(result) mustEqual BAD_REQUEST
       val Some(error) = Json.parse(contentAsString(result)).asOpt[Error]
-      error.id mustEqual "create.user.request.validation"
+      error.id mustEqual "user.create.request.validation"
     }
     "return BadRequest for invalid email" in {
       val request = UserCreateRequest("not@@valid", "password")
@@ -37,7 +37,7 @@ class UsersControllerSpec extends TestHelper {
                 .withJsonBody(Json.toJson(request)))
       status(result) mustEqual BAD_REQUEST
       val Some(error) = Json.parse(contentAsString(result)).asOpt[Error]
-      error.id mustEqual "create.user.request.validation"
+      error.id mustEqual "user.create.request.validation"
     }
     "return BadRequest for empty password" in {
       val request = UserCreateRequest("email@test.com", "")
@@ -47,11 +47,8 @@ class UsersControllerSpec extends TestHelper {
                 .withJsonBody(Json.toJson(request)))
       status(result) mustEqual BAD_REQUEST
       val Some(error) = Json.parse(contentAsString(result)).asOpt[Error]
-      error.id mustEqual "create.user.request.validation"
+      error.id mustEqual "user.create.request.validation"
     }
-  }
-
-  "UsersController" must {
     "return Ok for valid request" in {
       val request = UserCreateRequest("valid_request@test.com", "password")
       val Some(result) =
@@ -60,10 +57,11 @@ class UsersControllerSpec extends TestHelper {
                 .withJsonBody(Json.toJson(request)))
       status(result) mustEqual OK
       val Some(response) = Json.parse(contentAsString(result)).asOpt[UserCreateResponse]
-      print(response)
       response.id mustBe a[String]
-      response.createdAt mustBe a[Some[Instant]]
-      response.updatedAt mustBe a[Some[Instant]]
+      response.createdAt mustBe defined
+      response.createdAt.get mustBe a[Instant]
+      response.updatedAt mustBe defined
+      response.updatedAt.get mustBe a[Instant]
     }
     "return Bad if user with same email already exists" in {
       val request = UserCreateRequest("first@test.com", "password", Some("first"))
@@ -100,6 +98,45 @@ class UsersControllerSpec extends TestHelper {
           FakeRequest(POST, routes.UsersController.create().url)
             .withJsonBody(Json.toJson(UserCreateRequest("me@test.com", "xxx", Some("second")))))
       status(result3) mustEqual CONFLICT
+    }
+  }
+
+  "UsersController.login" must {
+    // Create some user
+    val Some(result) =
+      route(app,
+            FakeRequest(POST, routes.UsersController.create().url).withJsonBody(
+              Json.toJson(UserCreateRequest("login@valid.com", "password", Some("success")))))
+    status(result) mustEqual OK
+
+    "authorize login request with valid email/password" in {
+      val Some(result) =
+        route(app,
+              FakeRequest(POST, routes.UsersController.login().url)
+                .withJsonBody(Json.toJson(UserLoginRequest("login@valid.com", "password"))))
+      status(result) mustEqual OK
+      val authToken = header("X-Auth-Token", result)
+      authToken mustBe defined
+    }
+
+    "Un-authorize login request with valid email and invalid password" in {
+      val Some(result) =
+        route(app,
+              FakeRequest(POST, routes.UsersController.login().url)
+                .withJsonBody(Json.toJson(UserLoginRequest("login@valid.com", "hacker"))))
+      status(result) mustEqual UNAUTHORIZED
+      val authToken = header("X-Auth-Token", result)
+      authToken mustBe None
+    }
+
+    "Un-authorize login request with invalid email/password" in {
+      val Some(result) =
+        route(app,
+              FakeRequest(POST, routes.UsersController.login().url)
+                .withJsonBody(Json.toJson(UserLoginRequest("login@fake.com", "password"))))
+      status(result) mustEqual UNAUTHORIZED
+      val authToken = header("X-Auth-Token", result)
+      authToken mustBe None
     }
   }
 }

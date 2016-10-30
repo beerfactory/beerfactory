@@ -6,6 +6,7 @@ GET         /account/activate/:token         controllers.ActivateAccountControll
 
 #API
 POST        /api/v1/users/                   controllers.UsersController.create
+POST        /api/v1/users/login              controllers.UsersController.login
 POST        /api/v1/auth/email/:email        controllers.ActivateAccountController.send(email: String)
 POST        /api/v1/auth/activate/:token     controllers.ActivateAccountController.activate(token: String)
 
