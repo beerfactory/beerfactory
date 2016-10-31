@@ -14,19 +14,19 @@ object GlobalStyles extends StyleSheet.Inline {
   import dsl._
 
   val imgLogo = style(
-      addClassName("ui image"),
-      marginRight(1.5 em),
-      width(2.5 em)
+    addClassNames("ui", "image"),
+    marginRight(1.5 em),
+    width(2.5 em)
   )
 
   val mainContainer = style(
-    addClassName("ui container"),
+    addClassNames("ui", "container"),
     marginTop(7 em)
   )
 
   val loginView = style(
-    addClassName("ui middle aligned center aligned grid"),
-    backgroundColor(c"#DADADA")
+    addClassName("ui middle aligned center aligned grid")
+    //,backgroundColor(c"#DADADA")
   )
 
   val loginFormColumn = style(

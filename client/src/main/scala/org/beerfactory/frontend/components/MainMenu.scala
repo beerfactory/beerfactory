@@ -22,37 +22,32 @@ import org.beerfactory.frontend.state.UserModel
 object MainMenu {
   case class Props(router: RouterCtl[Page], currentLoc: Page, proxy: ModelProxy[UserModel])
 
-
-  private class Backend($: BackendScope[Props, Unit]) {
+  private class Backend($ : BackendScope[Props, Unit]) {
     def render(props: Props) = {
       def button(name: String, target: Page) =
         div(
-          cls:="item",
+          cls := "item",
           props.router.link(target)(name, cls := "ui inverted basic blue button")
         )
 
       div(cls := "ui fixed inverted menu",
-        props.router.link(Home)(cls:="header item") (
-          img(GlobalStyles.imgLogo, src:="/assets/images/logo.png"),
-          "Beerfactory"
-        ),
-        if(props.proxy.value.isAuthentified) {
-          div()
-        }
-        else {
-          div(
-            cls := "right menu",
-            button("Register", Home),
-            button("Login", Home)
-          )
-        }
-      )
+          props.router.link(Home)(cls := "header item")(
+            img(GlobalStyles.imgLogo, src := "/assets/images/logo.png"),
+            "Beerfactory"
+          ),
+          if (props.proxy.value.isAuthentified) {
+            div()
+          } else {
+            div(
+              cls := "right menu",
+              button("Register", Home),
+              button("Login", Home)
+            )
+          })
     }
   }
 
-  private val component = ReactComponentB[Props]("MainMenu")
-    .renderBackend[Backend]
-    .build
+  private val component = ReactComponentB[Props]("MainMenu").renderBackend[Backend].build
 
   def apply(ctl: RouterCtl[Page], currentPage: Page, proxy: ModelProxy[UserModel]): ReactElement =
     component(Props(ctl, currentPage, proxy))

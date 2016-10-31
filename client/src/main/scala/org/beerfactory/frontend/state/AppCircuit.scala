@@ -12,12 +12,23 @@ import diode.{ActionHandler, Circuit}
 import diode.data.Empty
 import diode.react.ReactConnector
 import org.beerfactory.frontend.DOMGlobalScope
+import org.beerfactory.shared.api.UserLoginRequest
+import org.scalajs.dom
+import org.scalajs.dom.ext
+import org.scalajs.dom.ext.Ajax
+import io.circe.syntax._
+
+import scala.scalajs.js.JSON
 
 object AppCircuit extends Circuit[RootModel] with ReactConnector[RootModel] {
 
-  override protected def initialModel = RootModel(UserModel(locale="fr"))//DOMGlobalScope.acceptLang()))
+  override protected def initialModel = {
+    val authToken = dom.window.localStorage.getItem("authToken")
+    Ajax.post("/api/v1/users/login", UserLoginRequest("test", "password").asJson.noSpaces)
+    RootModel(UserModel(locale = "fr"))
+  } //DOMGlobalScope.acceptLang()))
 
   override protected val actionHandler = composeHandlers(
-    new UserModelHandler(zoomRW(_.userModel)((m,v) => m.copy(userModel = v)))
+    new UserModelHandler(zoomRW(_.userModel)((m, v) => m.copy(userModel = v)))
   )
 }
