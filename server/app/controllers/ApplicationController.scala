@@ -24,21 +24,21 @@ import utils.auth.DefaultEnv
   * @param silhouette The Silhouette stack.
   * @param socialProviderRegistry The social provider registry.
   */
-class ApplicationController @Inject() (
-  val messagesApi: MessagesApi,
-  silhouette: Silhouette[DefaultEnv],
-  socialProviderRegistry: SocialProviderRegistry,
-  implicit val config: Configuration,
-  implicit val env: Environment)
-  extends Controller with I18nSupport {
+class ApplicationController @Inject()(val messagesApi: MessagesApi,
+                                      silhouette: Silhouette[DefaultEnv],
+                                      socialProviderRegistry: SocialProviderRegistry,
+                                      implicit val config: Configuration,
+                                      implicit val env: Environment)
+    extends Controller
+    with I18nSupport {
 
   /**
     * Handles the index action.
     *
     * @return The result to display.
     */
-  def index = silhouette.SecuredAction { implicit request =>
-    Ok(views.html.app(request.identity))
+  def index = Action { implicit request =>
+    Ok(views.html.app("app.title"))
   }
 
   /**
