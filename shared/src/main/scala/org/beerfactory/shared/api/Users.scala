@@ -22,32 +22,6 @@ case class UserCreateRequest(email: String,
                              nickName: Option[String] = None,
                              locale: Option[String] = None)
 
-object UserCreateRequest {
-  val userCreateRequestReads: Reads[UserCreateRequest] = (
-    (__ \ "email").read[String](email) and
-      (__ \ "password")
-        .read[String](minLength[String](1)) and //avoid empty passwords. Real validation rules should go in controller
-      (__ \ "userName").readNullable[String] and
-      (__ \ "firstName").readNullable[String] and
-      (__ \ "lastName").readNullable[String] and
-      (__ \ "nickName").readNullable[String] and
-      (__ \ "locale").readNullable[String]
-  )(UserCreateRequest.apply _)
-
-  val userCreateRequestWrites: Writes[UserCreateRequest] = (
-    (__ \ "email").write[String] and
-      (__ \ "password").write[String] and
-      (__ \ "userName").writeNullable[String] and
-      (__ \ "firstName").writeNullable[String] and
-      (__ \ "lastName").writeNullable[String] and
-      (__ \ "nickName").writeNullable[String] and
-      (__ \ "locale").writeNullable[String]
-  )(unlift(UserCreateRequest.unapply))
-
-  implicit val format: Format[UserCreateRequest] =
-    Format(userCreateRequestReads, userCreateRequestWrites)
-}
-
 case class UserCreateResponse(id: String,
                               createdAt: Option[Instant],
                               updatedAt: Option[Instant],
@@ -63,12 +37,4 @@ case class UserCreateResponse(id: String,
                               authService: String,
                               authData: String)
 
-object UserCreateResponse {
-  implicit val format: Format[UserCreateResponse] = Json.format[UserCreateResponse]
-}
-
 case class UserLoginRequest(authData: String, password: String)
-
-object UserLoginRequest {
-  implicit val format: Format[UserLoginRequest] = Json.format[UserLoginRequest]
-}

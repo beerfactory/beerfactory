@@ -19,12 +19,15 @@ import com.mohiva.play.silhouette.api.util.{Credentials, PasswordHasherRegistry}
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import models.auth.services.{AuthTokenService, UserService}
 import org.beerfactory.shared.api.{Error, UserCreateRequest, UserCreateResponse, UserLoginRequest}
+import org.scalactic._
+import org.scalactic.Accumulation._
 import play.api.Configuration
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import utils.auth.DefaultEnv
 import play.api.libs.json._
 import play.api.mvc.{Controller, Request, RequestHeader, Result}
 import play.api.libs.concurrent.Execution.Implicits._
+import utils.Validators._
 
 import scala.concurrent.Future
 
@@ -41,6 +44,10 @@ class UsersController @Inject()(val messagesApi: MessagesApi,
     extends Controller
     with I18nSupport {
 
+  implicit val userCreateRequestFormat  = Json.format[UserCreateRequest]
+  implicit val userCreateResponseFormat = Json.format[UserCreateResponse]
+  implicit val userLoginReguestFormat   = Json.format[UserLoginRequest]
+
   /**
     * Handle User creation request
     */
@@ -51,7 +58,12 @@ class UsersController @Inject()(val messagesApi: MessagesApi,
         invalid ⇒
           Future.successful(BadRequest(Json.toJson(
             Error("user.create.request.validation", Some(JsError.toJson(invalid)), BAD_REQUEST)))),
-        request ⇒ doCreateUser(request)
+        request ⇒
+          validateUserCreateRequest(request).fold(
+            reuest ⇒ doCreateUser(request),
+            errors ⇒
+              Future.successful(BadRequest(Json.toJson(
+                Error("user.create.request.validation", errors.toSeq.toString(), BAD_REQUEST)))))
       )
   }
 
@@ -164,5 +176,13 @@ class UsersController @Inject()(val messagesApi: MessagesApi,
           case Some(user) ⇒ Future.successful(LoginInfo(CredentialsProvider.ID, user.email))
         }
     }
+  }
+
+  private def validateUserCreateRequest(
+      request: UserCreateRequest): UserCreateRequest Or Every[ErrorMessage] = {
+    for {
+      email    ← Good(request.email) when validEmailAddress("user.create.request.email.invalid")
+      password ← Good(request.password) when notEmpty("user.create.request.password.empty")
+    } yield request.copy(email = email, password = password)
   }
 }
