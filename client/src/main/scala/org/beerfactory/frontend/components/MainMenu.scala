@@ -30,7 +30,7 @@ object MainMenu {
           props.router.link(target)(name, cls := "ui inverted basic blue button")
         )
 
-      div(cls := "ui fixed inverted menu",
+      div(cls := "ui fixed menu",
           props.router.link(Home)(cls := "header item")(
             img(GlobalStyles.imgLogo, src := "/assets/images/logo.png"),
             "Beerfactory"

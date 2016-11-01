@@ -16,14 +16,15 @@ import org.beerfactory.shared.api.UserLoginRequest
 import org.scalajs.dom
 import org.scalajs.dom.ext
 import org.scalajs.dom.ext.Ajax
-
-import scala.scalajs.js.JSON
+import upickle.default._
 
 object AppCircuit extends Circuit[RootModel] with ReactConnector[RootModel] {
 
   override protected def initialModel = {
     val authToken = dom.window.localStorage.getItem("authToken")
-    //Ajax.post("/api/v1/users/login", UserLoginRequest("test", "password").asJson.noSpaces)
+    Ajax.post(url = "/api/v1/users/login",
+              data = write(UserLoginRequest("test", "password")),
+              headers = Map("Content-Type" → "application/json"))
     RootModel(UserModel(locale = "fr"))
   } //DOMGlobalScope.acceptLang()))
 

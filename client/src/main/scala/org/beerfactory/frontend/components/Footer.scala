@@ -16,16 +16,10 @@ import org.beerfactory.frontend.ClientMain.Page
 import org.beerfactory.frontend.GlobalStyles
 
 object Footer {
-  private val component = ReactComponentB[RouterCtl[Page]]("MainMenu")
-    .render_P { ctl =>
-      div(cls := "ui inverted vertical segment",
-        div(cls:= "ui right aligned segment",
-          "Version xxx"
-        )
-      )
-    }
-    .configure(Reusability.shouldComponentUpdate)
-    .build
+  private val component = ReactComponentB[RouterCtl[Page]]("Footer").render_P { ctl =>
+    div(cls := "ui inverted vertical segment",
+        div(cls := "ui right aligned segment", "Version xxx"))
+  }.configure(Reusability.shouldComponentUpdate).build
 
   def apply(ctl: RouterCtl[Page]): ReactElement =
     component(ctl)

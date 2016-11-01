@@ -22,6 +22,7 @@ object Dependencies {
     val playSlick     = "2.0.0"
     val playMailer    = "5.0.0"
     val play          = "2.5.8"
+    val µPickle       = "0.4.3"
   }
 
   object jsV {
@@ -72,6 +73,7 @@ object Dependencies {
       "com.github.japgolly.scalacss"      %%% "ext-react"   % V.scalaCSS,
       "me.chrons"                         %%% "diode"       % V.diode,
       "me.chrons"                         %%% "diode-react" % V.diode,
+      "com.lihaoyi"                       %%% "upickle"     % V.µPickle,
       "org.scalatest"                     %%% "scalatest"   % "3.0.0" % "test"
     ))
 

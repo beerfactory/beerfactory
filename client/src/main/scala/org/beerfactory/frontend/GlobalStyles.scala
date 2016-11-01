@@ -25,7 +25,7 @@ object GlobalStyles extends StyleSheet.Inline {
   )
 
   val loginView = style(
-    addClassName("ui middle aligned center aligned grid")
+    addClassName("ui one column middle aligned center aligned grid")
     //,backgroundColor(c"#DADADA")
   )
 

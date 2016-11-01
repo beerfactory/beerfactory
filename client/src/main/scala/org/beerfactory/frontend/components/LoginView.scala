@@ -15,39 +15,27 @@ import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.all._
 import org.beerfactory.frontend.ClientMain.{Home, Page}
 import org.beerfactory.frontend.GlobalStyles
+
 import scalacss.ScalaCssReact._
 
-
 object LoginView {
-  private val loginView = ReactComponentB[Unit]("LoginView")
-    .render { _ =>
-      div(GlobalStyles.loginView,
-        div(GlobalStyles.loginFormColumn,
-          LoginView.loginForm()
-        )
-      )
-    }.build
+  private val loginView = ReactComponentB[Unit]("LoginView").render { _ =>
+    div(GlobalStyles.loginView, div(LoginView.loginForm()), div("Test"))
+  }.build
 
-  val loginForm = ReactComponentB[Unit]("LoginForm")
-    .render { _ =>
-      form(cls := "ui large form",
-        div(cls:="ui stacked segment",
-          div(cls:= "field",
-            div(cls:="ui left icon input",
-              i(cls:="user icon"),
-              input(name:="username", placeholder:="Username")
-            )
-          ),
-          div(cls:= "field",
-            div(cls:="ui left icon input",
-              i(cls:="lock icon"),
-              input(name:="password", placeholder:="Username")
-            )
-          ),
-          div(cls:="ui fluid large teal button", "Login")
-        )
-      )
-    }.build
+  val loginForm = ReactComponentB[Unit]("LoginForm").render { _ =>
+    form(cls := "ui large form",
+         div(cls := "ui stacked segment",
+             div(cls := "field",
+                 div(cls := "ui left icon input",
+                     i(cls := "user icon"),
+                     input(name := "username", placeholder := "Username"))),
+             div(cls := "field",
+                 div(cls := "ui left icon input",
+                     i(cls := "lock icon"),
+                     input(name := "password", placeholder := "Username"))),
+             div(cls := "ui fluid large teal button", "Login")))
+  }.build
 
   def apply(): ReactElement =
     loginView()

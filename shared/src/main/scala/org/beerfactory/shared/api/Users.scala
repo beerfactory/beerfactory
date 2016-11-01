@@ -14,6 +14,8 @@ import play.api.libs.json._
 import play.api.libs.json.Reads._
 import play.api.libs.functional.syntax._
 
+sealed trait UsersApi
+
 case class UserCreateRequest(email: String,
                              password: String,
                              userName: Option[String] = None,
@@ -21,6 +23,7 @@ case class UserCreateRequest(email: String,
                              lastName: Option[String] = None,
                              nickName: Option[String] = None,
                              locale: Option[String] = None)
+    extends UsersApi
 
 case class UserCreateResponse(id: String,
                               createdAt: Option[Instant],
@@ -36,5 +39,6 @@ case class UserCreateResponse(id: String,
                               avatarUrl: Option[String],
                               authService: String,
                               authData: String)
+    extends UsersApi
 
-case class UserLoginRequest(authData: String, password: String)
+case class UserLoginRequest(authData: String, password: String) extends UsersApi
