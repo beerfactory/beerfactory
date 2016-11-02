@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+    <title>Beerfactory</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.6/semantic.min.css">
+    <style type="text/css">.GlobalStyles-imgLogo {
+  margin-right: 1.5em;
+  width: 2.5em;
+}
+
+.GlobalStyles-mainContainer {
+  margin-top: 7em;
+}
+
+.GlobalStyles-loginFormColumn {
+  max-width: 450px;
+}
+
+footer {
+    height:100px;
+    background-color: #353535;
+    position: relative;
+    padding-top: 40px;
+    color: #fff;
+}
+
+footer a, footer a:visited {
+    color: #a0a0a0;
+    padding: 0 10px;
+}
+
+.more.spacing {
+    margin-top: 7em !important;
+    margin-bottom: 7em !important;
+}
+    </style>
+</head>
+<body>
+<div id="root">
+    <main data-reactroot="" class="ui vertical center aligned">
+        <div class="ui fixed menu">
+            <a href="http://localhost:9000/" class="header item"><img
+                    src="images/logo.png" class="GlobalStyles-imgLogo ui image">Beerfactory</a>
+            <div class="right menu">
+                <div class="item"><a href="http://localhost:9000/" class="ui green basic button">Register</a></div>
+                <div class="item"><a href="http://localhost:9000/" class="ui blue button">Login</a></div>
+            </div>
+        </div>
+        <div class="GlobalStyles-mainContainer ui container more spacing">
+            <div class="ui three column centered grid">
+                <div class="row">
+                    <form class="ui column large form">
+                        <div class="ui segment">
+                            <div class="required field">
+                                <div class="ui left icon input"><input name="username" placeholder="Username"><i class="user icon"></i>
+                                </div>
+                            </div>
+                            <div class="required field">
+                                <div class="ui left icon input"><input name="password" placeholder="Password" type="password"><i class="lock icon"></i></div>
+                                <div style="text-align: right;">
+                                    <small><a href="#">Forgot password ?</a></small>
+                                </div>
+                            </div>
+                            <div class="ui fluid large blue button">Login</div>
+                        </div>
+                    </form>
+                </div>
+                <div class="row">
+                    <div class="column">
+                        <div class="ui center aligned segment">New to Beerfactory? <a href="">Create an account</a>.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer class="hidden-print">
+        <div class="ui container">
+            <div class="ui two column stackable flex grid">
+                <div class="column">
+                    <strong>Beerfactory</strong>
+                    <a href="#">Link</a>
+                    <a href="#">Link</a>
+                    <a href="#">Link</a>
+                    <a href="#">Link</a>
+
+                </div>
+                <div class="column right aligned">
+                    <a href="#">Link</a>
+                    <a href="#">Link</a>
+                    <a href="#">Link</a>
+                    <a href="#">Link</a>
+                </div>
+            </div>
+        </div>
+    </footer></div>
+        <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/semantic-ui/2.2.6/semantic.min.js"></script>
+</body>
+</html>
