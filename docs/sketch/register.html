@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+    <title>Beerfactory</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.6/semantic.min.css">
+    <style type="text/css">.GlobalStyles-imgLogo {
+  margin-right: 1.5em;
+  width: 2.5em;
+}
+
+.GlobalStyles-mainContainer {
+  margin-top: 7em;
+}
+
+.GlobalStyles-loginFormColumn {
+  max-width: 450px;
+}
+
+footer {
+    height:100px;
+    background-color: #353535;
+    position: relative;
+    padding-top: 40px;
+    color: #fff;
+}
+
+footer a, footer a:visited {
+    color: #a0a0a0;
+    padding: 0 10px;
+}
+
+.more.spacing {
+    margin-top: 7em !important;
+    margin-bottom: 7em !important;
+}
+    </style>
+</head>
+<body>
+<div id="root">
+    <main data-reactroot="" class="ui vertical center aligned">
+        <div class="ui fixed menu">
+            <a href="http://localhost:9000/" class="header item"><img
+                    src="images/logo.png" class="GlobalStyles-imgLogo ui image">Beerfactory</a>
+            <div class="right menu">
+                <div class="item"><a href="http://localhost:9000/" class="ui green basic button">Register</a></div>
+                <div class="item"><a href="http://localhost:9000/" class="ui blue button">Login</a></div>
+            </div>
+        </div>
+        <div class="GlobalStyles-mainContainer ui container more spacing">
+            <div class="ui two column centered grid">
+                <div class="row">
+                    <form class="ui column form">
+                        <div class="row">
+                            <div class="column">
+                                <h1 class="ui header">Join Beerfactory</h1>
+                                <div class="sub header">Fill the form below to create your personal account</div>
+                            </div>
+                        </div>
+                        <div class="ui segment">
+                            <div class="required field">
+                                <label>Email address</label>
+                                <input name="email">
+                                <p style="color: #767676">
+                                    <small>An email address which will be used for login and occasionally send you some emails.</small>
+                                </p>
+                            </div>
+                            <div class="required field">
+                                <label>Password</label>
+                                <input name="password" type="password">
+                                <p style="color: #767676">
+                                    <small>Use at least n characters, ...</small>
+                                </p>
+                            </div>
+                            <div class="field">
+                                <label>Username</label>
+                                <input name="email">
+                                <p style="color: #767676">
+                                    <small>This will be your unique username. Defaults to email address.</small>
+                                </p>
+                            </div>
+                            <div class="field">
+                                <label>First name</label>
+                                <input name="firstname" placeholder="John">
+                            </div>
+                            <div class="field">
+                                <label>Last name</label>
+                                <input name="lastname" placeholder="Doe">
+                            </div>
+                            <div class="field">
+                                <label>Nick name</label>
+                                <input name="nickname">
+                                <p style="color: #767676">
+                                    <small>If you'd like to customize it.</small>
+                                </p>
+                            </div>
+                            <div class="ui fluid large green button">Register</div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer class="hidden-print">
+        <div class="ui container">
+            <div class="ui two column stackable flex grid">
+                <div class="column">
+                    <strong>Beerfactory</strong>
+                    <a href="#">Link</a>
+                    <a href="#">Link</a>
+                    <a href="#">Link</a>
+                    <a href="#">Link</a>
+
+                </div>
+                <div class="column right aligned">
+                    <a href="#">Link</a>
+                    <a href="#">Link</a>
+                    <a href="#">Link</a>
+                    <a href="#">Link</a>
+                </div>
+            </div>
+        </div>
+    </footer></div>
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/semantic-ui/2.2.6/semantic.min.js"></script>
+</body>
+</html>
