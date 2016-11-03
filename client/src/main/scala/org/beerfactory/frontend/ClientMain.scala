@@ -8,11 +8,19 @@
  */
 package org.beerfactory.frontend
 
-import japgolly.scalajs.react.ReactDOM
-import japgolly.scalajs.react.extra.router.{BaseUrl, Redirect, Resolution, Router, RouterConfigDsl, RouterCtl}
+import japgolly.scalajs.react
+import japgolly.scalajs.react._
+import japgolly.scalajs.react.extra.router.{
+  BaseUrl,
+  Redirect,
+  Resolution,
+  Router,
+  RouterConfigDsl,
+  RouterCtl
+}
 import japgolly.scalajs.react.vdom.all._
 import org.beerfactory.frontend.components.{Footer, MainMenu}
-import org.beerfactory.frontend.pages.HomePage
+import org.beerfactory.frontend.pages.{Home, HomePage, Login, Page}
 import org.beerfactory.frontend.state.AppCircuit
 import org.scalajs.dom
 
@@ -21,16 +29,24 @@ import scalacss.ScalaCssReact._
 import scala.scalajs.js.JSApp
 
 object ClientMain extends JSApp {
-  sealed trait Page
-  case object Home extends Page
 
   val userWrapper = AppCircuit.connect(_.userModel)
+  val userReader  = AppCircuit.zoom(_.userModel)
   val routerConfig = RouterConfigDsl[Page].buildConfig { dsl =>
     import dsl._
 
-    ( trimSlashes
-      | staticRoute(root, Home) ~> renderR(ctl => AppCircuit.wrap(_.userModel)(proxy => HomePage(ctl, proxy)))
-      ).notFound(redirectToPage(Home)(Redirect.Replace))
+    def isUserLoggedIn = userReader.zoom(_.isAuthentified).value
+
+    val securedPages =
+      (emptyRule
+        | staticRoute(root, Home) ~> renderR(
+          ctl => AppCircuit.wrap(_.userModel)(proxy => HomePage(ctl, proxy))))
+        .addCondition(react.CallbackTo(isUserLoggedIn))(_ =>
+          Some(redirectToPage(Login)(Redirect.Push)))
+
+    (trimSlashes
+      | securedPages).notFound(
+      redirectToPage(if (isUserLoggedIn) Home else Login)(Redirect.Replace))
   }.renderWith(layout)
 
   def layout(c: RouterCtl[Page], r: Resolution[Page]) =

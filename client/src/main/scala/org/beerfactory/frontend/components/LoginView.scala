@@ -13,7 +13,6 @@ import japgolly.scalajs.react.extra.Reusability
 import japgolly.scalajs.react.extra.components.TriStateCheckbox.Props
 import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.all._
-import org.beerfactory.frontend.ClientMain.{Home, Page}
 import org.beerfactory.frontend.GlobalStyles
 
 import scalacss.ScalaCssReact._

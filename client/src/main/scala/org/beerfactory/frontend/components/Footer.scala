@@ -12,8 +12,8 @@ import japgolly.scalajs.react.{ReactComponentB, ReactElement}
 import japgolly.scalajs.react.extra.Reusability
 import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.all._
-import org.beerfactory.frontend.ClientMain.Page
 import org.beerfactory.frontend.GlobalStyles
+import org.beerfactory.frontend.pages.Page
 
 object Footer {
   private val component = ReactComponentB[RouterCtl[Page]]("Footer").render_P { ctl =>
