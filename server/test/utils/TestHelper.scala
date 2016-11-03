@@ -1,7 +1,8 @@
 package utils
 
+import org.scalatest._
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
-import org.scalatestplus.play.PlaySpec
+//import org.scalatestplus.play.PlaySpec
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
 import play.filters.csrf.CSRF.Token
@@ -15,7 +16,12 @@ import play.filters.csrf.{CSRFConfigProvider, CSRFFilter}
  * this stuff is worth it, you can buy me a beer in return.   Nicolas JOUANIN
  *********************************************************************************
  */
-class TestHelper extends PlaySpec with ScalaFutures with IntegrationPatience { self ⇒
+class TestHelper
+    extends WordSpec
+    with OptionValues
+    with ScalaFutures
+    with MustMatchers
+    with IntegrationPatience { self ⇒
 
   //Build add with in-memory database
   lazy val app = new GuiceApplicationBuilder()

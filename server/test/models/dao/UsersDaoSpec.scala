@@ -13,10 +13,7 @@ import java.time.Instant
 import com.mohiva.play.silhouette.api.LoginInfo
 import models.auth.User
 import models.auth.daos.UserDao
-import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
-import org.scalatestplus.play._
 import utils.TestHelper
-import views.html.app
 
 class UsersDaoSpec extends TestHelper {
 

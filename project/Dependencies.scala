@@ -60,10 +60,10 @@ object Dependencies {
       "com.mohiva"                   %% "play-silhouette-crypto-jca"      % V.silhouette,
       "com.mohiva"                   %% "play-silhouette-persistence"     % V.silhouette,
       "com.mohiva"                   %% "play-silhouette-testkit"         % V.silhouette % Test,
-      "org.scalatestplus.play"       %% "scalatestplus-play"              % V.scalatestPlay % Test,
-      "com.typesafe.akka"            %% "akka-testkit"                    % V.akka % Test,
-      "net.codingwell"               %% "scala-guice"                     % V.scalaGuice,
-      "com.iheart"                   %% "ficus"                           % V.ficus
+      //"org.scalatestplus.play"       %% "scalatestplus-play"              % V.scalatestPlay % Test,
+      "com.typesafe.akka" %% "akka-testkit" % V.akka % Test,
+      "net.codingwell"    %% "scala-guice"  % V.scalaGuice,
+      "com.iheart"        %% "ficus"        % V.ficus
     ))
 
   val clientDependencies = Def.setting(
