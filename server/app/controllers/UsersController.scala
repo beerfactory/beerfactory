@@ -103,6 +103,10 @@ class UsersController @Inject()(val messagesApi: MessagesApi,
       )
   }
 
+  def currentUser = silhouette.SecuredAction.async(parse.json) { implicit rawRequest =>
+    ???
+  }
+
   /**
     * Create all information relative to a new user : user information, authentication info
     * @param request User recreation request
