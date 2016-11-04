@@ -38,8 +38,7 @@ object Dependencies {
 
   val sharedDependencies = Def.setting(
     Seq(
-      "com.typesafe.play" %% "play-json" % V.play
-    ))
+      ))
 
   val serverDependencies = Def.setting(
     Seq(

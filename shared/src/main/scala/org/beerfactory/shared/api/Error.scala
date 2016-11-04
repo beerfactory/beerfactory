@@ -8,16 +8,12 @@
  */
 package org.beerfactory.shared.api
 
-import play.api.libs.json.{Format, JsString, JsValue, Json}
-
-case class Error(id: String, detail: Option[JsValue], statusCode: Int)
+case class Error(id: String, details: Seq[String], statusCode: Int)
 
 object Error {
-  implicit val errorFormat: Format[Error] = Json.format[Error]
+  def apply(id: String, statusCode: Int) =
+    new Error(id, Seq.empty, statusCode)
 
   def apply(id: String, detail: String, statusCode: Int) =
-    new Error(id, Some(JsString(detail)), statusCode)
-
-  def apply(id: String, statusCode: Int) =
-    new Error(id, None, statusCode)
+    new Error(id, Seq(detail), statusCode)
 }

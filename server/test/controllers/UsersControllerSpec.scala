@@ -26,10 +26,11 @@ import play.api.test.Helpers._
 import play.api.libs.json._
 
 class UsersControllerSpec extends TestHelper {
-  implicit val userInfoFormat           = Json.format[UserInfo]
-  implicit val userCreateRequestFormat  = Json.format[UserCreateRequest]
-  implicit val userCreateResponseFormat = Json.format[UserCreateResponse]
-  implicit val userLoginReguestFormat   = Json.format[UserLoginRequest]
+  implicit val userInfoFormat             = Json.format[UserInfo]
+  implicit val userCreateRequestFormat    = Json.format[UserCreateRequest]
+  implicit val userCreateResponseFormat   = Json.format[UserCreateResponse]
+  implicit val userLoginReguestFormat     = Json.format[UserLoginRequest]
+  implicit val errorFormat: Format[Error] = Json.format[Error]
 
   "UsersController.create" must {
     "return BadRequest for invalid body" in {

@@ -45,11 +45,12 @@ class UsersController @Inject()(val messagesApi: MessagesApi,
     extends Controller
     with I18nSupport {
 
-  implicit val userInfoFormat           = Json.format[UserInfo]
-  implicit val userCreateRequestFormat  = Json.format[UserCreateRequest]
-  implicit val userCreateResponseFormat = Json.format[UserCreateResponse]
-  implicit val userLoginReguestFormat   = Json.format[UserLoginRequest]
-  implicit val userCurrentFormat        = Json.format[UserCurrentResponse]
+  implicit val userInfoFormat             = Json.format[UserInfo]
+  implicit val userCreateRequestFormat    = Json.format[UserCreateRequest]
+  implicit val userCreateResponseFormat   = Json.format[UserCreateResponse]
+  implicit val userLoginReguestFormat     = Json.format[UserLoginRequest]
+  implicit val userCurrentFormat          = Json.format[UserCurrentResponse]
+  implicit val errorFormat: Format[Error] = Json.format[Error]
 
   /**
     * Handle User creation request
@@ -60,13 +61,13 @@ class UsersController @Inject()(val messagesApi: MessagesApi,
       .fold(
         invalid ⇒
           Future.successful(BadRequest(Json.toJson(
-            Error("user.create.request.validation", Some(JsError.toJson(invalid)), BAD_REQUEST)))),
+            Error("user.create.request.validation", JsError.toJson(invalid).toString, BAD_REQUEST)))),
         request ⇒
           validateUserCreateRequest(request).fold(
             reuest ⇒ doCreateUser(request),
             errors ⇒
               Future.successful(BadRequest(Json.toJson(
-                Error("user.create.request.validation", errors.toSeq.toString(), BAD_REQUEST)))))
+                Error("user.create.request.validation", errors.toSeq.map(e ⇒ e.toString), BAD_REQUEST)))))
       )
   }
 
@@ -76,7 +77,7 @@ class UsersController @Inject()(val messagesApi: MessagesApi,
       .fold(
         invalid ⇒
           Future.successful(BadRequest(Json.toJson(
-            Error("user.login.request.validation", Some(JsError.toJson(invalid)), BAD_REQUEST)))),
+            Error("user.login.request.validation", JsError.toJson(invalid).toString, BAD_REQUEST)))),
         request ⇒ {
           val credentials = Credentials(request.authData, request.password)
           credentialsProvider
