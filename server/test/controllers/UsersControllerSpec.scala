@@ -14,6 +14,7 @@ import org.beerfactory.shared.api.{
   Error,
   UserCreateRequest,
   UserCreateResponse,
+  UserCurrentResponse,
   UserInfo,
   UserLoginRequest
 }
@@ -30,6 +31,7 @@ class UsersControllerSpec extends TestHelper {
   implicit val userCreateRequestFormat    = Json.format[UserCreateRequest]
   implicit val userCreateResponseFormat   = Json.format[UserCreateResponse]
   implicit val userLoginReguestFormat     = Json.format[UserLoginRequest]
+  implicit val userCurrentResponseFormat  = Json.format[UserCurrentResponse]
   implicit val errorFormat: Format[Error] = Json.format[Error]
 
   "UsersController.create" must {
@@ -149,6 +151,53 @@ class UsersControllerSpec extends TestHelper {
       status(result) mustEqual UNAUTHORIZED
       val authToken = header("X-Auth-Token", result)
       authToken mustBe None
+    }
+  }
+
+  "UsersController.currentUser" must {
+    val badToken =
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ"
+
+    "fail with SEE_OTHER when called without authorization token" in {
+      val Some(result) =
+        route(app, FakeRequest(GET, routes.UsersController.currentUser().url))
+      status(result) mustEqual SEE_OTHER
+    }
+    "fail with SEE_OTHER when called with invalid authorization token" in {
+      val Some(result) =
+        route(app,
+              FakeRequest(GET, routes.UsersController.currentUser().url)
+                .withHeaders("X-Auth-Token" → badToken))
+      status(result) mustEqual SEE_OTHER
+    }
+
+    "succeed and return UserInfo when called with a valid token" in {
+      // Create some user
+      val Some(result) =
+        route(app,
+              FakeRequest(POST, routes.UsersController.create().url)
+                .withJsonBody(Json.toJson(UserCreateRequest("current@valid.com", "password"))))
+      status(result) mustEqual OK
+
+      val Some(result2) =
+        route(app,
+              FakeRequest(POST, routes.UsersController.login().url)
+                .withJsonBody(Json.toJson(UserLoginRequest("current@valid.com", "password"))))
+      status(result2) mustEqual OK
+      val authToken = header("X-Auth-Token", result2)
+      authToken mustBe defined
+
+      val Some(result3) =
+        route(app,
+              FakeRequest(GET, routes.UsersController.currentUser().url)
+                .withHeaders("X-Auth-Token" → authToken.get))
+      status(result3) mustEqual OK
+      val Some(response) = Json.parse(contentAsString(result3)).asOpt[UserCurrentResponse]
+      response.userInfo.id mustBe a[String]
+      response.userInfo.createdAt mustBe defined
+      response.userInfo.createdAt.get mustBe a[Instant]
+      response.userInfo.updatedAt mustBe defined
+      response.userInfo.updatedAt.get mustBe a[Instant]
     }
   }
 }
