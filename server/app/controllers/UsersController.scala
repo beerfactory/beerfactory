@@ -17,6 +17,7 @@ import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.services.AvatarService
 import com.mohiva.play.silhouette.api.util.{Credentials, PasswordHasherRegistry}
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
+import models.auth.User
 import models.auth.services.{AuthTokenService, UserService}
 import org.beerfactory.shared.api._
 import org.scalactic._
@@ -48,6 +49,7 @@ class UsersController @Inject()(val messagesApi: MessagesApi,
   implicit val userCreateRequestFormat  = Json.format[UserCreateRequest]
   implicit val userCreateResponseFormat = Json.format[UserCreateResponse]
   implicit val userLoginReguestFormat   = Json.format[UserLoginRequest]
+  implicit val userCurrentFormat        = Json.format[UserCurrentResponse]
 
   /**
     * Handle User creation request
@@ -103,13 +105,34 @@ class UsersController @Inject()(val messagesApi: MessagesApi,
       )
   }
 
-  def currentUser = silhouette.SecuredAction.async(parse.json) { implicit rawRequest =>
-    ???
+  def currentUser = silhouette.SecuredAction { implicit request =>
+    request.identity match {
+      case user: User ⇒
+        Ok(
+          Json.toJson(
+            UserCurrentResponse(
+              userInfo = UserInfo(user.userId,
+                                  user.createdAt,
+                                  user.updatedAt,
+                                  user.deletedAt,
+                                  user.email,
+                                  user.emailVerified,
+                                  user.userName,
+                                  user.firstName,
+                                  user.lastName,
+                                  user.nickName,
+                                  user.locale,
+                                  user.avatarUrl,
+                                  user.loginInfo.providerID,
+                                  user.loginInfo.providerKey))))
+      case _ => BadRequest(Json.toJson(Error("user.current.invalid", BAD_REQUEST)))
+    }
   }
 
   /**
     * Create all information relative to a new user : user information, authentication info
-    * @param request User recreation request
+    *
+    * @param request    User recreation request
     * @param rawRequest raw HTTP request passed to inner functions
     * @return a Future containing a HTTP result
     */
@@ -166,6 +189,7 @@ class UsersController @Inject()(val messagesApi: MessagesApi,
     * Initialize LoginInfo object from creation request
     * Normally, the object is simply initalized with request data. A user existence check is also performed so a
     * login info duplicate is detected
+    *
     * @param request User creation request
     * @return the LoginInfo initialized
     */

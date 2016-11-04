@@ -23,6 +23,8 @@ case class UserCreateRequest(email: String,
 
 case class UserCreateResponse(userInfo: UserInfo) extends UsersApi
 
+case class UserCurrentResponse(userInfo: UserInfo) extends UsersApi
+
 case class UserInfo(id: String,
                     createdAt: Option[Instant],
                     updatedAt: Option[Instant],
