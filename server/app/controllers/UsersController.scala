@@ -18,7 +18,7 @@ import com.mohiva.play.silhouette.api.services.AvatarService
 import com.mohiva.play.silhouette.api.util.{Credentials, PasswordHasherRegistry}
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import models.auth.services.{AuthTokenService, UserService}
-import org.beerfactory.shared.api.{Error, UserCreateRequest, UserCreateResponse, UserLoginRequest}
+import org.beerfactory.shared.api._
 import org.scalactic._
 import org.scalactic.Accumulation._
 import play.api.Configuration
@@ -44,6 +44,7 @@ class UsersController @Inject()(val messagesApi: MessagesApi,
     extends Controller
     with I18nSupport {
 
+  implicit val userInfoFormat           = Json.format[UserInfo]
   implicit val userCreateRequestFormat  = Json.format[UserCreateRequest]
   implicit val userCreateResponseFormat = Json.format[UserCreateResponse]
   implicit val userLoginReguestFormat   = Json.format[UserLoginRequest]
@@ -137,20 +138,21 @@ class UsersController @Inject()(val messagesApi: MessagesApi,
             silhouette.env.eventBus.publish(SignUpEvent(user, rawRequest))
             Ok(
               Json.toJson(
-                UserCreateResponse(user.userId,
-                                   user.createdAt,
-                                   user.updatedAt,
-                                   user.deletedAt,
-                                   user.email,
-                                   user.emailVerified,
-                                   user.userName,
-                                   user.firstName,
-                                   user.lastName,
-                                   user.nickName,
-                                   user.locale,
-                                   user.avatarUrl,
-                                   user.loginInfo.providerID,
-                                   user.loginInfo.providerKey)))
+                UserCreateResponse(
+                  userInfo = UserInfo(user.userId,
+                                      user.createdAt,
+                                      user.updatedAt,
+                                      user.deletedAt,
+                                      user.email,
+                                      user.emailVerified,
+                                      user.userName,
+                                      user.firstName,
+                                      user.lastName,
+                                      user.nickName,
+                                      user.locale,
+                                      user.avatarUrl,
+                                      user.loginInfo.providerID,
+                                      user.loginInfo.providerKey))))
           }
       }
     } yield result

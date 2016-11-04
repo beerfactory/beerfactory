@@ -10,7 +10,13 @@ package controllers
 
 import java.time.Instant
 
-import org.beerfactory.shared.api.{Error, UserCreateRequest, UserCreateResponse, UserLoginRequest}
+import org.beerfactory.shared.api.{
+  Error,
+  UserCreateRequest,
+  UserCreateResponse,
+  UserInfo,
+  UserLoginRequest
+}
 import utils.TestHelper
 import play.api.libs.json.{JsString, Json}
 import play.api.test.FakeRequest
@@ -20,6 +26,7 @@ import play.api.test.Helpers._
 import play.api.libs.json._
 
 class UsersControllerSpec extends TestHelper {
+  implicit val userInfoFormat           = Json.format[UserInfo]
   implicit val userCreateRequestFormat  = Json.format[UserCreateRequest]
   implicit val userCreateResponseFormat = Json.format[UserCreateResponse]
   implicit val userLoginReguestFormat   = Json.format[UserLoginRequest]
@@ -61,11 +68,11 @@ class UsersControllerSpec extends TestHelper {
                 .withJsonBody(Json.toJson(request)))
       status(result) mustEqual OK
       val Some(response) = Json.parse(contentAsString(result)).asOpt[UserCreateResponse]
-      response.id mustBe a[String]
-      response.createdAt mustBe defined
-      response.createdAt.get mustBe a[Instant]
-      response.updatedAt mustBe defined
-      response.updatedAt.get mustBe a[Instant]
+      response.userInfo.id mustBe a[String]
+      response.userInfo.createdAt mustBe defined
+      response.userInfo.createdAt.get mustBe a[Instant]
+      response.userInfo.updatedAt mustBe defined
+      response.userInfo.updatedAt.get mustBe a[Instant]
     }
     "return Bad if user with same email already exists" in {
       val request = UserCreateRequest("first@test.com", "password", Some("first"))

@@ -21,20 +21,21 @@ case class UserCreateRequest(email: String,
                              locale: Option[String] = None)
     extends UsersApi
 
-case class UserCreateResponse(id: String,
-                              createdAt: Option[Instant],
-                              updatedAt: Option[Instant],
-                              deletedAt: Option[Instant],
-                              email: String,
-                              emailVerified: Boolean,
-                              userName: Option[String],
-                              firstName: Option[String],
-                              lastName: Option[String],
-                              nickName: Option[String],
-                              locale: Option[String],
-                              avatarUrl: Option[String],
-                              authService: String,
-                              authData: String)
-    extends UsersApi
+case class UserCreateResponse(userInfo: UserInfo) extends UsersApi
+
+case class UserInfo(id: String,
+                    createdAt: Option[Instant],
+                    updatedAt: Option[Instant],
+                    deletedAt: Option[Instant],
+                    email: String,
+                    emailVerified: Boolean,
+                    userName: Option[String],
+                    firstName: Option[String],
+                    lastName: Option[String],
+                    nickName: Option[String],
+                    locale: Option[String],
+                    avatarUrl: Option[String],
+                    authService: String,
+                    authData: String)
 
 case class UserLoginRequest(authData: String, password: String) extends UsersApi
