@@ -55,8 +55,8 @@ lazy val client = (project in file("client"))
     persistLauncher in Test := false,
     scalaJSUseRhino in Global := false,
     libraryDependencies ++= Dependencies.commonDependencies.value ++ Dependencies.clientDependencies.value,
-    jsDependencies ++= Dependencies.jsDependencies,
-    jsEnv := JSDOMNodeJSEnv().value,
+    jsDependencies ++= Dependencies.jsDependencies ++ Seq(RuntimeDOM),
+    //jsEnv := JSDOMNodeJSEnv().value,
     skip in packageJSDependencies := false
   )
 

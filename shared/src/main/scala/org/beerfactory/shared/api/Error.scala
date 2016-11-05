@@ -14,6 +14,7 @@ object Error {
   def apply(id: String, statusCode: Int) =
     new Error(id, Seq.empty, statusCode)
 
-  def apply(id: String, detail: String, statusCode: Int) =
+  def apply(id: String, detail: String, statusCode: Int = 0) =
     new Error(id, Seq(detail), statusCode)
+
 }
