@@ -22,6 +22,7 @@ object Dependencies {
     val playMailer   = "5.0.0"
     val play         = "2.5.9"
     val µPickle      = "0.4.3"
+    val circe        = "0.5.1"
   }
 
   object jsV {
@@ -32,8 +33,8 @@ object Dependencies {
 
   val commonDependencies = Def.setting(
     Seq(
-      "org.scalactic" %% "scalactic" % V.scalactic,
-      "org.scalatest" %% "scalatest" % V.scalatest % "test"
+      "org.scalactic" %% "scalactic"  % V.scalactic,
+      "org.scalatest" %%% "scalatest" % V.scalatest % "test"
     ))
 
   val sharedDependencies = Def.setting(
@@ -66,14 +67,20 @@ object Dependencies {
 
   val clientDependencies = Def.setting(
     Seq(
-      "com.github.japgolly.scalajs-react" %%% "core"        % V.scalajsReact,
-      "com.github.japgolly.scalajs-react" %%% "extra"       % V.scalajsReact,
-      "com.github.japgolly.scalacss"      %%% "ext-react"   % V.scalaCSS,
-      "me.chrons"                         %%% "diode"       % V.diode,
-      "me.chrons"                         %%% "diode-react" % V.diode,
-      "com.lihaoyi"                       %%% "upickle"     % V.µPickle,
-      "org.scalatest"                     %%% "scalatest"   % "3.0.0" % "test"
-    ))
+      "com.github.japgolly.scalajs-react" %%% "core"            % V.scalajsReact,
+      "com.github.japgolly.scalajs-react" %%% "extra"           % V.scalajsReact,
+      "com.github.japgolly.scalacss"      %%% "ext-react"       % V.scalaCSS,
+      "me.chrons"                         %%% "diode"           % V.diode,
+      "me.chrons"                         %%% "diode-react"     % V.diode,
+      "io.github.soc"                     %%% "scala-java-time" % "2.0.0-M3",
+      //    "com.lihaoyi"                       %%% "upickle"     % V.µPickle,
+      "org.scalatest" %%% "scalatest" % V.scalatest % "test"
+    ) ++ Seq(
+      "io.circe" %%% "circe-core",
+      "io.circe" %%% "circe-generic",
+      "io.circe" %%% "circe-parser"
+    ).map(_ % V.circe)
+  )
 
   val jsDependencies = Seq(
     "org.webjars.bower" % "react"       % jsV.react / "react-with-addons.js" minified "react-with-addons.min.js" commonJSName "React",

@@ -10,17 +10,13 @@ package org.beerfactory.frontend.state
 
 import diode.data.Pot
 import diode.{Action, ActionHandler, ModelRW}
+import org.beerfactory.shared.api.UserInfo
 
 // Application model
 case class RootModel(userModel: UserModel)
 
 case class UserModel(isAuthentified: Boolean = false,
-                     login: Option[String] = None,
-                     email: Option[String] = None,
-                     nickName: Option[String] = None,
-                     firstName: Option[String] = None,
-                     lastName: Option[String] = None,
-                     locale: String,
+                     userInfo: Option[UserInfo] = None,
                      authToken: Pot[String] = Pot.empty)
 
 // Actions

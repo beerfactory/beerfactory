@@ -52,8 +52,8 @@ lazy val client = (project in file("client"))
   .dependsOn(sharedJS)
   .settings(
     persistLauncher in Compile := true,
-    persistLauncher in Test := false,
-    scalaJSUseRhino in Global := false,
+    //persistLauncher in Test := false,
+    //scalaJSUseRhino in Global := false,
     libraryDependencies ++= Dependencies.commonDependencies.value ++ Dependencies.clientDependencies.value,
     jsDependencies ++= Dependencies.jsDependencies ++ Seq(RuntimeDOM),
     //jsEnv := JSDOMNodeJSEnv().value,

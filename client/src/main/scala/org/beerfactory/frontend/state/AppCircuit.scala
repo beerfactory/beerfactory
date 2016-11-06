@@ -11,26 +11,31 @@ package org.beerfactory.frontend.state
 import diode.{ActionHandler, Circuit}
 import diode.data.{Empty, Pot, Ready}
 import diode.react.ReactConnector
-import org.beerfactory.shared.api.UserLoginRequest
+import org.beerfactory.shared.api.{UserInfo, UserLoginRequest}
 import org.scalajs.dom
 import org.scalajs.dom.ext
 import org.scalajs.dom.ext.Ajax
-import upickle.default._
 
 object AppCircuit extends Circuit[RootModel] with ReactConnector[RootModel] {
 
   private val authTokenStorageKey = "beerfactory.auth.token"
 
+  private def getFromLocalStorage(key: String): String = {
+    try {
+      dom.window.localStorage.getItem(authTokenStorageKey)
+    } catch {
+      case _: Exception ⇒ ""
+    }
+  }
+
   override protected def initialModel = {
     RootModel(
-      UserModel(
-        locale = dom.window.navigator.language,
-        authToken = dom.window.localStorage.getItem(authTokenStorageKey) match {
+      userModel = UserModel(
+        authToken = getFromLocalStorage(authTokenStorageKey) match {
           case null          ⇒ Empty
           case token: String ⇒ Ready(token)
         }
       ))
-
   }
 
   override protected val actionHandler = composeHandlers(

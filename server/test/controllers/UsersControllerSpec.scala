@@ -11,7 +11,7 @@ package controllers
 import java.time.Instant
 
 import org.beerfactory.shared.api.{
-  Error,
+  ApiError$,
   UserCreateRequest,
   UserCreateResponse,
   UserCurrentResponse,
@@ -27,12 +27,12 @@ import play.api.test.Helpers._
 import play.api.libs.json._
 
 class UsersControllerSpec extends TestHelper {
-  implicit val userInfoFormat             = Json.format[UserInfo]
-  implicit val userCreateRequestFormat    = Json.format[UserCreateRequest]
-  implicit val userCreateResponseFormat   = Json.format[UserCreateResponse]
-  implicit val userLoginReguestFormat     = Json.format[UserLoginRequest]
-  implicit val userCurrentResponseFormat  = Json.format[UserCurrentResponse]
-  implicit val errorFormat: Format[Error] = Json.format[Error]
+  implicit val userInfoFormat                = Json.format[UserInfo]
+  implicit val userCreateRequestFormat       = Json.format[UserCreateRequest]
+  implicit val userCreateResponseFormat      = Json.format[UserCreateResponse]
+  implicit val userLoginReguestFormat        = Json.format[UserLoginRequest]
+  implicit val userCurrentResponseFormat     = Json.format[UserCurrentResponse]
+  implicit val errorFormat: Format[ApiError] = Json.format[ApiError]
 
   "UsersController.create" must {
     "return BadRequest for invalid body" in {
@@ -40,7 +40,7 @@ class UsersControllerSpec extends TestHelper {
         route(app,
               FakeRequest(POST, routes.UsersController.create().url).withJsonBody(JsString("")))
       status(result) mustEqual BAD_REQUEST
-      val Some(error) = Json.parse(contentAsString(result)).asOpt[Error]
+      val Some(error) = Json.parse(contentAsString(result)).asOpt[ApiError]
       error.id mustEqual "user.create.request.validation"
     }
     "return BadRequest for invalid email" in {
@@ -50,7 +50,7 @@ class UsersControllerSpec extends TestHelper {
               FakeRequest(POST, routes.UsersController.create().url)
                 .withJsonBody(Json.toJson(request)))
       status(result) mustEqual BAD_REQUEST
-      val Some(error) = Json.parse(contentAsString(result)).asOpt[Error]
+      val Some(error) = Json.parse(contentAsString(result)).asOpt[ApiError]
       error.id mustEqual "user.create.request.validation"
     }
     "return BadRequest for empty password" in {
@@ -60,7 +60,7 @@ class UsersControllerSpec extends TestHelper {
               FakeRequest(POST, routes.UsersController.create().url)
                 .withJsonBody(Json.toJson(request)))
       status(result) mustEqual BAD_REQUEST
-      val Some(error) = Json.parse(contentAsString(result)).asOpt[Error]
+      val Some(error) = Json.parse(contentAsString(result)).asOpt[ApiError]
       error.id mustEqual "user.create.request.validation"
     }
     "return Ok for valid request" in {

@@ -22,7 +22,9 @@ import japgolly.scalajs.react.vdom.all._
 import org.beerfactory.frontend.components.{Footer, MainMenu}
 import org.beerfactory.frontend.pages.{Home, HomePage, Login, Page}
 import org.beerfactory.frontend.state.AppCircuit
+import org.beerfactory.frontend.utils.AjaxApiFacade
 import org.scalajs.dom
+import scala.concurrent.ExecutionContext.Implicits.global
 
 import scalacss.Defaults._
 import scalacss.ScalaCssReact._
@@ -31,7 +33,17 @@ import scala.scalajs.js.JSApp
 object ClientMain extends JSApp {
 
   val userWrapper = AppCircuit.connect(_.userModel)
-  val userReader  = AppCircuit.zoom(_.userModel)
+
+  val userReader = AppCircuit.zoom(_.userModel)
+  val userInfoWriter =
+    AppCircuit.zoomRW(_.userModel.userInfo)((m, v) ⇒
+      m.copy(userModel = m.userModel.copy(userInfo = v)))
+
+  AjaxApiFacade.getCurrentUser.onSuccess {
+    case Right(resp) ⇒ userInfoWriter.updated(Some(resp.userInfo))
+    case Left(error) ⇒ println(error)
+  }
+
   val routerConfig = RouterConfigDsl[Page].buildConfig { dsl =>
     import dsl._
 

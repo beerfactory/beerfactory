@@ -50,7 +50,7 @@ class UsersController @Inject()(val messagesApi: MessagesApi,
   implicit val userCreateResponseFormat   = Json.format[UserCreateResponse]
   implicit val userLoginReguestFormat     = Json.format[UserLoginRequest]
   implicit val userCurrentFormat          = Json.format[UserCurrentResponse]
-  implicit val errorFormat: Format[Error] = Json.format[Error]
+  implicit val errorFormat: Format[ApiError] = Json.format[ApiError]
 
   /**
     * Handle User creation request
@@ -61,13 +61,13 @@ class UsersController @Inject()(val messagesApi: MessagesApi,
       .fold(
         invalid ⇒
           Future.successful(BadRequest(Json.toJson(
-            Error("user.create.request.validation", JsError.toJson(invalid).toString, BAD_REQUEST)))),
+            ApiError("user.create.request.validation", JsError.toJson(invalid).toString, BAD_REQUEST)))),
         request ⇒
           validateUserCreateRequest(request).fold(
             reuest ⇒ doCreateUser(request),
             errors ⇒
               Future.successful(BadRequest(Json.toJson(
-                Error("user.create.request.validation", errors.toSeq.map(e ⇒ e.toString), BAD_REQUEST)))))
+                ApiError("user.create.request.validation", errors.toSeq.map(e ⇒ e.toString), BAD_REQUEST)))))
       )
   }
 
@@ -77,7 +77,7 @@ class UsersController @Inject()(val messagesApi: MessagesApi,
       .fold(
         invalid ⇒
           Future.successful(BadRequest(Json.toJson(
-            Error("user.login.request.validation", JsError.toJson(invalid).toString, BAD_REQUEST)))),
+            ApiError("user.login.request.validation", JsError.toJson(invalid).toString, BAD_REQUEST)))),
         request ⇒ {
           val credentials = Credentials(request.authData, request.password)
           credentialsProvider
@@ -95,12 +95,12 @@ class UsersController @Inject()(val messagesApi: MessagesApi,
                     }
                   case None =>
                     Future.successful(
-                      Unauthorized(Json.toJson(Error("user.login.notfound", UNAUTHORIZED))))
+                      Unauthorized(Json.toJson(ApiError("user.login.notfound", UNAUTHORIZED))))
                 }
             }
             .recover {
               case e: ProviderException =>
-                Unauthorized(Json.toJson(Error("user.login.invalid.credentials", UNAUTHORIZED)))
+                Unauthorized(Json.toJson(ApiError("user.login.invalid.credentials", UNAUTHORIZED)))
             }
         }
       )
@@ -126,7 +126,7 @@ class UsersController @Inject()(val messagesApi: MessagesApi,
                                   user.avatarUrl,
                                   user.loginInfo.providerID,
                                   user.loginInfo.providerKey))))
-      case _ => BadRequest(Json.toJson(Error("user.current.invalid", BAD_REQUEST)))
+      case _ => BadRequest(Json.toJson(ApiError("user.current.invalid", BAD_REQUEST)))
     }
   }
 
@@ -147,7 +147,7 @@ class UsersController @Inject()(val messagesApi: MessagesApi,
           /* User already exists */
           Future.successful(
             Conflict(Json.toJson(
-              Error("create.user.alreadyExist", Messages("create.user.alreadyExist"), CONFLICT))))
+              ApiError("create.user.alreadyExist", Messages("create.user.alreadyExist"), CONFLICT))))
         case None =>
           val authInfo = passwordHasherRegistry.current.hash(request.password)
           for {
