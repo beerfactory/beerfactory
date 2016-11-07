@@ -12,7 +12,7 @@ import cats.data.Xor
 import org.beerfactory.frontend.state.AppCircuit
 import org.beerfactory.shared.api.{ApiError, UserCurrentResponse, UserInfo, UserLoginRequest}
 import org.scalajs.dom.XMLHttpRequest
-import org.scalajs.dom.ext.Ajax
+import org.scalajs.dom.ext.{Ajax, AjaxException}
 import org.scalajs.dom.ext.Ajax.InputData
 
 import scala.concurrent.Future
@@ -51,7 +51,7 @@ object AjaxApiFacade extends ApiFacade {
 
   private def parseError(xhr: XMLHttpRequest): ApiError = {
     parse(xhr.responseText).fold(
-      failure => ApiError("apifacade.json.parse", Seq(failure.toString), xhr.status),
+      failure => ApiError("apifacade.json.parse", Seq(failure.toString, xhr.responseText), xhr.status),
       json =>
         json
           .as[ApiError]
@@ -65,31 +65,37 @@ object AjaxApiFacade extends ApiFacade {
         if (token.isEmpty)
           Future.successful(Left(parseError(xhr)))
         else Future.successful(Right(token))
-    }.recover { case e: Throwable ⇒ Left(ApiError("apifacade.login.recover.error", e.toString)) }
+    }.recover {
+      case aje: AjaxException ⇒ Left(ApiError("apifacade.login.ajax.exception", aje.toString, aje.xhr.status))
+      case e: Throwable ⇒ Left(ApiError("apifacade.login.recover.error", e.toString)) }
   }
 
   def getCurrentUser: Future[Either[ApiError, UserCurrentResponse]] = {
     jsonGet(url = "/api/v1/users/current").flatMap { xhr ⇒
+      println(xhr)
+      println(s"status=$xhr")
       xhr.status match {
         case 200 ⇒
           parse(xhr.responseText).fold(
             failure =>
               Future.successful(
-                Left(ApiError("apifacade.json.parse", Seq(failure.toString), xhr.status))),
+                Left(ApiError("apifacade.json.parse", Seq(failure.toString, xhr.responseText), xhr.status))),
             json =>
               json
                 .as[UserCurrentResponse]
                 .fold(
                   failure ⇒
                     Future.successful(Left(
-                      ApiError("apifacade.json.decode", Seq(failure.toString()), xhr.status))),
+                      ApiError("apifacade.json.decode", Seq(failure.toString(), xhr.responseText), xhr.status))),
                   resp ⇒ Future.successful(Right(resp))
               )
           )
         case status: Int ⇒
+          println(s"$status")
           Future.successful(Left(parseError(xhr)))
       }
     }.recover {
+      case aje: AjaxException ⇒ Left(ApiError("apifacade.current.user.ajax.exception", aje.toString, aje.xhr.status))
       case e: Throwable ⇒ Left(ApiError("apifacade.json.post.request.error", e.toString))
     }
   }
