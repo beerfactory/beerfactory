@@ -23,3 +23,5 @@ Server and client side can be embedded (with H2) to provide a all-in-one softwar
 ## Contact
 
 Join the chat room : [![Gitter](https://badges.gitter.im/beerfactory/beerfactory.svg)](https://gitter.im/beerfactory/beerfactory?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+
+[![Beerpay](https://beerpay.io/beerfactory/beerfactory/badge.svg)](https://beerpay.io/beerfactory/beerfactory)
