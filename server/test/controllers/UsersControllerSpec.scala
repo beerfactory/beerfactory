@@ -161,14 +161,14 @@ class UsersControllerSpec extends TestHelper {
     "fail with SEE_OTHER when called without authorization token" in {
       val Some(result) =
         route(app, FakeRequest(GET, routes.UsersController.currentUser().url))
-      status(result) mustEqual SEE_OTHER
+      status(result) mustEqual FORBIDDEN
     }
     "fail with SEE_OTHER when called with invalid authorization token" in {
       val Some(result) =
         route(app,
               FakeRequest(GET, routes.UsersController.currentUser().url)
                 .withHeaders("X-Auth-Token" → badToken))
-      status(result) mustEqual SEE_OTHER
+      status(result) mustEqual FORBIDDEN
     }
 
     "succeed and return UserInfo when called with a valid token" in {
