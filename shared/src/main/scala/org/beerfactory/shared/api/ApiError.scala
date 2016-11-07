@@ -8,13 +8,13 @@
  */
 package org.beerfactory.shared.api
 
-case class Error(id: String, details: Seq[String], statusCode: Int)
+case class ApiError(id: String, details: Seq[String], statusCode: Int)
 
-object Error {
+object ApiError {
   def apply(id: String, statusCode: Int) =
-    new Error(id, Seq.empty, statusCode)
+    new ApiError(id, Seq.empty, statusCode)
 
   def apply(id: String, detail: String, statusCode: Int = 0) =
-    new Error(id, Seq(detail), statusCode)
+    new ApiError(id, Seq(detail), statusCode)
 
 }

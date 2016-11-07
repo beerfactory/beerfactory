@@ -29,6 +29,7 @@ object Dependencies {
     val react      = "15.3.1"
     val semanticUI = "2.2.2"
     val jQuery     = "3.1.0"
+    val jsJoda     = "1.1.8"
   }
 
   val commonDependencies = Def.setting(
@@ -67,12 +68,13 @@ object Dependencies {
 
   val clientDependencies = Def.setting(
     Seq(
-      "com.github.japgolly.scalajs-react" %%% "core"            % V.scalajsReact,
-      "com.github.japgolly.scalajs-react" %%% "extra"           % V.scalajsReact,
-      "com.github.japgolly.scalacss"      %%% "ext-react"       % V.scalaCSS,
-      "me.chrons"                         %%% "diode"           % V.diode,
-      "me.chrons"                         %%% "diode-react"     % V.diode,
-      "io.github.soc"                     %%% "scala-java-time" % "2.0.0-M3",
+      "com.github.japgolly.scalajs-react" %%% "core"                        % V.scalajsReact,
+      "com.github.japgolly.scalajs-react" %%% "extra"                       % V.scalajsReact,
+      "com.github.japgolly.scalacss"      %%% "ext-react"                   % V.scalaCSS,
+      "me.chrons"                         %%% "diode"                       % V.diode,
+      "me.chrons"                         %%% "diode-react"                 % V.diode,
+      "com.zoepepper"                     %%% "scalajs-jsjoda"              % "1.0.4",
+      "com.zoepepper"                     %%% "scalajs-jsjoda-as-java-time" % "1.0.4",
       //    "com.lihaoyi"                       %%% "upickle"     % V.µPickle,
       "org.scalatest" %%% "scalatest" % V.scalatest % "test"
     ) ++ Seq(
@@ -87,6 +89,7 @@ object Dependencies {
     "org.webjars.bower" % "react"       % jsV.react / "react-dom.js" minified "react-dom.min.js" dependsOn "react-with-addons.js" commonJSName "ReactDOM",
     "org.webjars.bower" % "react"       % jsV.react / "react-dom-server.js" minified "react-dom-server.min.js" dependsOn "react-dom.js" commonJSName "ReactDOMServer",
     "org.webjars"       % "jquery"      % jsV.jQuery / "jquery.js" minified "jquery.min.js",
-    "org.webjars"       % "Semantic-UI" % jsV.semanticUI / "semantic.js" minified "semantic.min.js" dependsOn "jquery.js"
+    "org.webjars"       % "Semantic-UI" % jsV.semanticUI / "semantic.js" minified "semantic.min.js" dependsOn "jquery.js",
+    "org.webjars.npm"   % "js-joda"     % jsV.jsJoda / "dist/js-joda.js" minified "dist/js-joda.min.js"
   )
 }

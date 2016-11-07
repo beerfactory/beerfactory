@@ -11,7 +11,7 @@ package controllers
 import java.time.Instant
 
 import org.beerfactory.shared.api.{
-  ApiError$,
+  ApiError,
   UserCreateRequest,
   UserCreateResponse,
   UserCurrentResponse,
