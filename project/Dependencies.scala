@@ -9,7 +9,7 @@ object Dependencies {
     val scalatest    = "3.0.0"
     val scalajsReact = "0.11.2"
     val scalaCSS     = "0.5.0"
-    val diode        = "1.0.0"
+    val diode        = "1.1.0"
     val h2           = "1.4.192"
     val akkaHttpJson = "1.9.0"
     val scalatags    = "0.6.0"
