@@ -16,6 +16,10 @@ import org.scalajs.dom
 import org.scalajs.dom.ext
 import org.scalajs.dom.ext.Ajax
 
+/* Notes:
+ * `connect` actively listens to changes in the model and then instructs React to update the component
+ * `wrap` doesn't listen to changes. wrap provides a ModelProxy which is a convenience data structure to get access to things like dispatch
+ */
 object AppCircuit extends Circuit[RootModel] with ReactConnector[RootModel] {
 
   private val authTokenStorageKey = "beerfactory.auth.token"
