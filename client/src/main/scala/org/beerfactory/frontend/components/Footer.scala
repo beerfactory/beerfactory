@@ -20,7 +20,22 @@ object Footer {
   // format: off
   private val component = ReactComponentB[RouterCtl[Page]]("Footer").render_P { ctl =>
     footer(GlobalStyles.footer,
-      div(cls := "ui three column centered grid",
+      div(cls := "ui container",
+        div(cls := "ui two column stackable flex grid",
+          div(cls := "column",
+            strong("Beerfactory"),
+            a(href := "#", "Link"),
+            a(href := "#", "Link"),
+            a(href := "#", "Link"),
+            a(href := "#", "Link")
+          ),
+          div(cls := "column right aligned",
+            a(href := "#", "Link"),
+            a(href := "#", "Link"),
+            a(href := "#", "Link"),
+            a(href := "#", "Link")
+          )
+        ),
         div(cls := "row",
           div(cls := "column",
             h1(cls := "ui centered header", "Login to Beerfactory")
