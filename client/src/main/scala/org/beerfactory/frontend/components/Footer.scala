@@ -14,12 +14,22 @@ import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.all._
 import org.beerfactory.frontend.GlobalStyles
 import org.beerfactory.frontend.pages.Page
+import scalacss.ScalaCssReact._
 
 object Footer {
+  // format: off
   private val component = ReactComponentB[RouterCtl[Page]]("Footer").render_P { ctl =>
-    div(cls := "ui inverted vertical segment",
-        div(cls := "ui right aligned segment", "Version xxx"))
+    footer(GlobalStyles.footer,
+      div(cls := "ui three column centered grid",
+        div(cls := "row",
+          div(cls := "column",
+            h1(cls := "ui centered header", "Login to Beerfactory")
+          )
+        )
+      )
+    )
   }.configure(Reusability.shouldComponentUpdate).build
+  // format: on
 
   def apply(ctl: RouterCtl[Page]): ReactElement =
     component(ctl)

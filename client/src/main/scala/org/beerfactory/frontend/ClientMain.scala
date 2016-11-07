@@ -20,12 +20,12 @@ import japgolly.scalajs.react.extra.router.{
 }
 import japgolly.scalajs.react.vdom.all._
 import org.beerfactory.frontend.components.{Footer, MainMenu}
-import org.beerfactory.frontend.pages.{Home, HomePage, Login, Page}
+import org.beerfactory.frontend.pages._
 import org.beerfactory.frontend.state.AppCircuit
 import org.beerfactory.frontend.utils.AjaxApiFacade
 import org.scalajs.dom
-import scala.concurrent.ExecutionContext.Implicits.global
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scalacss.Defaults._
 import scalacss.ScalaCssReact._
 import scala.scalajs.js.JSApp
@@ -57,16 +57,17 @@ object ClientMain extends JSApp {
           Some(redirectToPage(Login)(Redirect.Push)))
 
     (trimSlashes
-      | securedPages).notFound(
-      redirectToPage(if (isUserLoggedIn) Home else Login)(Redirect.Replace))
+      | staticRoute("login", Login) ~> renderR(ctl => LoginPage(ctl))
+      | securedPages)
+      .notFound(redirectToPage(if (isUserLoggedIn) Home else Login)(Redirect.Replace))
   }.renderWith(layout)
 
-  def layout(c: RouterCtl[Page], r: Resolution[Page]) =
+  def layout(controller: RouterCtl[Page], r: Resolution[Page]) =
     div(
       cls := "ui vertical center aligned",
-      userWrapper(proxy => MainMenu(c, r.page, proxy)),
+      userWrapper(proxy => MainMenu(controller, r.page, proxy)),
       div(GlobalStyles.mainContainer, r.render()),
-      Footer(c)
+      Footer(controller)
     )
 
   def main(): Unit = {
