@@ -56,7 +56,8 @@ object ClientMain extends JSApp {
           Some(redirectToPage(Login)(Redirect.Push)))
 
     (trimSlashes
-      | staticRoute("login", Login) ~> renderR(ctl => LoginPage(ctl))
+      | staticRoute("login", Login) ~> renderR(
+        ctl => AppCircuit.wrap(_.userModel)(proxy => LoginPage(ctl, proxy)))
       | securedPages)
       .notFound(redirectToPage(if (isUserLoggedIn) Home else Login)(Redirect.Replace))
   }.renderWith(layout)
