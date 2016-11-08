@@ -32,9 +32,8 @@ import scala.scalajs.js.JSApp
 
 object ClientMain extends JSApp {
 
-  val userWrapper = AppCircuit.connect(_.userModel)
+  val userConnection = AppCircuit.connect(_.userModel)
 
-  val userReader = AppCircuit.zoom(_.userModel)
   val userInfoWriter =
     AppCircuit.zoomRW(_.userModel.userInfo)((m, v) ⇒
       m.copy(userModel = m.userModel.copy(userInfo = v)))
@@ -47,7 +46,7 @@ object ClientMain extends JSApp {
   val routerConfig = RouterConfigDsl[Page].buildConfig { dsl =>
     import dsl._
 
-    def isUserLoggedIn = userReader.zoom(_.isAuthentified).value
+    def isUserLoggedIn = AppCircuit.zoom(_.userModel.isAuthentified).value
 
     val securedPages =
       (emptyRule
@@ -65,7 +64,7 @@ object ClientMain extends JSApp {
   def layout(controller: RouterCtl[Page], r: Resolution[Page]) =
     div(
       cls := "ui vertical center aligned",
-      userWrapper(proxy => MainMenu(controller, r.page, proxy)),
+      userConnection(proxy => MainMenu(controller, r.page, proxy)),
       div(GlobalStyles.mainContainer, r.render()),
       Footer(controller)
     )

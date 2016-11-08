@@ -20,7 +20,7 @@ object GlobalStyles extends StyleSheet.Inline {
   )
 
   val mainContainer = style(
-    addClassNames("ui", "container"),
+    addClassNames("ui", "container", "more", "spacing"),
     marginTop(7 em)
   )
 
@@ -35,7 +35,6 @@ object GlobalStyles extends StyleSheet.Inline {
   )
 
   val footer = style(
-    addClassNames("ui", "container", "more", "spacing"),
     height(7 em),
     backgroundColor(c"#353535"),
     position.relative,
