@@ -20,8 +20,9 @@ object GlobalStyles extends StyleSheet.Inline {
   )
 
   val mainContainer = style(
-    addClassNames("ui", "container", "more", "spacing"),
-    marginTop(7 em)
+    addClassNames("ui", "container"),
+    marginTop(7 em),
+    marginBottom(7 em)
   )
 
   val loginView = style(

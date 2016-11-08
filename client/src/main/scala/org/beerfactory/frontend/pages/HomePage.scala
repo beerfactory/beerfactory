@@ -13,7 +13,6 @@ import diode.react.{ModelProxy, ReactConnectProxy}
 import japgolly.scalajs.react.ReactComponentB
 import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.all._
-import org.beerfactory.frontend.components.LoginView
 import org.beerfactory.frontend.state.UserModel
 
 object HomePage {
@@ -24,9 +23,7 @@ object HomePage {
 
   private val component = ReactComponentB[Props]("Home")
     .initialState_P(props => State(props.proxy.connect(m => m)))
-    .renderPS { (_, props, state) =>
-      LoginView()
-    }
+    .renderPS { ??? }
     .build
 
   def apply(router: RouterCtl[Page], proxy: ModelProxy[UserModel]) =

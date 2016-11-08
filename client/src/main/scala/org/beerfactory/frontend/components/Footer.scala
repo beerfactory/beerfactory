@@ -35,11 +35,6 @@ object Footer {
             a(href := "#", "Link"),
             a(href := "#", "Link")
           )
-        ),
-        div(cls := "row",
-          div(cls := "column",
-            h1(cls := "ui centered header", "Login to Beerfactory")
-          )
         )
       )
     )
