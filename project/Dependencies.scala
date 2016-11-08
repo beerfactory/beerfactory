@@ -7,7 +7,7 @@ object Dependencies {
     val akka         = "2.4.12"
     val scalactic    = "3.0.0"
     val scalatest    = "3.0.0"
-    val scalajsReact = "0.11.2"
+    val scalajsReact = "0.11.3"
     val scalaCSS     = "0.5.0"
     val diode        = "1.1.0"
     val h2           = "1.4.192"
@@ -26,7 +26,7 @@ object Dependencies {
   }
 
   object jsV {
-    val react      = "15.3.1"
+    val react      = "15.3.2"
     val semanticUI = "2.2.2"
     val jQuery     = "3.1.0"
     val jsJoda     = "1.1.8"
