@@ -16,7 +16,7 @@ import japgolly.scalajs.react.vdom.all._
 
 import scalacss.ScalaCssReact._
 import org.beerfactory.frontend.GlobalStyles
-import org.beerfactory.frontend.pages.{Home, Page}
+import org.beerfactory.frontend.pages.{Home, Page, Register}
 import org.beerfactory.frontend.state.UserModel
 
 object MainMenu {
@@ -27,7 +27,7 @@ object MainMenu {
       def button(name: String, target: Page) =
         div(
           cls := "item",
-          props.router.link(target)(name, cls := "ui inverted basic blue button")
+          props.router.link(target)(name, cls := "ui basic button")
         )
 
       div(cls := "ui fixed menu",
@@ -40,7 +40,7 @@ object MainMenu {
           } else {
             div(
               cls := "right menu",
-              button("Register", Home),
+              button("Register", Register),
               button("Login", Home)
             )
           })

@@ -10,6 +10,7 @@ package org.beerfactory.frontend
 
 package object pages {
   sealed trait Page
-  case object Home  extends Page
-  case object Login extends Page
+  case object Home     extends Page
+  case object Login    extends Page
+  case object Register extends Page
 }

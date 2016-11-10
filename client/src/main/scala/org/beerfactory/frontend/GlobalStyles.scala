@@ -34,12 +34,4 @@ object GlobalStyles extends StyleSheet.Inline {
     addClassName("column"),
     maxWidth(450 px)
   )
-
-  val footer = style(
-    height(7 em),
-    backgroundColor(c"#353535"),
-    position.relative,
-    paddingTop(40 px),
-    color(c"#fff")
-  )
 }

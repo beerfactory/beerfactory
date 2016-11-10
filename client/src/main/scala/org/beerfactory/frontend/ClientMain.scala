@@ -19,7 +19,7 @@ import japgolly.scalajs.react.extra.router.{
   RouterCtl
 }
 import japgolly.scalajs.react.vdom.all._
-import org.beerfactory.frontend.components.{Footer, MainMenu}
+import org.beerfactory.frontend.components.{Commons, Footer, MainMenu}
 import org.beerfactory.frontend.pages._
 import org.beerfactory.frontend.state.AppCircuit
 import org.beerfactory.frontend.utils.AjaxApiFacade
@@ -58,6 +58,7 @@ object ClientMain extends JSApp {
     (trimSlashes
       | staticRoute("login", Login) ~> renderR(
         ctl => AppCircuit.wrap(_.userModel)(proxy => LoginPage(ctl, proxy)))
+      | staticRoute("register", Register) ~> renderR(ctl => ???)
       | securedPages)
       .notFound(redirectToPage(if (isUserLoggedIn) Home else Login)(Redirect.Replace))
   }.renderWith(layout)

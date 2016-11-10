@@ -14,6 +14,7 @@ import scalacss.Defaults._
   * Created by njouanin on 07/11/16.
   */
 object LoginPage {
+
   case class Props(router: RouterCtl[Page], proxy: ModelProxy[UserModel])
 
   object Styles extends StyleSheet.Inline {
@@ -21,23 +22,30 @@ object LoginPage {
 
     val loginFormButton   = style(addClassNames("ui", "fluid", "large", "blue", "button"))
     val bottomFormMessage = style(addClassNames("ui", "bottom", "attached", "green", "message"))
-
+    val passwordFieldDesc = style(textAlign.right)
   }
+  Styles.addToDocument()
 
   private val LoginForm = ReactComponentB[Props]("LoginPage").render_P { props =>
-    // format: off
-    div(cls:= "column",
-      form(cls:= "ui column large form attached segment",
-        InputField(InputFieldProps(fieldName = "username", required=true, placeholder = Some("Email"), icon=Some("user"))),
-        InputField(InputFieldProps(fieldName = "password", required=true, placeholder = Some("Password"), icon=Some("lock"))),
-        div(Styles.loginFormButton, "Login")
-      ),
+    div(cls := "column",
+        form(cls := "ui column large form attached segment",
+             InputField(
+               InputFieldProps(fieldName = "username",
+                               required = true,
+                               placeholder = Some("Email"),
+                               icon = Some("user"))),
+             InputField(
+               InputFieldProps(fieldName = "password",
+                               required = true,
+                               placeholder = Some("Password"),
+                               icon = Some("lock"),
+                               descriptionStyle = Styles.passwordFieldDesc,
+                               description = Some(a(href := "#", "Forgot password ?")))),
+             div(Styles.loginFormButton, "Login")),
         div(Styles.bottomFormMessage,
-        i(cls := "add user icon"),
-        "New to Beerfactory? "
-      )
-    )
-    // format: on
+            i(cls := "add user icon"),
+            "New to Beerfactory? ",
+            props.router.link(Register)("Create an account.")))
   }.build
 
   private val component =

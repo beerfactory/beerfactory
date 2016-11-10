@@ -1,7 +1,8 @@
 package org.beerfactory.frontend.components
 
-import japgolly.scalajs.react.{ReactComponentB, ReactElement}
+import japgolly.scalajs.react.{ReactComponentB, ReactDOM, ReactElement}
 import japgolly.scalajs.react.vdom.all._
+import org.scalajs.dom.Element
 
 import scalacss.defaults.Exports.StyleSheet
 import scalacss.ScalaCssReact._
@@ -13,12 +14,13 @@ import scalacss.Defaults._
   */
 object Commons {
 
-  private object CommonStyles extends StyleSheet.Inline {
+  object CommonStyles extends StyleSheet.Inline {
     import dsl._
 
     val inputComment = style(color(c"#767676"))
 
   }
+  CommonStyles.addToDocument()
 
   val H1Header = ReactComponentB[String]("H1Header")
     .render_P(title => h1(cls := "cu centered header", title))
@@ -32,7 +34,7 @@ object Commons {
                              inputType: String = "text",
                              label: Option[String] = None,
                              placeholder: Option[String] = None,
-                             description: Option[ReactElement] = None,
+                             description: Option[TagMod] = None,
                              descriptionStyle: StyleA = CommonStyles.inputComment,
                              icon: Option[String] = None)
 
@@ -44,12 +46,12 @@ object Commons {
       div(cls := inputClass,
         p.label.map(l ⇒ label(l)),
         input(`type` := p.inputType, name:=p.fieldName, placeholder := p.placeholder.getOrElse[String]("")),
-        p.icon.map(iconName ⇒ i(cls := iconName + " icon")),
+        p.icon.map(iconName ⇒ i(cls := iconName + " icon"))
+      ),
         p.description.map(desc =>
           div(p.descriptionStyle,
             small(desc)
           )
-        )
       )
     )
     // format: on
