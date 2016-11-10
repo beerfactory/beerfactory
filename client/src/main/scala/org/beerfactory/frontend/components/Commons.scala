@@ -1,8 +1,8 @@
 package org.beerfactory.frontend.components
 
-import japgolly.scalajs.react.{ReactComponentB, ReactDOM, ReactElement}
+import japgolly.scalajs.react.{Callback, ReactComponentB, ReactDOM, ReactElement}
 import japgolly.scalajs.react.vdom.all._
-import org.scalajs.dom.Element
+import japgolly.scalajs.react._
 
 import scalacss.defaults.Exports.StyleSheet
 import scalacss.ScalaCssReact._
@@ -32,6 +32,7 @@ object Commons {
   case class InputFieldProps(fieldName: String,
                              required: Boolean,
                              inputType: String = "text",
+                             onChange: ReactEventI ⇒ Callback,
                              label: Option[String] = None,
                              placeholder: Option[String] = None,
                              description: Option[TagMod] = None,
@@ -41,20 +42,16 @@ object Commons {
   val InputField = ReactComponentB[InputFieldProps]("InputField").render_P { p =>
     val fieldClass = if (p.required) "required field" else "field"
     val inputClass = if (p.icon.isDefined) "ui left icon input" else "ui input"
-    // format: off
+
     div(cls := fieldClass,
-      div(cls := inputClass,
-        p.label.map(l ⇒ label(l)),
-        input(`type` := p.inputType, name:=p.fieldName, placeholder := p.placeholder.getOrElse[String]("")),
-        p.icon.map(iconName ⇒ i(cls := iconName + " icon"))
-      ),
-        p.description.map(desc =>
-          div(p.descriptionStyle,
-            small(desc)
-          )
-      )
-    )
-    // format: on
+        div(cls := inputClass,
+            p.label.map(l ⇒ label(l)),
+            input(`type` := p.inputType,
+                  name := p.fieldName,
+                  placeholder := p.placeholder.getOrElse[String](""),
+                  onChange ==> p.onChange),
+            p.icon.map(iconName ⇒ i(cls := iconName + " icon"))),
+        p.description.map(desc => div(p.descriptionStyle, small(desc))))
   }.build
 
 }
