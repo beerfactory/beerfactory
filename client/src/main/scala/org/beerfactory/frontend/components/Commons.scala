@@ -28,30 +28,4 @@ object Commons {
 
   val GridRow =
     ReactComponentB[ReactElement]("GridRow").render_P(child => div(cls := "row", child)).build
-
-  case class InputFieldProps(fieldName: String,
-                             required: Boolean,
-                             inputType: String = "text",
-                             onChange: ReactEventI ⇒ Callback,
-                             label: Option[String] = None,
-                             placeholder: Option[String] = None,
-                             description: Option[TagMod] = None,
-                             descriptionStyle: StyleA = CommonStyles.inputComment,
-                             icon: Option[String] = None)
-
-  val InputField = ReactComponentB[InputFieldProps]("InputField").render_P { p =>
-    val fieldClass = if (p.required) "required field" else "field"
-    val inputClass = if (p.icon.isDefined) "ui left icon input" else "ui input"
-
-    div(cls := fieldClass,
-        div(cls := inputClass,
-            p.label.map(l ⇒ label(l)),
-            input(`type` := p.inputType,
-                  name := p.fieldName,
-                  placeholder := p.placeholder.getOrElse[String](""),
-                  onChange ==> p.onChange),
-            p.icon.map(iconName ⇒ i(cls := iconName + " icon"))),
-        p.description.map(desc => div(p.descriptionStyle, small(desc))))
-  }.build
-
 }
