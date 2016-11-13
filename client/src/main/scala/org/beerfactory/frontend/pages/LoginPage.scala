@@ -18,7 +18,7 @@ object LoginPage {
 
   case class Props(router: RouterCtl[Page], proxy: ModelProxy[UserModel])
 
-  def login(authData: String, password: String) = {
+  def handleLogin(authData: String, password: String) = {
     Callback.future(
       AjaxApiFacade.login(UserLoginRequest(authData, password)).map(r ⇒ Callback.log(r.toString)))
   }
@@ -28,7 +28,7 @@ object LoginPage {
       // format: off
       div(cls := "ui three column centered grid",
         GridRow(H1Header("Login to Beerfactory")),
-        GridRow(LoginForm(LoginForm.Props(props.router, props.proxy, login)))
+        GridRow(LoginForm(LoginForm.Props(props.router, props.proxy, handleLogin)))
       )
       // format: on
     }.build

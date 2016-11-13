@@ -36,8 +36,8 @@ object LoginForm {
   Styles.addToDocument()
 
   class Backend(scope: BackendScope[Props, State]) {
-    def submit(state: State, props: Props) = {
-      props.onSubmit(state.authData, state.password)
+    def handleClick(props: Props, state: State)(e: ReactEventI) = {
+      e.preventDefaultCB >> props.onSubmit(state.authData, state.password)
     }
 
     def handleChangeAuthData(event: ReactEventI) = {
@@ -54,21 +54,22 @@ object LoginForm {
       div(cls := "column",
           form(cls := "ui column large form attached segment",
                InputField(
-                 InputFieldProps(fieldName = "authData",
-                                 required = true,
-                                 placeholder = Some("Email"),
-                                 icon = Some("user"),
-                                 onChange = handleChangeAuthData)),
+                 InputField.Props(fieldName = "authData",
+                                  inputType = "email",
+                                  required = true,
+                                  placeholder = Some("Email"),
+                                  icon = Some("user"),
+                                  onChange = handleChangeAuthData)),
                InputField(
-                 InputFieldProps(fieldName = "password",
-                                 required = true,
-                                 placeholder = Some("Password"),
-                                 icon = Some("lock"),
-                                 inputType = "password",
-                                 descriptionStyle = Styles.passwordFieldDesc,
-                                 description = Some(a(href := "#", "Forgot password ?")),
-                                 onChange = handleChangePassword)),
-               div(Styles.loginFormButton, onClick --> submit(s, props), "Login")),
+                 InputField.Props(fieldName = "password",
+                                  required = true,
+                                  placeholder = Some("Password"),
+                                  icon = Some("lock"),
+                                  inputType = "password",
+                                  descriptionStyle = Styles.passwordFieldDesc,
+                                  description = Some(a(href := "#", "Forgot password ?")),
+                                  onChange = handleChangePassword)),
+               button(Styles.loginFormButton, onClick ==> handleClick(props, s), "Login")),
           div(Styles.bottomFormMessage,
               i(cls := "add user icon"),
               "New to Beerfactory? ",
