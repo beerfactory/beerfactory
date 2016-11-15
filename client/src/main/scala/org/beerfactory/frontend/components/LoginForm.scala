@@ -80,7 +80,7 @@ object LoginForm {
     def render(props: Props, s: State) = {
       div(cls := "column",
           if (s.formError.isDefined)
-            div(Styles.leftAlignedErrorMessage, div(cls := "header", s.formError.get.generalErrorMessage, ul(cls:="list", for(v <- s.formError.get.errorMessages) yield li(v))))
+            div(Styles.leftAlignedErrorMessage, div(cls := "header", s.formError.get.generalErrorMessage), ul(cls:="list", for(v <- s.formError.get.errorMessages) yield li(v)))
           else
             div(),
           form(cls := "ui column large form attached segment",
