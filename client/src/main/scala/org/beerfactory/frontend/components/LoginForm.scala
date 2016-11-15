@@ -16,12 +16,10 @@ import org.beerfactory.frontend.components.Commons._
 import org.beerfactory.frontend.pages.{Page, Register}
 import org.beerfactory.frontend.state.UserModel
 import org.beerfactory.frontend.utils.AjaxApiFacade
-import org.beerfactory.shared.api.UserLoginRequest
 import org.beerfactory.shared.utils.Validators._
 import org.scalactic.Accumulation._
 import org.scalactic._
 
-import scala.collection.mutable
 import scalacss.Defaults._
 import scalacss.ScalaCssReact._
 import scalacss.defaults.Exports.StyleSheet
@@ -33,10 +31,9 @@ object LoginForm {
 
   case class Props(router: RouterCtl[Page],
                    proxy: ModelProxy[UserModel],
-                   onSubmit: (String, String) ⇒ Callback,
-                   errors: Map[String, String])
+                   onSubmit: (String, String) ⇒ Callback)
 
-  case class State(formData:FormData, errorFields : Set[String], generalErrorMessage: Option[String], errorMessages: Seq[String])
+  case class State(formData:FormData, formError: Option[FormError])
 
   object Styles extends StyleSheet.Inline {
     import dsl._
@@ -51,12 +48,11 @@ object LoginForm {
   class Backend(scope: BackendScope[Props, State]) {
 
     def validateForm(formData: FormData): Either[FormError, FormData] = {
-      val validations = for {
-        authData    ← Good(formData.authData) when notEmpty(("authData", "authData empty"))
-        password ← Good(formData.password) when notEmpty(("password", "password empty"))
-      } yield FormData(authData, password)
+      val authDavaValidation = Good(formData.authData) when notEmpty(("authData", "authData empty"))
+      val passwordValidation = Good(formData.password) when notEmpty(("password", "password empty"))
 
-      validations.fold(
+      //Errors are expected to be a tuple containing the name of the field in error and an error message
+      withGood(authDavaValidation, passwordValidation) {FormData(_,_)}.fold(
         formData => Right(formData),
         errors => Left(FormError(generalErrorMessage = "Invalid fields data",
           errorFields = errors.groupBy(error => error._1).keySet,
@@ -66,8 +62,8 @@ object LoginForm {
 
     def handleClick(props: Props, state: State)(e: ReactEventI) = {
       e.preventDefaultCB >> validateForm(state.formData).fold(
-          formError => scope.modState(s => s.copy(errorFields = formError.errorFields)),
-          formData => props.onSubmit(formData.authData, formData.password)
+          fe => scope.modState(s => s.copy(formError=Some(fe))),
+        fd => props.onSubmit(fd.authData, fd.password)
         )
     }
 
@@ -83,8 +79,8 @@ object LoginForm {
 
     def render(props: Props, s: State) = {
       div(cls := "column",
-          if (!props.errors.isEmpty)
-            div(Styles.leftAlignedErrorMessage, div(cls := "header", "Form errors"), ul(cls:="list", for((k,v) <- props.errors) yield li(v)))
+          if (s.formError.isDefined)
+            div(Styles.leftAlignedErrorMessage, div(cls := "header", s.formError.get.generalErrorMessage, ul(cls:="list", for(v <- s.formError.get.errorMessages) yield li(v))))
           else
             div(),
           form(cls := "ui column large form attached segment",
@@ -93,14 +89,14 @@ object LoginForm {
                  InputField.Props(fieldName = "authData",
                                   inputType = "email",
                                   required = true,
-                                  error = s.errorFields.contains("authData"),
+                                  error = s.formError.isDefined && s.formError.get.errorFields.contains("authData"),
                                   placeholder = Some("Email"),
                                   icon = Some("user"),
                                   onChange = handleChangeAuthData(s))),
                InputField(
                  InputField.Props(fieldName = "password",
                                   required = true,
-                                  error = s.errorFields.contains("password"),
+                                  error = s.formError.isDefined && s.formError.get.errorFields.contains("password"),
                                   placeholder = Some("Password"),
                                   icon = Some("lock"),
                                   inputType = "password",
@@ -117,7 +113,7 @@ object LoginForm {
 
   private val component =
     ReactComponentB[Props]("LoginForm")
-      .initialState_P(p ⇒ State(FormData("", ""), Set.empty, None, Seq.empty))
+      .initialState_P(p ⇒ State(FormData("", ""), None))
       .renderBackend[Backend]
       .build
 

@@ -33,10 +33,9 @@ object LoginPage {
     }
 
     def render(props: Props, state: State) =
-      div(
-        cls := "ui three column centered grid",
-        GridRow(H1Header("Login to Beerfactory")),
-        GridRow(LoginForm(LoginForm.Props(props.router, props.proxy, handleLogin, state.errors))))
+      div(cls := "ui three column centered grid",
+          GridRow(H1Header("Login to Beerfactory")),
+          GridRow(LoginForm(LoginForm.Props(props.router, props.proxy, handleLogin))))
   }
 
   private val component =
