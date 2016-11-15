@@ -17,20 +17,26 @@ import org.beerfactory.frontend.pages.{Page, Register}
 import org.beerfactory.frontend.state.UserModel
 import org.beerfactory.frontend.utils.AjaxApiFacade
 import org.beerfactory.shared.api.UserLoginRequest
+import org.beerfactory.shared.utils.Validators._
 import org.scalactic.Accumulation._
 import org.scalactic._
 
+import scala.collection.mutable
 import scalacss.Defaults._
 import scalacss.ScalaCssReact._
 import scalacss.defaults.Exports.StyleSheet
 
 object LoginForm {
+
+  case class FormData(authData: String, password: String)
+  case class FormError(generalErrorMessage: String, errorFields: Set[String], errorMessages: Seq[String])
+
   case class Props(router: RouterCtl[Page],
                    proxy: ModelProxy[UserModel],
                    onSubmit: (String, String) ⇒ Callback,
                    errors: Map[String, String])
 
-  case class State(authData: String, password: String, errorFields : Set[String], errorMessageHeader: Option[String], errorMessages: Seq[String])
+  case class State(formData:FormData, errorFields : Set[String], generalErrorMessage: Option[String], errorMessages: Seq[String])
 
   object Styles extends StyleSheet.Inline {
     import dsl._
@@ -44,41 +50,35 @@ object LoginForm {
 
   class Backend(scope: BackendScope[Props, State]) {
 
-    def validateFields(state: State): Callback = {
-      def validateAuthData(authData: String): Callback = {
-        val trimmed = authData.trim
-        if (trimmed.isEmpty)
-          scope.modState(s ⇒ s.copy(errorFields = s.errorFields + "authData", errorMessageHeader = Some("Invalid input")))
-        else
-          Callback.empty
-      }
+    def validateForm(formData: FormData): Either[FormError, FormData] = {
+      val validations = for {
+        authData    ← Good(formData.authData) when notEmpty(("authData", "authData empty"))
+        password ← Good(formData.password) when notEmpty(("password", "password empty"))
+      } yield FormData(authData, password)
 
-      def validatePassword(password: String): Callback = {
-        val trimmed = password.trim
-        if (trimmed.isEmpty)
-          scope.modState(s ⇒ s.copy(errorFields = s.errorFields + "password", errorMessageHeader = Some("Invalid input")))
-        else
-          Callback.empty
-      }
-
-      scope.modState(s ⇒ s.copy(errorFields = Set.empty)) >> validateAuthData(state.authData) >> validatePassword(state.password) >> Callback.log(s"validate=$state")
+      validations.fold(
+        formData => Right(formData),
+        errors => Left(FormError(generalErrorMessage = "Invalid fields data",
+          errorFields = errors.groupBy(error => error._1).keySet,
+          errorMessages = errors.map(v => v._2)))
+      )
     }
 
     def handleClick(props: Props, state: State)(e: ReactEventI) = {
-      e.preventDefaultCB >> validateFields(state) >> scope.state.flatMap{ s =>
-        println(s"${s}")
-        if(s.errorFields.isEmpty) props.onSubmit(s.authData, s.password) else Callback.empty
-      }
+      e.preventDefaultCB >> validateForm(state.formData).fold(
+          formError => scope.modState(s => s.copy(errorFields = formError.errorFields)),
+          formData => props.onSubmit(formData.authData, formData.password)
+        )
     }
 
     def handleChangeAuthData(state: State)(event: ReactEventI) = {
       val text = event.target.value
-      scope.modState(s ⇒ s.copy(authData = text))// >> validateFields(state)
+      scope.modState(s ⇒ s.copy(formData=s.formData.copy(authData = text)))
     }
 
     def handleChangePassword(state: State)(event: ReactEventI) = {
       val text = event.target.value
-      scope.modState(s ⇒ s.copy(password = text))// >> validateFields(state)
+      scope.modState(s ⇒ s.copy(formData=s.formData.copy(password = text)))
     }
 
     def render(props: Props, s: State) = {
@@ -117,7 +117,7 @@ object LoginForm {
 
   private val component =
     ReactComponentB[Props]("LoginForm")
-      .initialState_P(p ⇒ State("", "", Set.empty, None, Seq.empty))
+      .initialState_P(p ⇒ State(FormData("", ""), Set.empty, None, Seq.empty))
       .renderBackend[Backend]
       .build
 
