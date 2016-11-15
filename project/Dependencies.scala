@@ -76,6 +76,7 @@ object Dependencies {
       "com.zoepepper"                     %%% "scalajs-jsjoda"              % "1.0.4",
       "com.zoepepper"                     %%% "scalajs-jsjoda-as-java-time" % "1.0.4",
       //    "com.lihaoyi"                       %%% "upickle"     % V.µPickle,
+      "org.scalactic" %%% "scalactic" % V.scalactic,
       "org.scalatest" %%% "scalatest" % V.scalatest % "test"
     ) ++ Seq(
       "io.circe" %%% "circe-core",

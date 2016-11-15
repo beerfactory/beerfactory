@@ -28,7 +28,7 @@ import utils.auth.DefaultEnv
 import play.api.libs.json._
 import play.api.mvc.{Controller, Request, RequestHeader, Result}
 import play.api.libs.concurrent.Execution.Implicits._
-import utils.Validators._
+import org.beerfactory.shared.utils.Validators._
 
 import scala.concurrent.Future
 
@@ -64,7 +64,7 @@ class UsersController @Inject()(val messagesApi: MessagesApi,
             ApiError("user.create.request.validation", JsError.toJson(invalid).toString, BAD_REQUEST)))),
         request ⇒
           validateUserCreateRequest(request).fold(
-            reuest ⇒ doCreateUser(request),
+            request ⇒ doCreateUser(request),
             errors ⇒
               Future.successful(BadRequest(Json.toJson(
                 ApiError("user.create.request.validation", errors.toSeq.map(e ⇒ e.toString), BAD_REQUEST)))))
