@@ -51,6 +51,7 @@ object LoginForm {
       val authDavaValidation = Good(formData.authData) when notEmpty(("authData", "authData empty"))
       val passwordValidation = Good(formData.password) when notEmpty(("password", "password empty"))
 
+      println(s"validateForm: $formData")
       //Errors are expected to be a tuple containing the name of the field in error and an error message
       withGood(authDavaValidation, passwordValidation) {FormData(_,_)}.fold(
         formData => Right(formData),
@@ -61,6 +62,7 @@ object LoginForm {
     }
 
     def handleClick(props: Props, state: State)(e: ReactEventI) = {
+      println(s"handleClick: $state")
       e.preventDefaultCB >> validateForm(state.formData).fold(
           fe => scope.modState(s => s.copy(formError=Some(fe))),
         fd => props.onSubmit(fd.authData, fd.password)
@@ -68,12 +70,32 @@ object LoginForm {
     }
 
     def handleChangeAuthData(state: State)(event: ReactEventI) = {
+/*
+      val newFormData = state.formData.copy(authData = event.target.value)
+      val validations = validateForm(newFormData)
+      println(s"handleChangeAuthData: $state / $newFormData / $validations")
+      validations.fold(
+        fe => scope.modState(s => s.copy(formError=Some(fe))),
+        fd => scope.modState(s => s.copy(formData=fd, formError = None))
+      )
+*/
       val text = event.target.value
+      println(s"handleChangeAuthData: $state")
       scope.modState(s ⇒ s.copy(formData=s.formData.copy(authData = text)))
     }
 
     def handleChangePassword(state: State)(event: ReactEventI) = {
+/*
+      val newFormData = state.formData.copy(password = event.target.value)
+      val validations = validateForm(newFormData)
+      println(s"handleChangePassword: $state / $newFormData / $validations")
+      validations.fold(
+        fe => scope.modState(s => s.copy(formError=Some(fe))),
+        fd => scope.modState(s => s.copy(formData=fd, formError = None))
+      )
+*/
       val text = event.target.value
+      println(s"handleChangePassword: $state")
       scope.modState(s ⇒ s.copy(formData=s.formData.copy(password = text)))
     }
 
