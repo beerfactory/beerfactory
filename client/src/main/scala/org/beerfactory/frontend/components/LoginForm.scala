@@ -70,33 +70,15 @@ object LoginForm {
     }
 
     def handleChangeAuthData(state: State)(event: ReactEventI) = {
-/*
-      val newFormData = state.formData.copy(authData = event.target.value)
-      val validations = validateForm(newFormData)
-      println(s"handleChangeAuthData: $state / $newFormData / $validations")
-      validations.fold(
-        fe => scope.modState(s => s.copy(formError=Some(fe))),
-        fd => scope.modState(s => s.copy(formData=fd, formError = None))
-      )
-*/
       val text = event.target.value
       println(s"handleChangeAuthData: $state")
-      scope.modState(s ⇒ s.copy(formData=s.formData.copy(authData = text)))
+      scope.modState(s ⇒ s.copy(formData=s.formData.copy(authData = text), formError = None))
     }
 
     def handleChangePassword(state: State)(event: ReactEventI) = {
-/*
-      val newFormData = state.formData.copy(password = event.target.value)
-      val validations = validateForm(newFormData)
-      println(s"handleChangePassword: $state / $newFormData / $validations")
-      validations.fold(
-        fe => scope.modState(s => s.copy(formError=Some(fe))),
-        fd => scope.modState(s => s.copy(formData=fd, formError = None))
-      )
-*/
       val text = event.target.value
       println(s"handleChangePassword: $state")
-      scope.modState(s ⇒ s.copy(formData=s.formData.copy(password = text)))
+      scope.modState(s ⇒ s.copy(formData=s.formData.copy(password = text), formError = None))
     }
 
     def render(props: Props, s: State) = {
