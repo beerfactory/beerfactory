@@ -21,26 +21,33 @@ object LoginPage {
 
   case class Props(router: RouterCtl[Page], proxy: ModelProxy[UserModel])
 
-  case class State(authData: String, password: String, errors: Map[String, String])
+  case class State(authData: String, password: String, errorMessage: Option[String])
 
   class Backend(scope: BackendScope[Props, State]) {
 
     def handleLogin(authData: String, password: String) = {
       Callback.future(
-        AjaxApiFacade
-          .login(UserLoginRequest(authData, password))
-          .map(r ⇒ Callback.log(r.toString)))
+        AjaxApiFacade.login(UserLoginRequest(authData, password))
+          map {
+            case Left(apiError) ⇒
+              scope.modState(s ⇒
+                s.copy(
+                  errorMessage = Some(s"Authentication failed with code ${apiError.statusCode}")))
+            case Right(token) ⇒ Callback.log(token)
+          })
     }
 
     def render(props: Props, state: State) =
-      div(cls := "ui three column centered grid",
-          GridRow(H1Header("Login to Beerfactory")),
-          GridRow(LoginForm(LoginForm.Props(props.router, props.proxy, handleLogin))))
+      div(
+        cls := "ui three column centered grid",
+        GridRow(H1Header("Login to Beerfactory")),
+        GridRow(
+          LoginForm(LoginForm.Props(props.router, props.proxy, handleLogin, state.errorMessage))))
   }
 
   private val component =
     ReactComponentB[Props]("LoginPage")
-      .initialState(State("", "", Map[String, String]()))
+      .initialState(State("", "", None))
       .renderBackend[Backend]
       .build
 

@@ -27,11 +27,12 @@ import scalacss.defaults.Exports.StyleSheet
 object LoginForm {
 
   case class FormData(authData: String, password: String)
-  case class FormError(generalErrorMessage: String, errorFields: Set[String], errorMessages: Seq[String])
+  case class FormError(headerMessage: String, errorFields: Set[String], errorMessages: Seq[String])
 
   case class Props(router: RouterCtl[Page],
                    proxy: ModelProxy[UserModel],
-                   onSubmit: (String, String) ⇒ Callback)
+                   onSubmit: (String, String) ⇒ Callback,
+                   errorMessage: Option[String])
 
   case class State(formData:FormData, formError: Option[FormError])
 
@@ -48,21 +49,19 @@ object LoginForm {
   class Backend(scope: BackendScope[Props, State]) {
 
     def validateForm(formData: FormData): Either[FormError, FormData] = {
-      val authDavaValidation = Good(formData.authData) when notEmpty(("authData", "authData empty"))
-      val passwordValidation = Good(formData.password) when notEmpty(("password", "password empty"))
+      val authDavaValidation = Good(formData.authData) when notEmpty(("authData", "e-mail must not be empty"))
+      val passwordValidation = Good(formData.password) when notEmpty(("password", "password must not be empty"))
 
-      println(s"validateForm: $formData")
       //Errors are expected to be a tuple containing the name of the field in error and an error message
       withGood(authDavaValidation, passwordValidation) {FormData(_,_)}.fold(
         formData => Right(formData),
-        errors => Left(FormError(generalErrorMessage = "Invalid fields data",
+        errors => Left(FormError(headerMessage = "Invalid form input data",
           errorFields = errors.groupBy(error => error._1).keySet,
           errorMessages = errors.map(v => v._2)))
       )
     }
 
     def handleClick(props: Props, state: State)(e: ReactEventI) = {
-      println(s"handleClick: $state")
       e.preventDefaultCB >> validateForm(state.formData).fold(
           fe => scope.modState(s => s.copy(formError=Some(fe))),
         fd => props.onSubmit(fd.authData, fd.password)
@@ -71,22 +70,22 @@ object LoginForm {
 
     def handleChangeAuthData(state: State)(event: ReactEventI) = {
       val text = event.target.value
-      println(s"handleChangeAuthData: $state")
       scope.modState(s ⇒ s.copy(formData=s.formData.copy(authData = text), formError = None))
     }
 
     def handleChangePassword(state: State)(event: ReactEventI) = {
       val text = event.target.value
-      println(s"handleChangePassword: $state")
       scope.modState(s ⇒ s.copy(formData=s.formData.copy(password = text), formError = None))
     }
 
     def render(props: Props, s: State) = {
       div(cls := "column",
-          if (s.formError.isDefined)
-            div(Styles.leftAlignedErrorMessage, div(cls := "header", s.formError.get.generalErrorMessage), ul(cls:="list", for(v <- s.formError.get.errorMessages) yield li(v)))
-          else
-            div(),
+          if (s.formError.isDefined) {
+            div(Styles.leftAlignedErrorMessage, div(cls := "header", s.formError.get.headerMessage), ul(cls:="list", for(v <- s.formError.get.errorMessages) yield li(v)))
+          }
+          else {
+              div()
+          },
           form(cls := "ui column large form attached segment",
                div(cls := "ui error message", div(cls := "header", "Header"), p("Error")),
                InputField(
@@ -117,8 +116,17 @@ object LoginForm {
 
   private val component =
     ReactComponentB[Props]("LoginForm")
-      .initialState_P(p ⇒ State(FormData("", ""), None))
+      .initialState_P(p ⇒ State(FormData("", ""), p.errorMessage match {
+        case Some(error) ⇒ Some(FormError(error, Set.empty, Seq.empty))
+        case _ ⇒ None
+      }))
       .renderBackend[Backend]
+        .componentWillReceiveProps(update =>
+          if(update.nextProps.errorMessage.isDefined)
+            update.$.modState(state => state.copy(formError=Some(FormError(update.nextProps.errorMessage.get, Set.empty, Seq.empty))))
+        else
+            Callback.empty
+        )
       .build
 
   def apply(props: Props) = component(props)
