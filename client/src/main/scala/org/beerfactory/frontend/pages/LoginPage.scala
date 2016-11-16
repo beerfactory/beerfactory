@@ -3,7 +3,7 @@ package org.beerfactory.frontend.pages
 import diode.react.ModelProxy
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
-import org.beerfactory.frontend.state.UserModel
+import org.beerfactory.frontend.state.{UserLogin, UserModel}
 import japgolly.scalajs.react.vdom.all._
 import org.beerfactory.frontend.components.Commons._
 import org.beerfactory.frontend.components.LoginForm
@@ -33,7 +33,8 @@ object LoginPage {
               scope.modState(s ⇒
                 s.copy(
                   errorMessage = Some(s"Authentication failed with code ${apiError.statusCode}")))
-            case Right(token) ⇒ Callback.log(token)
+            case Right(token) ⇒
+              scope.props.flatMap(props => props.proxy.dispatchCB(UserLogin(token)))
           })
     }
 
