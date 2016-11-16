@@ -22,24 +22,25 @@ import org.scalajs.dom.ext.Ajax
  */
 object AppCircuit extends Circuit[RootModel] with ReactConnector[RootModel] {
 
-  private val authTokenStorageKey = "beerfactory.auth.token"
-
   private def getFromLocalStorage(key: String): String = {
     try {
-      dom.window.localStorage.getItem(authTokenStorageKey)
+      dom.window.localStorage.getItem(key)
     } catch {
       case _: Exception ⇒ ""
     }
   }
 
+  def storeAuthToken(token: String) =
+    dom.window.localStorage.setItem("beerfactory.auth.token", token)
+
   override protected def initialModel = {
-    RootModel(
-      userModel = UserModel(
-        authToken = getFromLocalStorage(authTokenStorageKey) match {
-          case null          ⇒ Empty
-          case token: String ⇒ Ready(token)
-        }
-      ))
+    RootModel(userModel = UserModel(
+                authToken = getFromLocalStorage("beerfactory.auth.token") match {
+                  case null          ⇒ Empty
+                  case token: String ⇒ Ready(token)
+                }
+              ),
+              lastError = None)
   }
 
   override protected val actionHandler = composeHandlers(
