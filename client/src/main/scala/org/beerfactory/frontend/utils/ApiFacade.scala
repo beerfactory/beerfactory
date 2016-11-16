@@ -71,9 +71,7 @@ object AjaxApiFacade extends ApiFacade {
   }
 
   def getCurrentUser: Future[Either[ApiError, UserCurrentResponse]] = {
-    jsonGet(url = "/api/v1/users/current").flatMap { xhr ⇒
-      println(xhr)
-      println(s"status=$xhr")
+    jsonGet(url = "/api/v1/users/current", withCredentials = true).flatMap { xhr ⇒
       xhr.status match {
         case 200 ⇒
           parse(xhr.responseText).fold(
@@ -91,7 +89,6 @@ object AjaxApiFacade extends ApiFacade {
               )
           )
         case status: Int ⇒
-          println(s"$status")
           Future.successful(Left(parseError(xhr)))
       }
     }.recover {
@@ -129,7 +126,7 @@ object AjaxApiFacade extends ApiFacade {
     val getHeaders = withCredentials match {
       case false ⇒ headers + ("Content-Type" → "application/json")
       case true ⇒
-        headers + ("Content-Type" → "application/json") + ("X-Auth-Token" → authTokenReader.value.get)
+        headers + ("Content-Type" → "application/json") + ("X-Auth-Token" → authTokenReader.value.getOrElse(""))
     }
     Ajax.get(url, data, timeout, getHeaders, withCredentials, responseType)
   }
