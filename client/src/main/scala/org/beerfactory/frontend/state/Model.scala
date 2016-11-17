@@ -8,7 +8,7 @@
  */
 package org.beerfactory.frontend.state
 
-import diode.data.Pot
+import diode.data.{Pot, Ready}
 import diode.{Action, ActionHandler, Effect, ModelRW}
 import org.beerfactory.frontend.utils.AjaxApiFacade
 import org.beerfactory.shared.api.{ApiError, UserCurrentResponse, UserInfo}
@@ -17,9 +17,7 @@ import slogging.LazyLogging
 // Application model
 case class RootModel(userModel: UserModel, lastError: Option[ApiError])
 
-case class UserModel(isAuthentified: Boolean = false,
-                     userInfo: Option[UserInfo] = None,
-                     authToken: Pot[String] = Pot.empty)
+case class UserModel(userInfo: Pot[UserInfo], authToken: Pot[String])
 
 // Actions
 case class UserLogin(token: String)        extends Action
@@ -34,11 +32,10 @@ class UserModelHandler[M](modelRW: ModelRW[M, UserModel])
     case UserLogin(token) =>
       logger.trace("Handling UserLogin action. Token={}", token)
       AppCircuit.storeAuthToken(token)
-      updated(value.copy(isAuthentified = true, authToken = value.authToken.ready(token)),
-              UserEffects.getUserInfo())
+      updated(value.copy(authToken = value.authToken.ready(token)), UserEffects.getUserInfo())
     case SetUserInfo(info) ⇒
       logger.trace("Handling SetUserInfo action. info={}", info)
-      updated(value.copy(userInfo = Some(info)))
+      updated(value.copy(userInfo = Ready(info)))
   }
 }
 

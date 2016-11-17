@@ -30,20 +30,23 @@ object MainMenu {
           props.router.link(target)(name, cls := "ui basic button")
         )
 
-      div(cls := "ui fixed menu",
-          props.router.link(Home)(cls := "header item")(
-            img(GlobalStyles.imgLogo, src := "/assets/images/logo.png"),
-            "Beerfactory"
-          ),
-          if (props.proxy.value.isAuthentified) {
-            div()
-          } else {
-            div(
-              cls := "right menu",
-              button("Register", Register),
-              button("Login", Home)
-            )
-          })
+      div(
+        cls := "ui fixed menu",
+        props.router.link(Home)(cls := "header item")(
+          img(GlobalStyles.imgLogo, src := "/assets/images/logo.png"),
+          "Beerfactory"
+        ),
+        if (props.proxy.value.userInfo.isReady) {
+          div(cls := "right menu",
+              div(cls := "item",
+                  img(cls := "ui avatar image", src := props.proxy.value.userInfo.get.avatarUrl)))
+        } else {
+          div(
+            cls := "right menu",
+            button("Register", Register),
+            button("Login", Home)
+          )
+        })
     }
   }
 

@@ -8,7 +8,6 @@
  */
 package org.beerfactory.frontend
 
-import diode.data.{Empty, Ready}
 import japgolly.scalajs.react
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.{
@@ -20,11 +19,9 @@ import japgolly.scalajs.react.extra.router.{
   RouterCtl
 }
 import japgolly.scalajs.react.vdom.all._
-import org.beerfactory.frontend.components.{Commons, Footer, MainMenu}
+import org.beerfactory.frontend.components.{Footer, MainMenu}
 import org.beerfactory.frontend.pages._
-import org.beerfactory.frontend.state.AppCircuit.logger
 import org.beerfactory.frontend.state.{AppCircuit, UserLogin}
-import org.beerfactory.frontend.utils.AjaxApiFacade
 import org.scalajs.dom
 import slogging.{ConsoleLoggerFactory, LazyLogging, LoggerConfig}
 
@@ -52,7 +49,7 @@ object ClientMain extends JSApp with LazyLogging {
   val routerConfig = RouterConfigDsl[Page].buildConfig { dsl =>
     import dsl._
 
-    def isUserLoggedIn = AppCircuit.zoom(_.userModel.isAuthentified).value
+    def isUserLoggedIn = AppCircuit.zoom(_.userModel.authToken.isReady).value
 
     val securedPages =
       (emptyRule

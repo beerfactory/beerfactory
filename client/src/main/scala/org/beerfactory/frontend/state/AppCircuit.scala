@@ -24,7 +24,7 @@ object AppCircuit extends Circuit[RootModel] with ReactConnector[RootModel] with
     dom.window.localStorage.setItem("beerfactory.auth.token", token)
 
   override protected def initialModel = {
-    RootModel(userModel = UserModel(), lastError = None)
+    RootModel(userModel = UserModel(Empty, Empty), lastError = None)
   }
 
   override protected val actionHandler = composeHandlers(
