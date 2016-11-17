@@ -14,6 +14,7 @@ import org.beerfactory.shared.api.{ApiError, UserCurrentResponse, UserInfo, User
 import org.scalajs.dom.XMLHttpRequest
 import org.scalajs.dom.ext.{Ajax, AjaxException}
 import org.scalajs.dom.ext.Ajax.InputData
+import slogging.LazyLogging
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -23,7 +24,7 @@ trait ApiFacade {
   def getCurrentUser: Future[Either[ApiError, UserCurrentResponse]]
 }
 
-object AjaxApiFacade extends ApiFacade {
+object AjaxApiFacade extends ApiFacade with LazyLogging {
   import io.circe._, io.circe.generic.semiauto._
   import io.circe.syntax._
   import io.circe.parser._
@@ -126,7 +127,13 @@ object AjaxApiFacade extends ApiFacade {
     val getHeaders = withCredentials match {
       case false ⇒ headers + ("Content-Type" → "application/json")
       case true ⇒
-        headers + ("Content-Type" → "application/json") + ("X-Auth-Token" → authTokenReader.value.getOrElse(""))
+        if(authTokenReader.value.isReady)
+          headers + ("Content-Type" → "application/json") + ("X-Auth-Token" → authTokenReader.value.getOrElse(""))
+        else
+        {
+          logger.warn("Ajax call with creadentials but authToken not ready, X-Auth-Token header ignored")
+          headers + ("Content-Type" → "application/json")
+        }
     }
     Ajax.get(url, data, timeout, getHeaders, withCredentials, responseType)
   }
