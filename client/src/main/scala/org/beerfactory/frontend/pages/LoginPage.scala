@@ -34,7 +34,8 @@ object LoginPage {
                 s.copy(
                   errorMessage = Some(s"Authentication failed with code ${apiError.statusCode}")))
             case Right(token) ⇒
-              scope.props.flatMap(props => props.proxy.dispatchCB(UserLogin(token)))
+              scope.props.flatMap(props =>
+                props.proxy.dispatchCB(UserLogin(token)) >> props.router.set(Home))
           })
     }
 

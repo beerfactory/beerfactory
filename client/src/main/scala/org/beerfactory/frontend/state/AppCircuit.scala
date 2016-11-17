@@ -20,29 +20,11 @@ import slogging.LazyLogging
  */
 object AppCircuit extends Circuit[RootModel] with ReactConnector[RootModel] with LazyLogging {
 
-  private def getFromLocalStorage(key: String): String = {
-    try {
-      val item = dom.window.localStorage.getItem(key)
-      logger.trace("localStorage.getItem({})={}", key, item)
-      item
-    } catch {
-      case e: Exception ⇒
-        logger.warn("localStorage.getItem has thrown a exception, returning empty item", e)
-        ""
-    }
-  }
-
   def storeAuthToken(token: String) =
     dom.window.localStorage.setItem("beerfactory.auth.token", token)
 
   override protected def initialModel = {
-    RootModel(userModel = UserModel(
-                authToken = getFromLocalStorage("beerfactory.auth.token") match {
-                  case null          ⇒ Empty
-                  case token: String ⇒ Ready(token)
-                }
-              ),
-              lastError = None)
+    RootModel(userModel = UserModel(), lastError = None)
   }
 
   override protected val actionHandler = composeHandlers(

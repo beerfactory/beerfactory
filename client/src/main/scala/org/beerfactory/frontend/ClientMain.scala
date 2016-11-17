@@ -8,6 +8,7 @@
  */
 package org.beerfactory.frontend
 
+import diode.data.{Empty, Ready}
 import japgolly.scalajs.react
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.{
@@ -21,7 +22,8 @@ import japgolly.scalajs.react.extra.router.{
 import japgolly.scalajs.react.vdom.all._
 import org.beerfactory.frontend.components.{Commons, Footer, MainMenu}
 import org.beerfactory.frontend.pages._
-import org.beerfactory.frontend.state.AppCircuit
+import org.beerfactory.frontend.state.AppCircuit.logger
+import org.beerfactory.frontend.state.{AppCircuit, UserLogin}
 import org.beerfactory.frontend.utils.AjaxApiFacade
 import org.scalajs.dom
 import slogging.{ConsoleLoggerFactory, LazyLogging, LoggerConfig}
@@ -32,19 +34,20 @@ import scalacss.ScalaCssReact._
 import scala.scalajs.js.JSApp
 
 object ClientMain extends JSApp with LazyLogging {
-  LoggerConfig.factory = ConsoleLoggerFactory()
+
+  private def getFromLocalStorage(key: String): String = {
+    try {
+      val item = dom.window.localStorage.getItem(key)
+      logger.trace("localStorage.getItem({})={}", key, item)
+      item
+    } catch {
+      case e: Exception ⇒
+        logger.warn("localStorage.getItem has thrown a exception, returning empty item", e)
+        ""
+    }
+  }
 
   val userConnection = AppCircuit.connect(_.userModel)
-
-  val userInfoWriter =
-    AppCircuit.zoomRW(_.userModel.userInfo)((m, v) ⇒
-      m.copy(userModel = m.userModel.copy(userInfo = v)))
-
-  // Try to see if user is already authenticated (by an existing token in localStorage)
-  AjaxApiFacade.getCurrentUser.onSuccess {
-    case Right(resp) ⇒ userInfoWriter.updated(Some(resp.userInfo))
-    case Left(error) ⇒ logger.debug("getCurrentUser failed with error: {}", error)
-  }
 
   val routerConfig = RouterConfigDsl[Page].buildConfig { dsl =>
     import dsl._
@@ -75,7 +78,14 @@ object ClientMain extends JSApp with LazyLogging {
     )
 
   def main(): Unit = {
+    LoggerConfig.factory = ConsoleLoggerFactory()
     GlobalStyles.addToDocument()
+
+    // Try to see if user is already authenticated (by an existing token in localStorage)
+    getFromLocalStorage("beerfactory.auth.token") match {
+      case token: String ⇒ AppCircuit.dispatch(UserLogin(token))
+      case _             ⇒ ()
+    }
 
     val router = Router(BaseUrl.until_#, routerConfig)
     // tell React to render the router in the document body
