@@ -1,0 +1,1 @@
+curl -H "Content-type: application/json" -v -d '{"email":"some@user.com","password":"password"}' http://localhost:9000/api/v1/users/
