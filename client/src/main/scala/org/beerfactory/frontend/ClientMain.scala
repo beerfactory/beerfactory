@@ -24,13 +24,15 @@ import org.beerfactory.frontend.pages._
 import org.beerfactory.frontend.state.AppCircuit
 import org.beerfactory.frontend.utils.AjaxApiFacade
 import org.scalajs.dom
+import slogging.{ConsoleLoggerFactory, LazyLogging, LoggerConfig}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scalacss.Defaults._
 import scalacss.ScalaCssReact._
 import scala.scalajs.js.JSApp
 
-object ClientMain extends JSApp {
+object ClientMain extends JSApp with LazyLogging {
+  LoggerConfig.factory = ConsoleLoggerFactory()
 
   val userConnection = AppCircuit.connect(_.userModel)
 
@@ -38,9 +40,10 @@ object ClientMain extends JSApp {
     AppCircuit.zoomRW(_.userModel.userInfo)((m, v) ⇒
       m.copy(userModel = m.userModel.copy(userInfo = v)))
 
+  // Try to see if user is already authenticated (by an existing token in localStorage)
   AjaxApiFacade.getCurrentUser.onSuccess {
     case Right(resp) ⇒ userInfoWriter.updated(Some(resp.userInfo))
-    case Left(error) ⇒ println(error)
+    case Left(error) ⇒ logger.debug("getCurrentUser failed with error: {}", error)
   }
 
   val routerConfig = RouterConfigDsl[Page].buildConfig { dsl =>

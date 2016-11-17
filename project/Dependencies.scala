@@ -21,7 +21,7 @@ object Dependencies {
     val playSlick    = "2.0.0"
     val playMailer   = "5.0.0"
     val play         = "2.5.9"
-    val µPickle      = "0.4.3"
+    val slogging     = "0.5.1"
     val circe        = "0.5.1"
   }
 
@@ -75,9 +75,9 @@ object Dependencies {
       "me.chrons"                         %%% "diode-react"                 % V.diode,
       "com.zoepepper"                     %%% "scalajs-jsjoda"              % "1.0.4",
       "com.zoepepper"                     %%% "scalajs-jsjoda-as-java-time" % "1.0.4",
-      //    "com.lihaoyi"                       %%% "upickle"     % V.µPickle,
-      "org.scalactic" %%% "scalactic" % V.scalactic,
-      "org.scalatest" %%% "scalatest" % V.scalatest % "test"
+      "biz.enef"                          %%% "slogging"                    % V.slogging,
+      "org.scalactic"                     %%% "scalactic"                   % V.scalactic,
+      "org.scalatest"                     %%% "scalatest"                   % V.scalatest % "test"
     ) ++ Seq(
       "io.circe" %%% "circe-core",
       "io.circe" %%% "circe-generic",

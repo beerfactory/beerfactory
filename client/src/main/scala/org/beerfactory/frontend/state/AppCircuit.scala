@@ -8,25 +8,27 @@
  */
 package org.beerfactory.frontend.state
 
-import diode.{ActionHandler, Circuit}
-import diode.data.{Empty, Pot, Ready}
+import diode.Circuit
+import diode.data.{Empty, Ready}
 import diode.react.ReactConnector
-import org.beerfactory.shared.api.{UserInfo, UserLoginRequest}
 import org.scalajs.dom
-import org.scalajs.dom.ext
-import org.scalajs.dom.ext.Ajax
+import slogging.LazyLogging
 
 /* Notes:
  * `connect` actively listens to changes in the model and then instructs React to update the component
  * `wrap` doesn't listen to changes. wrap provides a ModelProxy which is a convenience data structure to get access to things like dispatch
  */
-object AppCircuit extends Circuit[RootModel] with ReactConnector[RootModel] {
+object AppCircuit extends Circuit[RootModel] with ReactConnector[RootModel] with LazyLogging {
 
   private def getFromLocalStorage(key: String): String = {
     try {
-      dom.window.localStorage.getItem(key)
+      val item = dom.window.localStorage.getItem(key)
+      logger.debug("localStorage.getItem({})={}", key, item)
+      item
     } catch {
-      case _: Exception ⇒ ""
+      case e: Exception ⇒
+        logger.warn("localStorage.getItem has thrown a exception, returning empty item", e)
+        ""
     }
   }
 
