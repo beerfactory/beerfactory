@@ -23,7 +23,7 @@ object AppCircuit extends Circuit[RootModel] with ReactConnector[RootModel] with
   private def getFromLocalStorage(key: String): String = {
     try {
       val item = dom.window.localStorage.getItem(key)
-      logger.debug("localStorage.getItem({})={}", key, item)
+      logger.trace("localStorage.getItem({})={}", key, item)
       item
     } catch {
       case e: Exception ⇒

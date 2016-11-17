@@ -12,6 +12,7 @@ import diode.data.Pot
 import diode.{Action, ActionHandler, Effect, ModelRW}
 import org.beerfactory.frontend.utils.AjaxApiFacade
 import org.beerfactory.shared.api.{ApiError, UserCurrentResponse, UserInfo}
+import slogging.LazyLogging
 
 // Application model
 case class RootModel(userModel: UserModel, lastError: Option[ApiError])
@@ -26,15 +27,17 @@ case class SetUserInfo(userInfo: UserInfo) extends Action
 
 case class SetError(error: ApiError) extends Action
 
-class UserModelHandler[M](modelRW: ModelRW[M, UserModel]) extends ActionHandler(modelRW) {
+class UserModelHandler[M](modelRW: ModelRW[M, UserModel])
+    extends ActionHandler(modelRW)
+    with LazyLogging {
   override def handle = {
     case UserLogin(token) =>
+      logger.trace("Handling UserLogin action. Token={}", token)
       AppCircuit.storeAuthToken(token)
-      println("User login")
       updated(value.copy(isAuthentified = true, authToken = value.authToken.ready(token)),
               UserEffects.getUserInfo())
     case SetUserInfo(info) ⇒
-      println(s"User info: $info")
+      logger.trace("Handling SetUserInfo action. info={}", info)
       updated(value.copy(userInfo = Some(info)))
   }
 }
