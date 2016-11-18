@@ -29,7 +29,7 @@ trait UserService extends IdentityService[User] {
   def save(loginInfo: LoginInfo,
            emailVerified: Boolean = false,
            email: String,
-           userName: Option[String],
+           userName: String,
            firstName: Option[String],
            lastName: Option[String],
            nickName: Option[String],

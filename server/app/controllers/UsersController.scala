@@ -195,18 +195,12 @@ class UsersController @Inject()(val messagesApi: MessagesApi,
     * @return the LoginInfo initialized
     */
   private def initLogInfo(request: UserCreateRequest): Future[LoginInfo] = {
-    request.userName match {
-      case None ⇒
-        // userName is empty. Create user credentials with request email
-        Future.successful(LoginInfo(CredentialsProvider.ID, request.email))
-      case Some(userName) =>
-        // userName is not empty. Retrieve the User and use its email instead of the request email
-        // This means that a user already exists with this username
-        userService.retrieveByUserName(userName).flatMap {
-          case None       ⇒ Future.successful(LoginInfo(CredentialsProvider.ID, request.email))
-          case Some(user) ⇒ Future.successful(LoginInfo(CredentialsProvider.ID, user.email))
-        }
-    }
+      // Retrieve the User and use its email instead of the request email
+      // This means that a user already exists with this username
+      userService.retrieveByUserName(request.userName).flatMap {
+        case None       ⇒ Future.successful(LoginInfo(CredentialsProvider.ID, request.email))
+        case Some(user) ⇒ Future.successful(LoginInfo(CredentialsProvider.ID, user.email))
+      }
   }
 
   private def validateUserCreateRequest(
@@ -214,6 +208,7 @@ class UsersController @Inject()(val messagesApi: MessagesApi,
     for {
       email    ← Good(request.email) when validEmailAddress("user.create.request.email.invalid")
       password ← Good(request.password) when notEmpty("user.create.request.password.empty")
-    } yield request.copy(email = email, password = password)
+      username ← Good(request.userName) when notEmpty("user.create.request.username.empty")
+    } yield request.copy(email = email, password = password, userName = username)
   }
 }

@@ -44,7 +44,7 @@ class UsersControllerSpec extends TestHelper {
       error.id mustEqual "user.create.request.validation"
     }
     "return BadRequest for invalid email" in {
-      val request = UserCreateRequest("not@@valid", "password")
+      val request = UserCreateRequest("not@@valid", "password", "userName")
       val Some(result) =
         route(app,
               FakeRequest(POST, routes.UsersController.create().url)
@@ -54,7 +54,17 @@ class UsersControllerSpec extends TestHelper {
       error.id mustEqual "user.create.request.validation"
     }
     "return BadRequest for empty password" in {
-      val request = UserCreateRequest("email@test.com", "")
+      val request = UserCreateRequest("email@test.com", "", "userName")
+      val Some(result) =
+        route(app,
+              FakeRequest(POST, routes.UsersController.create().url)
+                .withJsonBody(Json.toJson(request)))
+      status(result) mustEqual BAD_REQUEST
+      val Some(error) = Json.parse(contentAsString(result)).asOpt[ApiError]
+      error.id mustEqual "user.create.request.validation"
+    }
+    "return BadRequest for empty username" in {
+      val request = UserCreateRequest("email@test.com", "password", "")
       val Some(result) =
         route(app,
               FakeRequest(POST, routes.UsersController.create().url)
@@ -64,7 +74,7 @@ class UsersControllerSpec extends TestHelper {
       error.id mustEqual "user.create.request.validation"
     }
     "return Ok for valid request" in {
-      val request = UserCreateRequest("valid_request@test.com", "password")
+      val request = UserCreateRequest("valid_request@test.com", "password", "userName")
       val Some(result) =
         route(app,
               FakeRequest(POST, routes.UsersController.create().url)
@@ -78,7 +88,7 @@ class UsersControllerSpec extends TestHelper {
       response.userInfo.updatedAt.get mustBe a[Instant]
     }
     "return Bad if user with same email already exists" in {
-      val request = UserCreateRequest("first@test.com", "password", Some("first"))
+      val request = UserCreateRequest("first@test.com", "password", "first")
 
       // Create first user
       val Some(result) =
@@ -91,12 +101,12 @@ class UsersControllerSpec extends TestHelper {
       val Some(result2) =
         route(app,
               FakeRequest(POST, routes.UsersController.create().url)
-                .withJsonBody(Json.toJson(UserCreateRequest("first@test.com", "xxx"))))
+                .withJsonBody(Json.toJson(UserCreateRequest("first@test.com", "xxx", "second"))))
       status(result2) mustEqual CONFLICT
     }
 
     "return Bad if user with same username already exists" in {
-      val request = UserCreateRequest("second@test.com", "password", Some("second"))
+      val request = UserCreateRequest("second@test.com", "password", "second")
 
       // Create first user
       val Some(result) =
@@ -107,10 +117,9 @@ class UsersControllerSpec extends TestHelper {
 
       // Create second user with same username
       val Some(result3) =
-        route(
-          app,
-          FakeRequest(POST, routes.UsersController.create().url)
-            .withJsonBody(Json.toJson(UserCreateRequest("me@test.com", "xxx", Some("second")))))
+        route(app,
+              FakeRequest(POST, routes.UsersController.create().url)
+                .withJsonBody(Json.toJson(UserCreateRequest("me@test.com", "xxx", "second"))))
       status(result3) mustEqual CONFLICT
     }
   }
@@ -118,9 +127,10 @@ class UsersControllerSpec extends TestHelper {
   "UsersController.login" must {
     // Create some user
     val Some(result) =
-      route(app,
-            FakeRequest(POST, routes.UsersController.create().url).withJsonBody(
-              Json.toJson(UserCreateRequest("login@valid.com", "password", Some("success")))))
+      route(
+        app,
+        FakeRequest(POST, routes.UsersController.create().url)
+          .withJsonBody(Json.toJson(UserCreateRequest("login@valid.com", "password", "success"))))
     status(result) mustEqual OK
 
     "authorize login request with valid email/password" in {
@@ -175,8 +185,8 @@ class UsersControllerSpec extends TestHelper {
       // Create some user
       val Some(result) =
         route(app,
-              FakeRequest(POST, routes.UsersController.create().url)
-                .withJsonBody(Json.toJson(UserCreateRequest("current@valid.com", "password"))))
+              FakeRequest(POST, routes.UsersController.create().url).withJsonBody(
+                Json.toJson(UserCreateRequest("current@valid.com", "password", "current"))))
       status(result) mustEqual OK
 
       val Some(result2) =

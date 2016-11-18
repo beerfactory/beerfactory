@@ -18,7 +18,7 @@ case class DBUser(id: String,
                   loginInfoFK: String,
                   emailVerified: Boolean,
                   email: String,
-                  userName: Option[String],
+                  userName: String,
                   firstName: Option[String],
                   lastName: Option[String],
                   nickName: Option[String],
@@ -36,7 +36,7 @@ trait DBUserSchema { self: HasDatabaseConfigProvider[JdbcProfile] ⇒
     def loginInfoFK   = column[String]("login_info_fk")
     def emailVerified = column[Boolean]("email_verified", O.Default(false))
     def email         = column[String]("email")
-    def userName      = column[Option[String]]("username")
+    def userName      = column[String]("username")
     def firstName     = column[Option[String]]("firstname")
     def lastName      = column[Option[String]]("lastname")
     def nickName      = column[Option[String]]("nickname")

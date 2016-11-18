@@ -24,7 +24,7 @@ class UsersDaoSpec extends TestHelper {
                          LoginInfo("testProvider", "testKey"),
                          true,
                          "email@test.com",
-                         Some("userName"),
+                         "userName",
                          Some("firstName"),
                          Some("LastName"),
                          Some("nickName"))
