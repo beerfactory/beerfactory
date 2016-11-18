@@ -87,7 +87,6 @@ object LoginForm {
               div()
           },
           form(cls := "ui column large form attached segment",
-               div(cls := "ui error message", div(cls := "header", "Header"), p("Error")),
                InputField(
                  InputField.Props(fieldName = "authData",
                                   inputType = "email",
