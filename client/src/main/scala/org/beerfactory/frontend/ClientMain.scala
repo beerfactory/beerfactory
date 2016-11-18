@@ -61,7 +61,7 @@ object ClientMain extends JSApp with LazyLogging {
     (trimSlashes
       | staticRoute("login", Login) ~> renderR(
         ctl => AppCircuit.wrap(_.userModel)(proxy => LoginPage(ctl, proxy)))
-      | staticRoute("register", Register) ~> renderR(ctl => ???)
+      | staticRoute("register", Register) ~> renderR(ctl => RegisterPage(ctl))
       | securedPages)
       .notFound(redirectToPage(if (isUserLoggedIn) Home else Login)(Redirect.Replace))
   }.renderWith(layout)
