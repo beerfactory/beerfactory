@@ -16,6 +16,7 @@ import org.beerfactory.frontend.components.Commons._
 import org.beerfactory.frontend.pages.{Page, Register}
 import org.beerfactory.frontend.state.UserModel
 import org.beerfactory.frontend.utils.AjaxApiFacade
+import org.beerfactory.frontend.utils.Forms.FormError
 import org.beerfactory.shared.utils.Validators._
 import org.scalactic.Accumulation._
 import org.scalactic._
@@ -27,7 +28,6 @@ import scalacss.defaults.Exports.StyleSheet
 object LoginForm {
 
   case class FormData(authData: String, password: String)
-  case class FormError(headerMessage: String, errorFields: Set[String], errorMessages: Seq[String])
 
   case class Props(router: RouterCtl[Page],
                    proxy: ModelProxy[UserModel],
