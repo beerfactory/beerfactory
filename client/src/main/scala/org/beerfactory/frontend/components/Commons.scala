@@ -23,9 +23,14 @@ object Commons {
   CommonStyles.addToDocument()
 
   val H1Header = ReactComponentB[String]("H1Header")
-    .render_P(title => h1(cls := "cu centered header", title))
+    .render_P(title => h1(cls := "ui centered header", title))
     .build
 
   val GridRow =
     ReactComponentB[ReactElement]("GridRow").render_P(child => div(cls := "row", child)).build
+
+  val GridCenteredRow =
+    ReactComponentB[ReactElement]("GridCenteredRow")
+      .render_P(child => div(cls := "centered row", child))
+      .build
 }
