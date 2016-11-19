@@ -17,7 +17,7 @@ import scalacss.internal.StyleA
 
 object InputField {
   case class Props(fieldName: String,
-                   required: Boolean,
+                   required: Boolean = false,
                    error: Boolean = false,
                    inputType: String = "text",
                    onChange: ReactEventI ⇒ Callback,
@@ -47,12 +47,12 @@ object InputField {
         val inputClass = if (p.icon.isDefined) "ui left icon input" else "ui input"
 
         div(cls := fieldClass,
+            p.label.map(l ⇒ label(l)),
             div(cls := inputClass,
-                p.label.map(l ⇒ label(l)),
                 input(`type` := p.inputType,
                       name := p.fieldName,
                       placeholder := p.placeholder.getOrElse[String](""),
-                      onChange ==> handleOnChange(p)),
+                      onChange ==> p.onChange),
                 p.icon.map(iconName ⇒ i(cls := iconName + " icon"))),
             p.description.map(desc => div(p.descriptionStyle, small(desc))))
 
