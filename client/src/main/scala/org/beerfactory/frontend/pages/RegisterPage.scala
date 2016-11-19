@@ -17,8 +17,8 @@ object RegisterPage {
   class Backend(scope: BackendScope[Props, State]) {
 
     def render(props: Props, state: State) =
-      div(cls := "ui three column centered grid",
-          GridRow(H1Header("Register to Beerfactory")),
+      div(cls := "ui grid",
+          GridCenteredRow(H1Header("Register to Beerfactory")),
           GridRow(RegisterForm(RegisterForm.Props(props.router))))
   }
 
