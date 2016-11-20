@@ -27,11 +27,6 @@ object InputField {
                    descriptionStyle: StyleA = CommonStyles.inputComment,
                    icon: Option[String] = None)
 
-  def handleOnChange(props: Props)(event: ReactEventI) = {
-    //TODO: Implement field validation here
-    props.onChange(event)
-  }
-
   private val component =
     ReactComponentB[Props]("InputField")
       .render_P(p ⇒ {
