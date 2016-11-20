@@ -10,7 +10,7 @@ package org.beerfactory.frontend.utils
 
 import cats.data.Xor
 import org.beerfactory.frontend.state.AppCircuit
-import org.beerfactory.shared.api.{ApiError, UserCurrentResponse, UserInfo, UserLoginRequest}
+import org.beerfactory.shared.api._
 import org.scalajs.dom.XMLHttpRequest
 import org.scalajs.dom.ext.{Ajax, AjaxException}
 import org.scalajs.dom.ext.Ajax.InputData
@@ -47,16 +47,54 @@ object AjaxApiFacade extends ApiFacade with LazyLogging {
   implicit val userCurrentResponseEncoder: Encoder[UserCurrentResponse] = deriveEncoder
   implicit val errorDecoder: Decoder[ApiError]                          = deriveDecoder
   implicit val errorEncoder: Encoder[ApiError]                          = deriveEncoder
+  implicit val userCreateRequestEncoder: Encoder[UserCreateRequest]     = deriveEncoder
+  implicit val userCreateResponseDecoder: Decoder[UserCreateResponse]   = deriveDecoder
 
   private val authTokenReader = AppCircuit.zoom(_.userModel.authToken)
 
   private def parseError(xhr: XMLHttpRequest): ApiError = {
     parse(xhr.responseText).fold(
-      failure => ApiError("apifacade.json.parse", Seq(failure.toString, xhr.responseText), xhr.status),
+      failure =>
+        ApiError("apifacade.json.parse", Seq(failure.toString, xhr.responseText), xhr.status),
       json =>
         json
           .as[ApiError]
           .getOrElse(ApiError("apifacade.json.decode", Seq(xhr.responseText), xhr.status)))
+  }
+
+  def register(
+      userCreateRequest: UserCreateRequest): Future[Either[ApiError, UserCreateResponse]] = {
+    JsonPost(url = "/api/v1/users/", data = userCreateRequest.asJson.noSpaces).flatMap { xhr ⇒
+      xhr.status match {
+        case 200 ⇒
+          parse(xhr.responseText).fold(
+            failure ⇒
+              Future.successful(
+                Left(
+                  ApiError("apifacade.json.parse",
+                           Seq(failure.toString, xhr.responseText),
+                           xhr.status))),
+            json =>
+              json
+                .as[UserCreateResponse]
+                .fold(
+                  failure ⇒
+                    Future.successful(
+                      Left(
+                        ApiError("apifacade.json.decode",
+                                 Seq(failure.toString(), xhr.responseText),
+                                 xhr.status))),
+                  resp ⇒ Future.successful(Right(resp))
+              )
+          )
+        case status: Int ⇒
+          Future.successful(Left(parseError(xhr)))
+      }
+    }.recover {
+      case aje: AjaxException ⇒
+        Left(ApiError("apifacade.register.ajax.exception", aje.toString, aje.xhr.status))
+      case e: Throwable ⇒ Left(ApiError("apifacade.register.recover.error", e.toString))
+    }
   }
 
   def login(userLoginRequest: UserLoginRequest): Future[Either[ApiError, String]] = {
@@ -67,8 +105,10 @@ object AjaxApiFacade extends ApiFacade with LazyLogging {
           Future.successful(Left(parseError(xhr)))
         else Future.successful(Right(token))
     }.recover {
-      case aje: AjaxException ⇒ Left(ApiError("apifacade.login.ajax.exception", aje.toString, aje.xhr.status))
-      case e: Throwable ⇒ Left(ApiError("apifacade.login.recover.error", e.toString)) }
+      case aje: AjaxException ⇒
+        Left(ApiError("apifacade.login.ajax.exception", aje.toString, aje.xhr.status))
+      case e: Throwable ⇒ Left(ApiError("apifacade.login.recover.error", e.toString))
+    }
   }
 
   def getCurrentUser: Future[Either[ApiError, UserCurrentResponse]] = {
@@ -78,14 +118,20 @@ object AjaxApiFacade extends ApiFacade with LazyLogging {
           parse(xhr.responseText).fold(
             failure =>
               Future.successful(
-                Left(ApiError("apifacade.json.parse", Seq(failure.toString, xhr.responseText), xhr.status))),
+                Left(
+                  ApiError("apifacade.json.parse",
+                           Seq(failure.toString, xhr.responseText),
+                           xhr.status))),
             json =>
               json
                 .as[UserCurrentResponse]
                 .fold(
                   failure ⇒
-                    Future.successful(Left(
-                      ApiError("apifacade.json.decode", Seq(failure.toString(), xhr.responseText), xhr.status))),
+                    Future.successful(
+                      Left(
+                        ApiError("apifacade.json.decode",
+                                 Seq(failure.toString(), xhr.responseText),
+                                 xhr.status))),
                   resp ⇒ Future.successful(Right(resp))
               )
           )
@@ -93,7 +139,8 @@ object AjaxApiFacade extends ApiFacade with LazyLogging {
           Future.successful(Left(parseError(xhr)))
       }
     }.recover {
-      case aje: AjaxException ⇒ Left(ApiError("apifacade.current.user.ajax.exception", aje.toString, aje.xhr.status))
+      case aje: AjaxException ⇒
+        Left(ApiError("apifacade.current.user.ajax.exception", aje.toString, aje.xhr.status))
       case e: Throwable ⇒ Left(ApiError("apifacade.json.post.request.error", e.toString))
     }
   }
@@ -127,11 +174,12 @@ object AjaxApiFacade extends ApiFacade with LazyLogging {
     val getHeaders = withCredentials match {
       case false ⇒ headers + ("Content-Type" → "application/json")
       case true ⇒
-        if(authTokenReader.value.isReady)
-          headers + ("Content-Type" → "application/json") + ("X-Auth-Token" → authTokenReader.value.getOrElse(""))
-        else
-        {
-          logger.warn("Ajax call with creadentials but authToken not ready, X-Auth-Token header ignored")
+        if (authTokenReader.value.isReady)
+          headers + ("Content-Type" → "application/json") + ("X-Auth-Token" → authTokenReader.value
+            .getOrElse(""))
+        else {
+          logger.warn(
+            "Ajax call with creadentials but authToken not ready, X-Auth-Token header ignored")
           headers + ("Content-Type" → "application/json")
         }
     }

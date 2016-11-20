@@ -19,7 +19,7 @@ import models.auth.daos.db.{DBLoginInfo, DBLoginInfoSchema, DBUser, DBUserSchema
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import play.api.libs.concurrent.Execution.Implicits._
 import slick.driver.JdbcProfile
-
+import play.api.Logger
 import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration._
 import akka.pattern.ask
@@ -44,6 +44,7 @@ class UserDaoImpl @Inject()(@Named("uuidActor") configuredActor: ActorRef,
 
   import driver.api._
 
+  val logger: Logger            = Logger(this.getClass())
   implicit val timeout: Timeout = 5.seconds
 
   private def getRandomId(): Future[String] = {
@@ -110,7 +111,12 @@ class UserDaoImpl @Inject()(@Named("uuidActor") configuredActor: ActorRef,
         dBLoginInfo.providerID === loginInfo.providerID && dBLoginInfo.providerKey === loginInfo.providerKey)
       u ← DBUsers.filter(_.loginInfoFK === l.id)
     } yield (u, l)
-    db.run(q.result.headOption).map(mapToUser)
+    val future = db.run(q.result.headOption).map(mapToUser)
+    future.onFailure {
+      case e: Throwable ⇒
+        logger.error("Database error", e)
+    }
+    future
   }
 
   private def mapToUser(dbResult: Option[(DBUser, DBLoginInfo)]): Option[User] = {

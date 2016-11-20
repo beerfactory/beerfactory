@@ -8,6 +8,8 @@
  */
 package org.beerfactory.frontend
 
+import org.beerfactory.frontend.components.LoginForm.Styles.style
+
 import scalacss.Defaults._
 
 object GlobalStyles extends StyleSheet.Inline {
@@ -34,4 +36,7 @@ object GlobalStyles extends StyleSheet.Inline {
     addClassName("column"),
     maxWidth(450 px)
   )
+
+  val leftAlignedErrorMessage = style(addClassNames("ui", "error", "message"), textAlign.left)
+
 }

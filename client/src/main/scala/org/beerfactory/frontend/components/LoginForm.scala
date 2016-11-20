@@ -12,6 +12,7 @@ import diode.react.ModelProxy
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.all._
+import org.beerfactory.frontend.GlobalStyles
 import org.beerfactory.frontend.components.Commons._
 import org.beerfactory.frontend.pages.{Page, Register}
 import org.beerfactory.frontend.state.UserModel
@@ -39,10 +40,9 @@ object LoginForm {
   object Styles extends StyleSheet.Inline {
     import dsl._
 
-    val loginFormButton         = style(addClassNames("ui", "fluid", "large", "blue", "button"))
-    val bottomFormMessage       = style(addClassNames("ui", "bottom", "attached", "green", "message"))
-    val passwordFieldDesc       = style(textAlign.right)
-    val leftAlignedErrorMessage = style(addClassNames("ui", "error", "message"), textAlign.left)
+    val loginFormButton   = style(addClassNames("ui", "fluid", "large", "blue", "button"))
+    val bottomFormMessage = style(addClassNames("ui", "bottom", "attached", "green", "message"))
+    val passwordFieldDesc = style(textAlign.right)
   }
   Styles.addToDocument()
 
@@ -86,7 +86,7 @@ object LoginForm {
       div(
         cls := "column",
         if (s.formError.isDefined) {
-          div(Styles.leftAlignedErrorMessage,
+          div(GlobalStyles.leftAlignedErrorMessage,
               div(cls := "header", s.formError.get.headerMessage),
               ul(cls := "list", for (v <- s.formError.get.errorMessages) yield li(v)))
         } else {

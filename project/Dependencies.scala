@@ -70,6 +70,7 @@ object Dependencies {
     Seq(
       "com.github.japgolly.scalajs-react" %%% "core"                        % V.scalajsReact,
       "com.github.japgolly.scalajs-react" %%% "extra"                       % V.scalajsReact,
+      "com.github.japgolly.scalajs-react" %%% "test"                        % V.scalajsReact % "test",
       "com.github.japgolly.scalacss"      %%% "ext-react"                   % V.scalaCSS,
       "me.chrons"                         %%% "diode"                       % V.diode,
       "me.chrons"                         %%% "diode-react"                 % V.diode,
