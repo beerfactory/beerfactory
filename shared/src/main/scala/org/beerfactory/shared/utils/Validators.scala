@@ -15,12 +15,14 @@ object Validators {
   def validate[E](error: E, predicate: => Boolean): Validation[E] =
     if (predicate) Pass else Fail(error)
 
-  def notEmpty[E](error: E)(validated: String)      = validate(error, !validated.isEmpty)
-  def notBlank[E](error: String)(validated: String) = notEmpty(error)(validated.trim)
-  def minSize[E](error: String, minSize: Int)(validated: String) =
+  def notEmpty[E](error: E)(validated: String) = validate(error, !validated.isEmpty)
+  def notBlank[E](error: E)(validated: String) = notEmpty(error)(validated.trim)
+  def minSize[E](error: E, minSize: Int)(validated: String) =
     validate(error, validated.length >= minSize)
-  def maxSize[E](error: String, maxSize: Int)(validated: String) =
+  def maxSize[E](error: E, maxSize: Int)(validated: String) =
     validate(error, validated.length <= maxSize)
+  def validEquals[E](error: E, other: String)(validated: String) =
+    validate(error, other.equals(validated))
 
   def validEmailAddress[E](error: E)(validated: String) = {
     def isValidEmail(str: String): Boolean = {
