@@ -37,7 +37,7 @@ class ApplicationController @Inject()(val messagesApi: MessagesApi,
     *
     * @return The result to display.
     */
-  def index = Action { implicit request =>
+  def index(any: String) = Action { implicit request =>
     Ok(views.html.app("app.title"))
   }
 
@@ -47,7 +47,7 @@ class ApplicationController @Inject()(val messagesApi: MessagesApi,
     * @return The result to display.
     */
   def signOut = silhouette.SecuredAction.async { implicit request =>
-    val result = Redirect(routes.ApplicationController.index())
+    val result = Redirect(routes.ApplicationController.index(""))
     silhouette.env.eventBus.publish(LogoutEvent(request.identity, request))
     silhouette.env.authenticatorService.discard(request.authenticator, result)
   }
