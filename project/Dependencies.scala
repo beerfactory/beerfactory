@@ -34,13 +34,19 @@ object Dependencies {
 
   val commonDependencies = Def.setting(
     Seq(
-      "org.scalactic" %% "scalactic"  % V.scalactic,
+      "org.scalactic" %%% "scalactic" % V.scalactic,
       "org.scalatest" %%% "scalatest" % V.scalatest % "test"
     ))
 
   val sharedDependencies = Def.setting(
     Seq(
-      ))
+      "com.github.japgolly.scalajs-react" %%% "core"      % V.scalajsReact,
+      "com.github.japgolly.scalajs-react" %%% "extra"     % V.scalajsReact,
+      "com.github.japgolly.scalajs-react" %%% "test"      % V.scalajsReact % "test",
+      "com.github.japgolly.scalacss"      %%% "ext-react" % V.scalaCSS,
+      "biz.enef"                          %%% "slogging"  % V.slogging,
+      "org.scalactic"                     %%% "scalactic" % V.scalactic
+    ))
 
   val serverDependencies = Def.setting(
     Seq(
