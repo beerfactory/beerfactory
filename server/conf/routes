@@ -1,5 +1,6 @@
 # Home page
 GET         /                               controllers.ApplicationController.index(any="")
+GET         /registration                   controllers.RegistrationController.index(any="")
 GET         /signOut                         controllers.ApplicationController.signOut
 
 GET         /account/activate/:token         controllers.ActivateAccountController.activate(token: String)
@@ -13,4 +14,5 @@ POST        /api/v1/auth/activate/:token     controllers.ActivateAccountControll
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file                     controllers.Assets.at(path="/public", file)
+GET         /registration/*any               controllers.RegistrationController.index(any)
 GET         /*any                            controllers.ApplicationController.index(any)

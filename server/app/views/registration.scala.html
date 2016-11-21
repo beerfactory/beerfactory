@@ -1,0 +1,10 @@
+@(title: String)(implicit request: RequestHeader, messages: Messages)
+
+@main(Messages("app.title")) {
+<div id="root">
+</div>
+@scalajs.html.scripts(
+"clientregistration",
+name => routes.Assets.at(name).toString,
+name => getClass.getResource(s"/public/$name") != null)
+}
