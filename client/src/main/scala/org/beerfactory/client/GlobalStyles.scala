@@ -35,6 +35,7 @@ object GlobalStyles extends StyleSheet.Inline {
     maxWidth(450 px)
   )
 
-  val leftAlignedErrorMessage = style(addClassNames("ui", "error", "message"), textAlign.left)
+  val leftAlignedErrorMessage   = style(addClassNames("ui", "error", "message"), textAlign.left)
+  val leftAlignedSuccessMessage = style(addClassNames("ui", "success", "message"), textAlign.left)
 
 }

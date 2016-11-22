@@ -3,12 +3,14 @@ package org.beerfactory.client.pages
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.all._
+import org.beerfactory.client.GlobalStyles
 import org.beerfactory.shared.components.Commons._
 import org.beerfactory.client.components.RegisterForm
 import org.beerfactory.client.utils.AjaxApiFacade
-import org.beerfactory.shared.api.UserCreateRequest
+import org.beerfactory.shared.api.{UserCreateRequest, UserInfo}
 import org.scalajs.dom
 import slogging.LazyLogging
+import scalacss.ScalaCssReact._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -18,7 +20,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 object RegisterPage {
   case class Props(router: RouterCtl[Page])
 
-  case class State(errorMessage: Option[String])
+  case class State(registered: Boolean, userInfo: Option[UserInfo], errorMessage: Option[String])
 
   class Backend(scope: BackendScope[Props, State]) extends LazyLogging {
 
@@ -44,7 +46,7 @@ object RegisterPage {
               scope.modState(s ⇒ s.copy(errorMessage = Some(message)))
             case Right(response) ⇒
               logger.debug(s"response")
-              Callback.empty
+              scope.modState(s => s.copy(registered = true, userInfo = Some(response.userInfo)))
           }
       }
     }
@@ -53,11 +55,27 @@ object RegisterPage {
       div(
         cls := "ui grid",
         GridCenteredRow(H1Header("Register to Beerfactory")),
-        GridRow(RegisterForm(RegisterForm.Props(props.router, handleSubmit, state.errorMessage))))
+        if (state.registered) {
+          val email = state.userInfo match {
+            case Some(info) => info.email
+            case None       => "NO_ADDRESS"
+          }
+          GridCenteredRow(
+            div(GlobalStyles.leftAlignedSuccessMessage,
+                div(cls := "header", "Registration completed"),
+                p(s"NOT_YET_IMPLEMENTED : A validation email has been sent to ",
+                  b(email),
+                  ". Please read it before login.")))
+        } else
+          GridRow(RegisterForm(RegisterForm.Props(props.router, handleSubmit, state.errorMessage)))
+      )
   }
 
   private val component =
-    ReactComponentB[Props]("RegisterPage").initialState(State(None)).renderBackend[Backend].build
+    ReactComponentB[Props]("RegisterPage")
+      .initialState(State(false, None, None))
+      .renderBackend[Backend]
+      .build
 
   def apply(router: RouterCtl[Page]) =
     component(Props(router))
