@@ -62,7 +62,7 @@ object RegisterPage {
           }
           GridCenteredRow(
             div(GlobalStyles.leftAlignedSuccessMessageWithIcon,
-                i(cls := "check-square-o icon"),
+                i(cls := "checkmark box icon"),
                 div(cls := "content",
                     div(cls := "header", "Registration completed (NOT_YET_IMPLEMENTED)"),
                     p("A confirmation email has been sent to ",
