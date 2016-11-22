@@ -52,6 +52,8 @@ object AppMain extends JSApp with LazyLogging {
 
     def isUserLoggedIn = AppCircuit.zoom(_.userModel.authToken.isReady).value
 
+    //Secured are pages which access is conditioned to an existing authentication token
+    //Most application pages should be secured pages.
     val securedPages =
       (emptyRule
         | staticRoute(root, Home) ~> renderR(
@@ -59,10 +61,18 @@ object AppMain extends JSApp with LazyLogging {
         .addCondition(react.CallbackTo(isUserLoggedIn))(_ =>
           Some(redirectToPage(Login)(Redirect.Push)))
 
+    //Registration pages are pages dedicated for user registration, email token verification, password reset, ...
+    //User should not be already logged in to access these pages
+    val registrationPages =
+      (emptyRule
+        | staticRoute("register", Register) ~> renderR(ctl => RegisterPage(ctl))).addCondition(
+        react.CallbackTo(!isUserLoggedIn))(_ => Some(redirectToPage(Home)(Redirect.Push)))
+
+    //Build router configuration
     (trimSlashes
       | staticRoute("login", Login) ~> renderR(
         ctl => AppCircuit.wrap(_.userModel)(proxy => LoginPage(ctl, proxy)))
-      | staticRoute("register", Register) ~> renderR(ctl => RegisterPage(ctl))
+      | registrationPages
       | securedPages)
       .notFound(redirectToPage(if (isUserLoggedIn) Home else Login)(Redirect.Replace))
   }.renderWith(layout)
