@@ -41,7 +41,7 @@ object RegisterPage {
                 case "create.user.alreadyExist" ⇒
                   "Some user already exists with this username or email address"
                 case _ ⇒
-                  s"Registration failed with error code ${apiError.statusCode} ($apiError.id)"
+                  s"Registration failed with error code ${apiError.statusCode} (${apiError.id})"
               }
               scope.modState(s ⇒ s.copy(errorMessage = Some(message)))
             case Right(response) ⇒
@@ -61,11 +61,17 @@ object RegisterPage {
             case None       => "NO_ADDRESS"
           }
           GridCenteredRow(
-            div(GlobalStyles.leftAlignedSuccessMessage,
-                div(cls := "header", "Registration completed"),
-                p(s"NOT_YET_IMPLEMENTED : A validation email has been sent to ",
-                  b(email),
-                  ". Please read it before login.")))
+            div(GlobalStyles.leftAlignedSuccessMessageWithIcon,
+                i(cls := "check-square-o icon"),
+                div(cls := "content",
+                    div(cls := "header", "Registration completed (NOT_YET_IMPLEMENTED)"),
+                    p("A confirmation email has been sent to ",
+                      b(email),
+                      ". Please read it before ",
+                      props.router.link(Home)("logging in"),
+                      "."),
+                    p("Didn't received a confirmation email? ",
+                      props.router.link(Home)("Request a new one")))))
         } else
           GridRow(RegisterForm(RegisterForm.Props(props.router, handleSubmit, state.errorMessage)))
       )

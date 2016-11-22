@@ -87,12 +87,12 @@ object AjaxApiFacade extends ApiFacade with LazyLogging {
                   resp ⇒ Future.successful(Right(resp))
               )
           )
-        case status: Int ⇒
+        case _ ⇒
           Future.successful(Left(parseError(xhr)))
       }
     }.recover {
       case aje: AjaxException ⇒
-        Left(ApiError("apifacade.register.ajax.exception", aje.toString, aje.xhr.status))
+        Left(parseError(aje.xhr))
       case e: Throwable ⇒ Left(ApiError("apifacade.register.recover.error", e.toString))
     }
   }
@@ -106,7 +106,7 @@ object AjaxApiFacade extends ApiFacade with LazyLogging {
         else Future.successful(Right(token))
     }.recover {
       case aje: AjaxException ⇒
-        Left(ApiError("apifacade.login.ajax.exception", aje.toString, aje.xhr.status))
+        Left(parseError(aje.xhr))
       case e: Throwable ⇒ Left(ApiError("apifacade.login.recover.error", e.toString))
     }
   }
@@ -140,7 +140,7 @@ object AjaxApiFacade extends ApiFacade with LazyLogging {
       }
     }.recover {
       case aje: AjaxException ⇒
-        Left(ApiError("apifacade.current.user.ajax.exception", aje.toString, aje.xhr.status))
+        Left(parseError(aje.xhr))
       case e: Throwable ⇒ Left(ApiError("apifacade.json.post.request.error", e.toString))
     }
   }

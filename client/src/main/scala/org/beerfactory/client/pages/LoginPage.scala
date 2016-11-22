@@ -30,9 +30,13 @@ object LoginPage {
         AjaxApiFacade.login(UserLoginRequest(authData, password))
           map {
             case Left(apiError) ⇒
-              scope.modState(s ⇒
-                s.copy(
-                  errorMessage = Some(s"Authentication failed with code ${apiError.statusCode}")))
+              val message = apiError.id match {
+                case "user.login.invalid.credentials" ⇒
+                  "Invalid e-mail/username or password"
+                case _ ⇒
+                  s"Login failed with error code ${apiError.statusCode} (${apiError.id})"
+              }
+              scope.modState(s ⇒ s.copy(errorMessage = Some(message)))
             case Right(token) ⇒
               scope.props.flatMap(props =>
                 props.proxy.dispatchCB(UserLogin(token)) >> props.router.set(Home))
