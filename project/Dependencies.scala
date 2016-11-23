@@ -27,8 +27,8 @@ object Dependencies {
 
   object jsV {
     val react      = "15.3.2"
-    val semanticUI = "2.2.2"
-    val jQuery     = "3.1.0"
+    val semanticUI = "2.2.6"
+    val jQuery     = "3.1.1"
     val jsJoda     = "1.1.8"
   }
 
@@ -59,17 +59,16 @@ object Dependencies {
       "com.lihaoyi"                  %% "scalatags"                       % V.scalatags,
       "com.github.japgolly.scalacss" %% "core"                            % V.scalaCSS,
       "org.webjars"                  % "font-awesome"                     % "4.6.3" % Provided,
-      "org.webjars"                  % "Semantic-UI"                      % jsV.semanticUI % Provided,
-      "org.webjars"                  % "jquery"                           % jsV.jQuery,
+      "org.webjars.bower"            % "css-avatars"                      % "0.4.0" % Provided,
+      "org.webjars.bower"            % "semantic-ui"                      % jsV.semanticUI % Provided,
       "com.mohiva"                   %% "play-silhouette"                 % V.silhouette,
       "com.mohiva"                   %% "play-silhouette-password-bcrypt" % V.silhouette,
       "com.mohiva"                   %% "play-silhouette-crypto-jca"      % V.silhouette,
       "com.mohiva"                   %% "play-silhouette-persistence"     % V.silhouette,
       "com.mohiva"                   %% "play-silhouette-testkit"         % V.silhouette % Test,
-      //"org.scalatestplus.play"       %% "scalatestplus-play"              % V.scalatestPlay % Test,
-      "com.typesafe.akka" %% "akka-testkit" % V.akka % Test,
-      "net.codingwell"    %% "scala-guice"  % V.scalaGuice,
-      "com.iheart"        %% "ficus"        % V.ficus
+      "com.typesafe.akka"            %% "akka-testkit"                    % V.akka % Test,
+      "net.codingwell"               %% "scala-guice"                     % V.scalaGuice,
+      "com.iheart"                   %% "ficus"                           % V.ficus
     ))
 
   val clientDependencies = Def.setting(
@@ -96,8 +95,8 @@ object Dependencies {
     "org.webjars.bower" % "react"       % jsV.react / "react-with-addons.js" minified "react-with-addons.min.js" commonJSName "React",
     "org.webjars.bower" % "react"       % jsV.react / "react-dom.js" minified "react-dom.min.js" dependsOn "react-with-addons.js" commonJSName "ReactDOM",
     "org.webjars.bower" % "react"       % jsV.react / "react-dom-server.js" minified "react-dom-server.min.js" dependsOn "react-dom.js" commonJSName "ReactDOMServer",
-    "org.webjars"       % "jquery"      % jsV.jQuery / "jquery.js" minified "jquery.min.js",
-    "org.webjars"       % "Semantic-UI" % jsV.semanticUI / "semantic.js" minified "semantic.min.js" dependsOn "jquery.js",
+    "org.webjars.bower" % "jquery"      % jsV.jQuery / "dist/jquery.js" minified "dist/jquery.min.js",
+    "org.webjars.bower" % "semantic-ui" % jsV.semanticUI / "dist/semantic.js" minified "dist/semantic.min.js" dependsOn "dist/jquery.js",
     "org.webjars.npm"   % "js-joda"     % jsV.jsJoda / "dist/js-joda.js" minified "dist/js-joda.min.js"
   )
 }
