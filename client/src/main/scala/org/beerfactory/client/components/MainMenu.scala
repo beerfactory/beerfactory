@@ -15,6 +15,7 @@ import japgolly.scalajs.react.{BackendScope, ReactComponentB, ReactElement}
 import org.beerfactory.client.GlobalStyles
 import org.beerfactory.client.pages.{Home, Page, Register}
 import org.beerfactory.client.state.UserModel
+import org.beerfactory.client.utils.Tags
 
 import scalacss.ScalaCssReact._
 
@@ -36,9 +37,7 @@ object MainMenu {
           "Beerfactory"
         ),
         if (props.proxy.value.userInfo.isReady) {
-          div(cls := "right menu",
-              div(cls := "item",
-                  img(cls := "ui avatar image", src := props.proxy.value.userInfo.get.avatarUrl)))
+          div(cls := "right menu", div(cls := "item", Tags.avatar(props.proxy.value.userInfo.get)))
         } else {
           div(
             cls := "right menu",
