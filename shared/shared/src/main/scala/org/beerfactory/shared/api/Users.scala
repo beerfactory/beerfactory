@@ -38,6 +38,16 @@ case class UserInfo(id: String,
                     locale: Option[String],
                     avatarUrl: Option[String],
                     authService: String,
-                    authData: String)
+                    authData: String) {
+  def initials = {
+    (firstName, lastName, nickName, userName) match {
+      case (Some(u), Some(l), _, _) if !(u.isEmpty || l.isEmpty) ⇒
+        (u.substring(0, 1) + l.substring(0, 1)).toUpperCase
+      case (_, _, Some(n), _) if !n.isEmpty ⇒ n.substring(0, 1).toUpperCase()
+      case (_, _, _, u) if !u.isEmpty       ⇒ u.substring(0, 1).toUpperCase
+      case _                                ⇒ "?"
+    }
+  }
+}
 
 case class UserLoginRequest(authData: String, password: String) extends UsersApi
