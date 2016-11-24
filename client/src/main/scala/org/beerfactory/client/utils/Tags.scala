@@ -9,16 +9,19 @@
 package org.beerfactory.client.utils
 
 import japgolly.scalajs.react.vdom.all._
+import org.beerfactory.client.GlobalStyles
 import org.beerfactory.shared.api.UserInfo
+import scalacss.Defaults._
+import scalacss.ScalaCssReact._
 
 object Tags {
   def avatar(userInfo: UserInfo) = {
     if (userInfo.avatarUrl.isDefined)
-      img(cls := "ui avatar image", src := userInfo.avatarUrl.get)
+      img(GlobalStyles.avatarImage, src := userInfo.avatarUrl.get)
     else {
       val userColor: String =
         (userInfo.email.getBytes().foldLeft(0L)((l, b) ⇒ l + b) % 215).toString
-      i(cls := s"avatar avatar-plain avatar-inverse avatar-color-$userColor", userInfo.initials)
+      i(GlobalStyles.avatarLetter, cls := s"avatar-color-$userColor", userInfo.initials)
     }
   }
 }

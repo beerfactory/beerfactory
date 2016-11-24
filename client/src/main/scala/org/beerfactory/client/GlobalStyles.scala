@@ -25,18 +25,23 @@ object GlobalStyles extends StyleSheet.Inline {
     marginBottom(7 em)
   )
 
-  val loginView = style(
-    addClassName("ui one column middle aligned center aligned grid")
-    //,backgroundColor(c"#DADADA")
-  )
-
-  val loginFormColumn = style(
-    addClassName("column"),
-    maxWidth(450 px)
-  )
-
   val leftAlignedErrorMessage = style(addClassNames("ui", "error", "message"), textAlign.left)
   val leftAlignedSuccessMessageWithIcon =
     style(addClassNames("ui", "success", "icon", "message"), textAlign.left)
 
+  val avatarImage = style(
+    addClassNames("ui", "avatar", "image"),
+    borderRadius(0 rem).important
+  )
+
+  /*
+  def avatarLetter(color: String) = style(
+    addClassNames("avatar", "avatar-plain", "avatar-inverse", "avator-color-" + color),
+    marginRight(0.25 em)
+  )
+   */
+  val avatarLetter = style(
+    addClassNames("avatar", "avatar-plain", "avatar-inverse"),
+    marginRight(0.25 em)
+  )
 }
