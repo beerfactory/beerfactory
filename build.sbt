@@ -14,7 +14,7 @@ val scOptions = Seq(
 
 lazy val commonSettings = Seq(
   organization := "org.beerfactory",
-  scalaVersion := "2.11.8",
+  scalaVersion := "2.12.0",
   version := "0.1.0-SNAPSHOT",
   resolvers += "Atlassian Releases" at "https://maven.atlassian.com/public/",
   resolvers += Resolver.jcenterRepo
@@ -28,7 +28,6 @@ lazy val server = (project in file("server"))
   .settings(commonSettings: _*)
   .enablePlugins(BuildInfoPlugin)
   .enablePlugins(SbtWeb)
-  .enablePlugins(PlayScala)
   .dependsOn(sharedJVM)
   .settings(
     name := "server",
@@ -42,8 +41,7 @@ lazy val server = (project in file("server"))
     buildInfoObject := "BuildInfo",
     buildInfoKeys := Seq[BuildInfoKey](name, version, "projectName" -> "Beerfactory"),
     buildInfoOptions += BuildInfoOption.BuildTime,
-    libraryDependencies ++= Dependencies.commonDependencies.value ++ Dependencies.serverDependencies.value,
-    libraryDependencies += filters
+    libraryDependencies ++= Dependencies.commonDependencies.value ++ Dependencies.serverDependencies.value
   )
 
 lazy val client = (project in file("client"))
